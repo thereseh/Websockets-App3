@@ -1,0 +1,146 @@
+   @import url('https://fonts.googleapis.com/css?family=Roboto:400,500');
+   html,
+   body {
+     width: 100%;
+     height: 100%;
+     font-family: 'Roboto', sans-serif;
+   }
+   
+   canvas {
+     width: 100%;
+     height: 100%;
+     border: 1px solid #f2f2f2;
+     box-shadow: 2px 2px 1px #f2f2f2;
+     float: left;
+     background-image: url("http://img06.deviantart.net/49d3/i/2010/245/0/c/pinboard_texture_by_nikky81-d2xuip9.png");
+     position: relative;
+     z-index: 0;
+   }
+   
+   #sideBarButton {
+     width: 45px;
+     height: 45px;
+     position: absolute;
+     align-content: center;
+   }
+   
+   #sideBarButton>#close {
+     margin-left: 210px;
+   }
+   
+   #sideBarButton>#open {
+     display: none;
+     margin-left: 20px;
+   }
+   
+   #sideBarButton>.glyphicon {
+     font-size: 40px;
+     cursor: pointer;
+   }
+   
+   .sideBar {
+     z-index: 2;
+     margin-top: 10px;
+     width: 200px;
+     height: 500px;
+     background-color: #fff2e6;
+     box-shadow: 2px 2px 3px #262626;
+     position: absolute;
+     text-align: left;
+   }
+   
+   .sideBar>#toggle>#stickyH2 {
+     left: 20px;
+     font-size: 20px;
+     position: absolute;
+   }
+   
+   .sideBar>#toggle>#stickyNote1 {
+     width: 40px;
+     height: 40px;
+     top: 60px;
+     left: 20px;
+     background-color: yellow;
+     box-shadow: 1px 1px 2px #262626;
+     position: absolute;
+     cursor: pointer;
+   }
+   
+   .sideBar>#toggle>#stickyNote2 {
+     width: 40px;
+     height: 40px;
+     top: 60px;
+     left: 75px;
+     background-color: greenyellow;
+     box-shadow: 1px 1px 2px #262626;
+     position: absolute;
+     cursor: pointer;
+   }
+   
+   .sideBar>#toggle>#stickyNote3 {
+     width: 40px;
+     height: 40px;
+     top: 60px;
+     left: 130px;
+     background-color: deepskyblue;
+     box-shadow: 1px 1px 2px #262626;
+     position: absolute;
+     cursor: pointer;
+   }
+   
+   .sideBar>#toggle>#textFieldH2 {
+     left: 20px;
+     top: 120px;
+     font-size: 20px;
+     position: absolute;
+   }
+   
+   .sideBar>#toggle>#textField {
+     width: 150px;
+     height: 40px;
+     top: 180px;
+     left: 20px;
+     border: 1px solid #262626;
+     position: absolute;
+     cursor: pointer;
+   }
+   
+   p {
+     margin-left: 12px;
+     font-size: 1.2em;
+     width: 50%;
+   }
+   
+   .hidden {
+     display: none;
+   }
+   
+   .can {
+     text-align: center;
+     display: none;
+   }
+   
+   .row {
+     padding-top: 10px;
+     width: 400px;
+     margin: auto;
+     !important float: none;
+     !important text-align: auto;
+     !important align-content: center;
+     !important
+   }
+   
+   .col-lg-6 {
+     width: 100%;
+     margin: auto;
+     !important text-align: center;
+     !important align-content: center;
+     !important float: none;
+     !important
+   }
+   
+   #indexh1 {
+     padding-top: 30px;
+     text-align: center;
+     font-size: 50px;
+   }
