@@ -1,6 +1,13 @@
 let canvas;
 let ctx;
 
+// Holds background image and pattern
+let background;
+let pattern;
+
+// Holds username
+let username;
+
 // Holds colors for drawing sticky notes
 const ColorEnum = {
   YELLOW: 1,
@@ -13,6 +20,9 @@ let stickyColor;
 
 // Used to get the value of text
 let textField;
+
+// Holds each note
+let notes = {};
 
 const getMousePos = (e, can) => {
     let rect = canvas.getBoundingClientRect();
@@ -43,7 +53,8 @@ const mouseUpHandler = (e) => {
 
 //handler for key up events
 const mouseMoveHandler = (e) => {
-
+  const position = getMousePos(e, canvas);
+  drawTransparentNote("gray", position, " ");
 };
 
 // When the user connects, set up socket pipelines
@@ -51,19 +62,30 @@ const connectSocket = (e) => {
 
 };
 
+// Resizes the canvas
 const resizeCanvas = (e) => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+  
+  redraw();
 };
 
 const init = () => {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
-  resizeCanvas();
+  
+  // Sets information to draw the background
+  background = new Image();
+  background.src = "http://img06.deviantart.net/49d3/i/2010/245/0/c/pinboard_texture_by_nikky81-d2xuip9.png";
+  background.onload = function() {
+    pattern = ctx.createPattern(background, 'repeat');
+    resizeCanvas();
+  };  
 
   // connect to socket
   const connect = document.querySelector("#connect");
   
+  // Event handle for resizing
   window.addEventListener('resize', resizeCanvas);
 
   // mouse event handlers - NOTE: Lines are changed to get events for the canvas
@@ -93,6 +115,7 @@ const init = () => {
   
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', () => {
+    username = document.querySelector('#username').value;
     console.log('connect');
     document.querySelector('.can').style.display = "block";
   document.querySelector('.login').style.display = "none";
