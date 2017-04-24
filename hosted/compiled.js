@@ -1,53 +1,44 @@
 "use strict";
 
 // Add the note onto the canvas depending on mouse position and color
-var addNote = function addNote(color, position) {
+var addNote = function addNote(color, position, text) {
+  ctx.save();
+  ctx.shadowBlur = 5;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+  ctx.shadowColor = "black";
+  ctx.fill();
   switch (color) {
     case 1:
       // Yellow
-      ctx.shadowBlur = 5;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      ctx.shadowColor = "black";
-      ctx.fill();
       ctx.fillStyle = "yellow";
-      ctx.fillRect(position.x - 20, position.y - 20, 40, 40);
-      console.log("yellow");
+      ctx.fillRect(position.x - 50, position.y - 50, 100, 100);
+      console.log(text);
       break;
     case 2:
       // Green
-      ctx.shadowBlur = 5;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      ctx.shadowColor = "black";
-      ctx.fill();
       ctx.fillStyle = "greenyellow";
-      ctx.fillRect(position.x - 20, position.y - 20, 40, 40);
+      ctx.fillRect(position.x - 50, position.y - 50, 100, 100);
       console.log("green");
       break;
     case 3:
       // Blue
-      ctx.shadowBlur = 5;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      ctx.shadowColor = "black";
-      ctx.fill();
       ctx.fillStyle = "deepskyblue";
-      ctx.fillRect(position.x - 20, position.y - 20, 40, 40);
+      ctx.fillRect(position.x - 50, position.y - 50, 100, 100);
       console.log("blue");
       break;
     default:
       // Default Yellow
-      ctx.shadowBlur = 5;
-      ctx.shadowOffsetX = 2;
-      ctx.shadowOffsetY = 2;
-      ctx.shadowColor = "black";
-      ctx.fill();
       ctx.fillStyle = "yellow";
-      ctx.fillRect(position.x - 20, position.y - 20, 40, 40);
+      ctx.fillRect(position.x - 50, position.y - 50, 100, 100);
       console.log("yellow");
       break;
   }
+  ctx.restore();
+  ctx.font = "24px Arial";
+  ctx.fillStyle = "black";
+  ctx.textAlign = "center";
+  ctx.fillText(text, position.x, position.y + 10);
 };
 'use strict';
 
@@ -64,6 +55,9 @@ var ColorEnum = {
 // Determines which color the sticky note is
 var stickyColor = void 0;
 
+// Used to get the value of text
+var textField = void 0;
+
 var getMousePos = function getMousePos(e, can) {
   var rect = canvas.getBoundingClientRect();
   var scaleX = canvas.width / rect.width;
@@ -79,9 +73,15 @@ var getMousePos = function getMousePos(e, can) {
 
 //handler for key up events
 var mouseUpHandler = function mouseUpHandler(e) {
+  var text = textField.value;
+  textField.value = "";
+
+  if (text.trim().length === 0) {
+    return;
+  }
   // Determines where to add the sticky note
   var position = getMousePos(e, canvas);
-  addNote(stickyColor, position);
+  addNote(stickyColor, position, text.trim());
 };
 
 //handler for key up events
@@ -90,16 +90,24 @@ var mouseMoveHandler = function mouseMoveHandler(e) {};
 // When the user connects, set up socket pipelines
 var connectSocket = function connectSocket(e) {};
 
+var resizeCanvas = function resizeCanvas(e) {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+};
+
 var init = function init() {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
+  resizeCanvas();
 
   // connect to socket
   var connect = document.querySelector("#connect");
 
-  // mouse event handlers - NOTE: First line is changed to just get events for the canvas
+  window.addEventListener('resize', resizeCanvas);
+
+  // mouse event handlers - NOTE: Lines are changed to get events for the canvas
   canvas.addEventListener('mouseup', mouseUpHandler);
-  document.body.addEventListener('mousemove', mouseMoveHandler);
+  canvas.addEventListener('mousemove', mouseMoveHandler);
 
   // Event handlers for sidebar
   stickyColor = ColorEnum.YELLOW;
@@ -118,6 +126,9 @@ var init = function init() {
   blueSticky.addEventListener('click', function () {
     stickyColor = ColorEnum.BLUE;
   });
+
+  // Used for getting text
+  textField = document.querySelector('#textField');
 
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', function () {

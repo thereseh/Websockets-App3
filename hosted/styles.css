@@ -96,13 +96,14 @@
    }
    
    .sideBar>#toggle>#textField {
-     width: 150px;
-     height: 40px;
+     font-size: 14px;
      top: 180px;
      left: 20px;
      border: 1px solid #262626;
      position: absolute;
      cursor: pointer;
+     resize: none;
+     overflow: hidden;
    }
    
    p {

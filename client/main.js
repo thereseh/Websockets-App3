@@ -11,6 +11,9 @@ const ColorEnum = {
 // Determines which color the sticky note is
 let stickyColor;
 
+// Used to get the value of text
+let textField;
+
 const getMousePos = (e, can) => {
     let rect = canvas.getBoundingClientRect();
     let scaleX = canvas.width / rect.width;
@@ -27,9 +30,15 @@ const getMousePos = (e, can) => {
 
 //handler for key up events
 const mouseUpHandler = (e) => {
+  let text = textField.value;
+  textField.value = "";
+  
+  if(text.trim().length === 0) {
+    return;
+  }
   // Determines where to add the sticky note
   const position = getMousePos(e, canvas);
-  addNote(stickyColor, position);
+  addNote(stickyColor, position, text.trim());
 };
 
 //handler for key up events
@@ -42,16 +51,24 @@ const connectSocket = (e) => {
 
 };
 
+const resizeCanvas = (e) => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+};
+
 const init = () => {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
+  resizeCanvas();
 
   // connect to socket
   const connect = document.querySelector("#connect");
+  
+  window.addEventListener('resize', resizeCanvas);
 
-  // mouse event handlers - NOTE: First line is changed to just get events for the canvas
+  // mouse event handlers - NOTE: Lines are changed to get events for the canvas
   canvas.addEventListener('mouseup', mouseUpHandler);
-  document.body.addEventListener('mousemove', mouseMoveHandler);
+  canvas.addEventListener('mousemove', mouseMoveHandler);
   
   // Event handlers for sidebar
   stickyColor = ColorEnum.YELLOW;
@@ -70,6 +87,9 @@ const init = () => {
   blueSticky.addEventListener('click', function() {
     stickyColor = ColorEnum.BLUE;
   });
+  
+  // Used for getting text
+  textField = document.querySelector('#textField');
   
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', () => {
