@@ -30,16 +30,16 @@ const redraw = () => {
         ctx.shadowColor = "black";
         ctx.fill();
         ctx.fillStyle = note.color;
-        ctx.fillRect(note.position.x - 50, note.position.y - 50, 100, 100);
+        ctx.fillRect(note.x - 50, note.y - 50, 100, 100);
         ctx.restore();
         ctx.font = "24px Arial";
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
-        ctx.fillText(note.text, note.position.x, note.position.y + 10);
+        ctx.fillText(note.text, note.x, note.y + 10);
         ctx.font = "12px Arial";
         ctx.fillStyle = "gray";
         ctx.textAlign = "right";
-        ctx.fillText(username, note.position.x + 48, note.position.y + 48);
+        ctx.fillText(note.username, note.x + 48, note.y + 48);
       }
     }
   }
@@ -54,30 +54,5 @@ const drawTransparentNote = (color, position, text) => {
   note.position = position;
   note.text = " ";
   
-  notes[text] = note;
-};
-
-// Create a note object and add it to the notes list
-const addNote = (color, position, text) => {
-  let note = {};
-  
-  switch (color) {
-    case 1: // Yellow
-      note.color = "yellow";
-      break;
-    case 2: // Green
-      note.color = "greenyellow";
-      break;
-    case 3: // Blue
-      note.color = "deepskyblue";
-      break;
-    default:  // Default Yellow
-      note.color = "yellow";
-      break;
-   }  
-  note.text = text;
-  note.position = position;
-  
-  // TODO: Change this when we enable socket.io
   notes[text] = note;
 };

@@ -32,16 +32,16 @@ var redraw = function redraw() {
         ctx.shadowColor = "black";
         ctx.fill();
         ctx.fillStyle = note.color;
-        ctx.fillRect(note.position.x - 50, note.position.y - 50, 100, 100);
+        ctx.fillRect(note.x - 50, note.y - 50, 100, 100);
         ctx.restore();
         ctx.font = "24px Arial";
         ctx.fillStyle = "black";
         ctx.textAlign = "center";
-        ctx.fillText(note.text, note.position.x, note.position.y + 10);
+        ctx.fillText(note.text, note.x, note.y + 10);
         ctx.font = "12px Arial";
         ctx.fillStyle = "gray";
         ctx.textAlign = "right";
-        ctx.fillText(username, note.position.x + 48, note.position.y + 48);
+        ctx.fillText(note.username, note.x + 48, note.y + 48);
       }
     }
   }
@@ -58,62 +58,7 @@ var drawTransparentNote = function drawTransparentNote(color, position, text) {
 
   notes[text] = note;
 };
-
-// Create a note object and add it to the notes list
-var addNote = function addNote(color, position, text) {
-  var note = {};
-
-  switch (color) {
-    case 1:
-      // Yellow
-      note.color = "yellow";
-      break;
-    case 2:
-      // Green
-      note.color = "greenyellow";
-      break;
-    case 3:
-      // Blue
-      note.color = "deepskyblue";
-      break;
-    default:
-      // Default Yellow
-      note.color = "yellow";
-      break;
-  }
-  note.text = text;
-  note.position = position;
-
-  // TODO: Change this when we enable socket.io
-  notes[text] = note;
-};
 "use strict";
-
-var canvas = void 0;
-var ctx = void 0;
-
-// Holds background image and pattern
-var background = void 0;
-var pattern = void 0;
-
-// Holds username
-var username = void 0;
-
-// Holds colors for drawing sticky notes
-var ColorEnum = {
-  YELLOW: 1,
-  GREEN: 2,
-  BLUE: 3
-};
-
-// Determines which color the sticky note is
-var stickyColor = void 0;
-
-// Used to get the value of text
-var textField = void 0;
-
-// Holds each note
-var notes = {};
 
 var getMousePos = function getMousePos(e, can) {
   var rect = canvas.getBoundingClientRect();
@@ -147,9 +92,6 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
   drawTransparentNote("gray", position, " ");
 };
 
-// When the user connects, set up socket pipelines
-var connectSocket = function connectSocket(e) {};
-
 // Resizes the canvas
 var resizeCanvas = function resizeCanvas(e) {
   canvas.width = window.innerWidth;
@@ -157,6 +99,34 @@ var resizeCanvas = function resizeCanvas(e) {
 
   redraw();
 };
+'use strict';
+
+var canvas = void 0;
+var ctx = void 0;
+var socket = void 0;
+
+// Holds background image and pattern
+var background = void 0;
+var pattern = void 0;
+
+// Holds username
+var username = void 0;
+
+// Holds colors for drawing sticky notes
+var ColorEnum = {
+  YELLOW: 1,
+  GREEN: 2,
+  BLUE: 3
+};
+
+// Determines which color the sticky note is
+var stickyColor = void 0;
+
+// Used to get the value of text
+var textField = void 0;
+
+// Holds each note
+var notes = {};
 
 var init = function init() {
   canvas = document.querySelector('#canvas');
@@ -207,6 +177,7 @@ var init = function init() {
     console.log('connect');
     document.querySelector('.can').style.display = "block";
     document.querySelector('.login').style.display = "none";
+    connectSocket();
   });
 
   $('#close').click(function () {
@@ -228,3 +199,54 @@ var init = function init() {
 };
 
 window.onload = init;
+'use strict';
+
+// Add all of the notes in the current room to the notes list
+var addAllNotes = function addAllNotes(data) {
+  notes = data;
+};
+
+// Add the note to the list if it doesn't exist
+var updateNoteList = function updateNoteList(data) {
+  if (!notes[data.hash]) {
+    notes[data.hash] = data;
+    return;
+  }
+};
+
+// When the user connects, set up socket pipelines
+var connectSocket = function connectSocket(e) {
+  socket = io.connect();
+
+  socket.on('addedNote', updateNoteList);
+  socket.on('joined', addAllNotes);
+};
+
+// Create a note object and add it to the notes list
+var addNote = function addNote(color, position, text) {
+  var note = {};
+
+  switch (color) {
+    case 1:
+      // Yellow
+      note.color = "yellow";
+      break;
+    case 2:
+      // Green
+      note.color = "greenyellow";
+      break;
+    case 3:
+      // Blue
+      note.color = "deepskyblue";
+      break;
+    default:
+      // Default Yellow
+      note.color = "yellow";
+      break;
+  }
+  note.text = text;
+  note.position = position;
+  note.username = username;
+
+  socket.emit('addNote', note);
+};
