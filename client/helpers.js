@@ -23,8 +23,8 @@ const checkClickOnRec = (position, type) => {
         // TODO - FILL IN FOR THREADS
       }
       
-      if (mousex > rec.x - rec.radius && mousex < rec.x + rec.radius &&
-         mousey > rec.y - rec.radius && mousey < rec.y + 50) {
+      if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx &&
+         mousey > rec.y - rec.radiusy && mousey < rec.y + radiusy) {
         return rec;
       }
     }

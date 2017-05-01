@@ -5,7 +5,8 @@ class Note {
     this.username = username;
     this.x = x; // NOTE: This is center x
     this.y = y; // NOTE: This is center y
-    this.radius = 50;
+    this.radiusx = 50;
+    this.radiusy = 50;
     this.text = text;
     this.color = color;
   }
