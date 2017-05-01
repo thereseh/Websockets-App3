@@ -71,10 +71,17 @@ const init = () => {
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', () => {
     username = document.querySelector('#username').value;
-    console.log('connect');
-    document.querySelector('.can').style.display = "block";
-  document.querySelector('.login').style.display = "none";
-    connectSocket();
+
+    // If the username is over 15 characters, display a popup
+    if (username.length > 15) {      
+      let popup = document.getElementById('namePopup');
+      popup.classList.toggle("show");
+    } else {
+      console.log('connect');
+      document.querySelector('.can').style.display = "block";
+      document.querySelector('.login').style.display = "none";
+      connectSocket();
+    }
   });
   
    $('#close').click(function(){
