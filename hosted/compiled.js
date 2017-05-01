@@ -60,6 +60,39 @@ var drawTransparentNote = function drawTransparentNote(color, position, text) {
 };
 "use strict";
 
+// Checks to see if the user clicked within interactable spaces
+var checkClickOnRec = function checkClickOnRec(position, type) {
+  // Get mouse positions
+  var mousex = position.x;
+  var mousey = position.y;
+
+  var keys = void 0;
+
+  if (type === 1) {
+    keys = Object.keys(notes);
+  } else {}
+  // TODO - FILL IN FOR THREADS
+
+
+  // Check if user clicked on an interactable space
+  if (keys.length > 0) {
+    for (var i = 0; i < keys.length; i++) {
+      var rec = void 0;
+
+      if (type === 1) {
+        rec = notes[keys[i]];
+      } else {
+        // TODO - FILL IN FOR THREADS
+      }
+
+      if (mousex > rec.x - rec.radius && mousex < rec.x + rec.radius && mousey > rec.y - rec.radius && mousey < rec.y + 50) {
+        return rec;
+      }
+    }
+  } else return false;
+};
+
+// Gets the position of the mouse on the canvas
 var getMousePos = function getMousePos(e, can) {
   var rect = canvas.getBoundingClientRect();
   var scaleX = canvas.width / rect.width;
@@ -75,15 +108,23 @@ var getMousePos = function getMousePos(e, can) {
 
 //handler for key up events
 var mouseUpHandler = function mouseUpHandler(e) {
-  var text = textField.value;
-  textField.value = "";
-
-  if (text.trim().length === 0) {
-    return;
-  }
-  // Determines where to add the sticky note
+  // Determines where the user clicked
   var position = getMousePos(e, canvas);
-  addNote(stickyColor, position, text.trim());
+
+  if (canvasBool === 1) {
+    var text = textField.value;
+    textField.value = "";
+
+    if (checkClickOnRec(position, 1)) {
+      //changeFocus(checkClickOnNote(position));  // Focuses on the note the user clicked on
+    } else {
+      if (text.trim().length === 0) {
+        return;
+      }
+      addNote(stickyColor, position, text.trim()); // Adds a note if no note was clicked on
+    }
+  } else {// TODO - Add handler support on thread canvas
+    };
 };
 
 //handler for key up events
@@ -128,9 +169,15 @@ var textField = void 0;
 // Holds each note
 var notes = {};
 
+// Flag for thread/note canvas - 0 for thread, 1 for note
+var canvasBool = void 0;
+
 var init = function init() {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
+
+  // NOTE: Set at 1 until threads in place
+  canvasBool = 1;
 
   // Sets information to draw the background
   background = new Image();
@@ -181,6 +228,7 @@ var init = function init() {
       popup.classList.toggle("show");
     } else {
       console.log('connect');
+      canvasBool = 1;
       document.querySelector('.can').style.display = "block";
       document.querySelector('.login').style.display = "none";
       connectSocket();

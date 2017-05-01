@@ -25,9 +25,15 @@ let textField;
 // Holds each note
 let notes = {};
 
+// Flag for thread/note canvas - 0 for thread, 1 for note
+let canvasBool;
+
 const init = () => {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
+  
+  // NOTE: Set at 1 until threads in place
+  canvasBool = 1;
   
   // Sets information to draw the background
   background = new Image();
@@ -78,6 +84,7 @@ const init = () => {
       popup.classList.toggle("show");
     } else {
       console.log('connect');
+      canvasBool = 1;
       document.querySelector('.can').style.display = "block";
       document.querySelector('.login').style.display = "none";
       connectSocket();

@@ -1,3 +1,38 @@
+// Checks to see if the user clicked within interactable spaces
+const checkClickOnRec = (position, type) => {
+  // Get mouse positions
+  const mousex = position.x;
+  const mousey = position.y;
+  
+  let keys;
+  
+  if (type === 1) {
+    keys = Object.keys(notes);
+  } else {
+    // TODO - FILL IN FOR THREADS
+  }
+  
+  // Check if user clicked on an interactable space
+  if (keys.length > 0) {
+    for (let i = 0; i < keys.length; i++) {
+      let rec;
+      
+      if (type === 1) {
+        rec = notes[keys[i]];
+      } else {
+        // TODO - FILL IN FOR THREADS
+      }
+      
+      if (mousex > rec.x - rec.radius && mousex < rec.x + rec.radius &&
+         mousey > rec.y - rec.radius && mousey < rec.y + 50) {
+        return rec;
+      }
+    }
+  }
+  else return false;
+};
+
+// Gets the position of the mouse on the canvas
 const getMousePos = (e, can) => {
     let rect = canvas.getBoundingClientRect();
     let scaleX = canvas.width / rect.width;
@@ -12,16 +47,25 @@ const getMousePos = (e, can) => {
 };
 
 //handler for key up events
-const mouseUpHandler = (e) => {
-  let text = textField.value;
-  textField.value = "";
-  
-  if(text.trim().length === 0) {
-    return;
-  }
-  // Determines where to add the sticky note
+const mouseUpHandler = (e) => { 
+  // Determines where the user clicked
   const position = getMousePos(e, canvas);
-  addNote(stickyColor, position, text.trim());
+  
+  if(canvasBool === 1) {
+    let text = textField.value;
+    textField.value = "";
+    
+    if(checkClickOnRec(position, 1)) {
+      //changeFocus(checkClickOnNote(position));  // Focuses on the note the user clicked on
+    } else {
+      if(text.trim().length === 0) {
+        return;
+      }
+      addNote(stickyColor, position, text.trim());  // Adds a note if no note was clicked on
+    }
+  }
+  else {  // TODO - Add handler support on thread canvas
+  };
 };
 
 //handler for key up events

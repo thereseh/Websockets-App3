@@ -3,8 +3,9 @@ class Note {
   constructor(hash, username, x, y, text, color) {
     this.hash = hash;
     this.username = username;
-    this.x = x;
-    this.y = y;
+    this.x = x; // NOTE: This is center x
+    this.y = y; // NOTE: This is center y
+    this.radius = 50;
     this.text = text;
     this.color = color;
   }
