@@ -6,6 +6,17 @@ var redraw = function redraw() {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  ctx.shadowBlur = 5;
+  ctx.shadowOffsetX = 2;
+  ctx.shadowOffsetY = 2;
+  ctx.shadowColor = "black";
+  ctx.fill();
+  ctx.fillStyle = "silver";
+  ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
+  ctx.restore();
+
   var keys = Object.keys(notes);
 
   // Draw each note to the screen
@@ -13,50 +24,34 @@ var redraw = function redraw() {
     for (var i = 0; i < keys.length; i++) {
       var note = notes[keys[i]];
 
-      if (note.color === 'gray') {
-        ctx.save();
-        ctx.globalAlpha = 0.5;
-        ctx.shadowBlur = 5;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowColor = "black";
-        ctx.fill();
-        ctx.fillStyle = "silver";
-        ctx.fillRect(note.position.x - 50, note.position.y - 50, 100, 100);
-        ctx.restore();
+      ctx.save();
+      if (note.focus) {
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.shadowColor = note.color;
       } else {
-        ctx.save();
         ctx.shadowBlur = 5;
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
         ctx.shadowColor = "black";
-        ctx.fill();
-        ctx.fillStyle = note.color;
-        ctx.fillRect(note.x - 50, note.y - 50, 100, 100);
-        ctx.restore();
-        ctx.font = "24px Arial";
-        ctx.fillStyle = "black";
-        ctx.textAlign = "center";
-        ctx.fillText(note.text, note.x, note.y + 10);
-        ctx.font = "12px Arial";
-        ctx.fillStyle = "gray";
-        ctx.textAlign = "right";
-        ctx.fillText(note.username, note.x + 48, note.y + 48);
       }
+      ctx.fill();
+      ctx.fillStyle = note.color;
+      ctx.fillRect(note.x - note.radiusx, note.y - note.radiusy, note.width, note.height);
+      ctx.restore();
+      ctx.font = "24px Arial";
+      ctx.fillStyle = "black";
+      ctx.textAlign = "center";
+      ctx.fillText(note.text, note.x, note.y + 10);
+      ctx.font = "12px Arial";
+      ctx.fillStyle = "gray";
+      ctx.textAlign = "right";
+      ctx.fillText(note.username, note.x + note.radiusx - 2, note.y + note.radiusy - 2);
     }
   }
 
   requestAnimationFrame(redraw);
-};
-
-// Draws a transparent note to the screen
-var drawTransparentNote = function drawTransparentNote(color, position, text) {
-  var note = {};
-  note.color = "gray";
-  note.position = position;
-  note.text = " ";
-
-  notes[text] = note;
 };
 "use strict";
 
@@ -85,8 +80,11 @@ var checkClickOnRec = function checkClickOnRec(position, type) {
         // TODO - FILL IN FOR THREADS
       }
 
-      if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx && mousey > rec.y - rec.radiusy && mousey < rec.y + radiusy) {
+      if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx && mousey > rec.y - rec.radiusy && mousey < rec.y + rec.radiusy) {
+        rec.focus = true;
         return rec;
+      } else {
+        rec.focus = false;
       }
     }
   } else return false;
@@ -116,7 +114,7 @@ var mouseUpHandler = function mouseUpHandler(e) {
     textField.value = "";
 
     if (checkClickOnRec(position, 1)) {
-      //changeFocus(checkClickOnNote(position));  // Focuses on the note the user clicked on
+      changeFocus(checkClickOnRec(position, 1)); // Focuses on the note the user clicked on
     } else {
       if (text.trim().length === 0) {
         return;
@@ -130,7 +128,9 @@ var mouseUpHandler = function mouseUpHandler(e) {
 //handler for key up events
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
-  drawTransparentNote("gray", position, " ");
+  if (position) {
+    updateGrayNote(position);
+  }
 };
 
 // Resizes the canvas
@@ -168,6 +168,8 @@ var textField = void 0;
 
 // Holds each note
 var notes = {};
+
+var greynote = {};
 
 // Flag for thread/note canvas - 0 for thread, 1 for note
 var canvasBool = void 0;
@@ -231,6 +233,7 @@ var init = function init() {
       canvasBool = 1;
       document.querySelector('.can').style.display = "block";
       document.querySelector('.login').style.display = "none";
+      createGrayNote();
       connectSocket();
     }
   });
@@ -256,6 +259,21 @@ var init = function init() {
 window.onload = init;
 'use strict';
 
+// Ensures all notes besides the active note are not in focus
+var changeFocus = function changeFocus(data) {
+  var keys = Object.keys(notes);
+
+  if (keys.length > 0) {
+    for (var i = 0; i < keys.length; i++) {
+      var note = notes[keys[i]];
+
+      if (note.hash !== data.hash) {
+        note.focus = false;
+      }
+    }
+  }
+};
+
 // Add all of the notes in the current room to the notes list
 var addAllNotes = function addAllNotes(data) {
   notes = data;
@@ -263,8 +281,10 @@ var addAllNotes = function addAllNotes(data) {
 
 // Add the note to the list if it doesn't exist
 var updateNoteList = function updateNoteList(data) {
+  var note = data;
+  note.focus = true;
   if (!notes[data.hash]) {
-    notes[data.hash] = data;
+    notes[data.hash] = note;
     return;
   }
 };
@@ -275,6 +295,22 @@ var connectSocket = function connectSocket(e) {
 
   socket.on('addedNote', updateNoteList);
   socket.on('joined', addAllNotes);
+};
+
+// Updates the greynote's position for drawing to the canvas
+var updateGrayNote = function updateGrayNote(position) {
+  greynote.x = position.x;
+  greynote.y = position.y;
+};
+
+// Adds the grey note object to the notes list for drawing
+var createGrayNote = function createGrayNote() {
+  greynote.x = 0;
+  greynote.y = 0;
+  greynote.radiusx = 50;
+  greynote.radiusy = 50;
+  greynote.width = 100;
+  greynote.height = 100;
 };
 
 // Create a note object and add it to the notes list

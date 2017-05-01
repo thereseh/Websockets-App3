@@ -24,8 +24,11 @@ const checkClickOnRec = (position, type) => {
       }
       
       if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx &&
-         mousey > rec.y - rec.radiusy && mousey < rec.y + radiusy) {
+         mousey > rec.y - rec.radiusy && mousey < rec.y + rec.radiusy) {
+        rec.focus = true;
         return rec;
+      } else {
+        rec.focus = false;
       }
     }
   }
@@ -56,7 +59,7 @@ const mouseUpHandler = (e) => {
     textField.value = "";
     
     if(checkClickOnRec(position, 1)) {
-      //changeFocus(checkClickOnNote(position));  // Focuses on the note the user clicked on
+      changeFocus(checkClickOnRec(position, 1));  // Focuses on the note the user clicked on
     } else {
       if(text.trim().length === 0) {
         return;
@@ -71,7 +74,9 @@ const mouseUpHandler = (e) => {
 //handler for key up events
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
-  drawTransparentNote("gray", position, " ");
+  if(position) {
+    updateGrayNote(position);
+  }
 };
 
 // Resizes the canvas

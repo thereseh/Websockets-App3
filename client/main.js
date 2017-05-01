@@ -25,6 +25,8 @@ let textField;
 // Holds each note
 let notes = {};
 
+let greynote = {};
+
 // Flag for thread/note canvas - 0 for thread, 1 for note
 let canvasBool;
 
@@ -87,6 +89,7 @@ const init = () => {
       canvasBool = 1;
       document.querySelector('.can').style.display = "block";
       document.querySelector('.login').style.display = "none";
+      createGrayNote();
       connectSocket();
     }
   });
