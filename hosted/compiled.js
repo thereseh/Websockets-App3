@@ -169,6 +169,7 @@ var textField = void 0;
 // Holds each note
 var notes = {};
 
+// Object for drawing the grey note
 var greynote = {};
 
 // Flag for thread/note canvas - 0 for thread, 1 for note

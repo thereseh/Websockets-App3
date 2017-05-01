@@ -25,6 +25,7 @@ let textField;
 // Holds each note
 let notes = {};
 
+// Object for drawing the grey note
 let greynote = {};
 
 // Flag for thread/note canvas - 0 for thread, 1 for note
