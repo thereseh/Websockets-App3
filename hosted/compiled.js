@@ -160,6 +160,9 @@ var ColorEnum = {
   BLUE: 3
 };
 
+// to limit topics
+var numTopics = 0;
+
 // Determines which color the sticky note is
 var stickyColor = void 0;
 
@@ -232,12 +235,164 @@ var init = function init() {
     } else {
       console.log('connect');
       canvasBool = 1;
-      document.querySelector('.can').style.display = "block";
+      //$(".clearfix1").hide();
+      //$(".clearfix2").hide();
+      //$(".clearfix3").hide();
+      document.querySelector('.topics').style.display = "block";
       document.querySelector('.login').style.display = "none";
-      createGrayNote();
       connectSocket();
     }
   });
+
+  // ---------------------
+
+  /* ADDING TOPICS */
+
+  // when adding a topic, removes button after 3 are added
+  //addTopic.addEventListener('click', () => {
+  //  numTopics++; 
+  //  document.querySelector(`#t${numTopics}`).style.display = "inline-block";
+  //  
+  //   if (numTopics === 3) {
+  //    //$('#topicBtn').addClass('disabled');
+  //    $('#topicBtn').hide();
+  //  }
+  //});
+
+  $("#topicBtn").click(function () {
+    numTopics++;
+
+    if ($(".clearfix1").is(":hidden")) {
+      $(".clearfix1").show();
+    } else if ($(".clearfix2").is(":hidden")) {
+      $(".clearfix2").show();
+    } else if ($(".clearfix3").is(":hidden")) {
+      $(".clearfix3").show();
+    }
+
+    if (numTopics === 3) {
+      $('#topicBtn').hide();
+    }
+  });
+
+  // ---------------------
+
+  /* WILL TOGGLE EDITING FOR TOPICS */
+
+  $("#showSettings1").click(function () {
+    $(".settings1").toggle('fast', 'swing');
+  });
+
+  $("#showSettings2").click(function () {
+    $(".settings2").toggle('fast', 'swing');
+  });
+
+  $("#showSettings3").click(function () {
+    $(".settings3").toggle('fast', 'swing');
+  });
+
+  // ---------------------
+
+  /* WILL GET THE NEW NAME FOR TOPIC */
+
+  $("#submitTopic1").click(function () {
+    var text = $("#name1").val();
+
+    $("#topicsName1").html(text);
+  });
+
+  $("#submitTopic2").click(function () {
+    var text = $("#name2").val();
+
+    $("#topicsName2").html(text);
+  });
+
+  $("#submitTopic3").click(function () {
+    var text = $("#name3").val();
+
+    $("#topicsName3").html(text);
+  });
+
+  // ---------------------
+
+  /* WILL GET THE NEW NAME FOR TOPIC */
+
+  $("#delete1").click(function () {
+    $("#name1").val('');
+
+    $("#topicsName1").html('1');
+    numTopics--;
+    $(".clearfix1").hide();
+    $(".settings1").hide();
+    $('#topicBtn').show();
+  });
+
+  $("#delete2").click(function () {
+    $("#name2").val('');
+
+    $("#topicsName2").html('2');
+    numTopics--;
+    $(".clearfix2").hide();
+    $(".settings2").hide();
+    $('#topicBtn').show();
+  });
+
+  $("#delete3").click(function () {
+    $("#name3").val('');
+
+    $("#topicsName2").html('3');
+    numTopics--;
+    $(".clearfix3").hide();
+    $(".settings3").hide();
+    $('#topicBtn').show();
+  });
+
+  $("#submitTopic2").click(function () {
+    var text = $("#name2").val();
+
+    $("#topicsName2").html(text);
+  });
+
+  $("#submitTopic3").click(function () {
+    var text = $("#name3").val();
+
+    $("#topicsName3").html(text);
+  });
+
+  // ---------------------
+
+  /* WILL GET THE NEW NAME FOR TOPIC */
+
+  $("#topic1").click(function () {
+    $(".topics").hide('slow', 'swing', function () {
+      $(".can").show('slow', 'swing', function () {
+        // then first send name of topic to server of course
+        createGrayNote();
+      });
+    });
+  });
+
+  $("#topic2").click(function () {
+    $(".topics").hide('slow', 'swing', function () {
+      $(".can").show('slow', 'swing', function () {
+        // then first send name of topic to server of course
+        createGrayNote();
+      });
+    });
+  });
+
+  $("#topic3").click(function () {
+    $(".topics").hide('slow', 'swing', function () {
+      $(".can").show('slow', 'swing', function () {
+        // then first send name of topic to server of course
+        createGrayNote();
+      });
+    });
+  });
+
+  // ---------------------
+
+  /* WILL TOGGLE THE SIDE BAR  */
 
   $('#close').click(function () {
     $('.sideBar').animate({ width: "0px" }, 500, function () {
