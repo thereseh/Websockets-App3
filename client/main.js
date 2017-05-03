@@ -40,6 +40,17 @@ let currRoom;
 // where to add notes
 let currNotes;
 
+//character list
+let users = {}; 
+//user's unique character id (from the server)
+let hash; 
+
+//our next animation frame function
+let animationFrame; 
+
+let strokeColor = "black";
+
+
 const init = () => {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
@@ -106,17 +117,7 @@ const init = () => {
   
   /* ADDING TOPICS */
   
-  // when adding a topic, removes button after 3 are added
-  //addTopic.addEventListener('click', () => {
-  //  numTopics++; 
-  //  document.querySelector(`#t${numTopics}`).style.display = "inline-block";
-  //  
-  //   if (numTopics === 3) {
-  //    //$('#topicBtn').addClass('disabled');
-  //    $('#topicBtn').hide();
-  //  }
-  //});
-  
+
   $("#topicBtn").click(function(){
     numTopics++; 
     

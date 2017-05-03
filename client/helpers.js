@@ -71,11 +71,31 @@ const mouseUpHandler = (e) => {
   };
 };
 
+
+// calculats the lerp for smooth transition between frames
+const lerp = (v0, v1, alpha) => {
+  return (1 - alpha) * v0 + alpha * v1;
+};
+
 //handler for key up events
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
   if(position) {
     updateGrayNote(position);
+    
+    const user = users[hash];
+
+    if (position.x > 0 && position.x < 950 && position.y > 0 && position.y < 500) {
+      if (user) {
+      user.prevX = user.x;
+      user.prevY = user.y;
+      user.destX = position.x;
+      user.destY = position.y;
+      user.lastUpdate = new Date().getTime();
+      user.alpha = 0.3;
+      socket.emit('movementUpdate', user);
+      }
+    }
   }
 };
 

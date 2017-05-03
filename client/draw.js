@@ -15,6 +15,40 @@ const redraw = () => {
   ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
   ctx.restore();
   
+  //// draws all the users
+  //const userKey = Object.keys(users);
+  //for(let i = 0; i < userKey.length; i++) {
+  //  ctx.save();
+  //  const user = users[userKey[i]];
+//
+//    //if alpha less than 1, increase it by 0.1
+//    if(user.alpha < 1) user.alpha += 0.1;
+//
+//    // calc lerp for both x and y pos
+//    user.x = lerp(user.prevX, user.destX, user.alpha);
+//    user.y = lerp(user.prevY, user.destY, user.alpha);
+//    
+//    ctx.fillStyle = user.color;
+//    // begin to draw
+//    ctx.beginPath();
+//    ctx.arc(user.x, user.y, user.rad, 0, 2 * Math.PI, false);
+//    // all users set their own color
+//    ctx.fill();
+//    ctx.closePath();
+//    // the second circle to get a cool stroke of a larger radius, for to make the user stand out more from added circles
+//    ctx.beginPath();
+//    ctx.strokeStyle = strokeColor;
+//    ctx.arc(user.x, user.y, user.rad+4, 0, 2 * Math.PI, false);
+//    ctx.stroke();
+//    ctx.closePath();
+//    // draw the name of the user, centered above the user circles
+//    ctx.fillStyle = "black";
+//    ctx.font = "30px";
+//    ctx.textAlign = 'center';
+//    ctx.fillText(user.name,user.x, user.y-15);
+//    ctx.restore();
+//  }
+
   const keys = Object.keys(notes);
   
   // Draw each note to the screen
@@ -47,7 +81,7 @@ const redraw = () => {
       ctx.textAlign = "right";
       ctx.fillText(note.username, note.x + note.radiusx - 2, note.y + note.radiusy - 2);
     }
-  } 
+  }
   
   requestAnimationFrame(redraw);
 };

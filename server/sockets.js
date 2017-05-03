@@ -1,10 +1,19 @@
 const xxh = require('xxhashjs');
 const Note = require('./classes/Note.js'); // Import Note class
+const User = require('./classes/User.js'); // Import User class
+
 
 // containers for each room
 const notes1 = {};
 const notes2 = {};
 const notes3 = {};
+
+// users
+const users = {};
+
+// some random color to start off with
+const colors = ['#4ECDC4', '#FF6B6B', '#313638', '#FFE66D', '#AA80FF', '#ADEBAD', '#FFCC66',
+  '#FF3399', '#0066CC'];
 
 let io;
 
@@ -18,18 +27,35 @@ const setupSockets = (ioServer) => {
     const socket = sock;
 
 
+    // when the user picks a topic to enter
     socket.on('enterRoom', (data) => {
       room = data.room;
       socket.join(room);
+
+      const hash = xxh.h32(`${socket.id}${new Date().getTime()}`, 0xCAFEBABE).toString(16);
+
+      // get a random color from array
+      const color = Math.floor(Math.random() * colors.length);
+
+      users[hash] = new User(hash, colors[color]);
+
+      // add the id to the user's socket object for quick reference
+      socket.hash = hash;
+
       if (room === 'room1') {
-        socket.emit('joined', notes1);
+        socket.emit('joined', { note: notes1, user: users[hash] });
       } else if (room === 'room2') {
-        socket.emit('joined', notes2);
+        socket.emit('joined', { note: notes2, user: users[hash] });
       } else if (room === 'room3') {
-        socket.emit('joined', notes3);
+        socket.emit('joined', { note: notes2, user: users[hash] });
       }
     });
-    // TODO - Change to whatever "room" they enter
+
+    // when this user sends the server a movement update
+    socket.on('movementUpdate', (data) => {
+      users[socket.hash] = data;
+      io.sockets.in('room1').emit('updatedMovement', users[socket.hash]);
+    });
 
 
     // Add a note to the note list
@@ -53,6 +79,15 @@ const setupSockets = (ioServer) => {
         notes3[note.hash] = note;
         io.sockets.in(data.room).emit('addedNote', notes3[note.hash]);
       }
+    });
+
+     // when the user disconnects
+    socket.on('disconnect', () => {
+      // let everyone know this user left
+      io.sockets.in('room1').emit('left', users[socket.hash]);
+      // remove this user from our object
+      delete users[socket.hash];
+      socket.leave('room1');
     });
   });
 };

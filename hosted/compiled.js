@@ -17,6 +17,40 @@ var redraw = function redraw() {
   ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
   ctx.restore();
 
+  //// draws all the users
+  //const userKey = Object.keys(users);
+  //for(let i = 0; i < userKey.length; i++) {
+  //  ctx.save();
+  //  const user = users[userKey[i]];
+  //
+  //    //if alpha less than 1, increase it by 0.1
+  //    if(user.alpha < 1) user.alpha += 0.1;
+  //
+  //    // calc lerp for both x and y pos
+  //    user.x = lerp(user.prevX, user.destX, user.alpha);
+  //    user.y = lerp(user.prevY, user.destY, user.alpha);
+  //    
+  //    ctx.fillStyle = user.color;
+  //    // begin to draw
+  //    ctx.beginPath();
+  //    ctx.arc(user.x, user.y, user.rad, 0, 2 * Math.PI, false);
+  //    // all users set their own color
+  //    ctx.fill();
+  //    ctx.closePath();
+  //    // the second circle to get a cool stroke of a larger radius, for to make the user stand out more from added circles
+  //    ctx.beginPath();
+  //    ctx.strokeStyle = strokeColor;
+  //    ctx.arc(user.x, user.y, user.rad+4, 0, 2 * Math.PI, false);
+  //    ctx.stroke();
+  //    ctx.closePath();
+  //    // draw the name of the user, centered above the user circles
+  //    ctx.fillStyle = "black";
+  //    ctx.font = "30px";
+  //    ctx.textAlign = 'center';
+  //    ctx.fillText(user.name,user.x, user.y-15);
+  //    ctx.restore();
+  //  }
+
   var keys = Object.keys(notes);
 
   // Draw each note to the screen
@@ -125,11 +159,30 @@ var mouseUpHandler = function mouseUpHandler(e) {
     };
 };
 
+// calculats the lerp for smooth transition between frames
+var lerp = function lerp(v0, v1, alpha) {
+  return (1 - alpha) * v0 + alpha * v1;
+};
+
 //handler for key up events
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
   if (position) {
     updateGrayNote(position);
+
+    var user = users[hash];
+
+    if (position.x > 0 && position.x < 950 && position.y > 0 && position.y < 500) {
+      if (user) {
+        user.prevX = user.x;
+        user.prevY = user.y;
+        user.destX = position.x;
+        user.destY = position.y;
+        user.lastUpdate = new Date().getTime();
+        user.alpha = 0.3;
+        socket.emit('movementUpdate', user);
+      }
+    }
   }
 };
 
@@ -183,6 +236,16 @@ var currRoom = void 0;
 
 // where to add notes
 var currNotes = void 0;
+
+//character list
+var users = {};
+//user's unique character id (from the server)
+var hash = void 0;
+
+//our next animation frame function
+var animationFrame = void 0;
+
+var strokeColor = "black";
 
 var init = function init() {
   canvas = document.querySelector('#canvas');
@@ -249,17 +312,6 @@ var init = function init() {
   // ---------------------
 
   /* ADDING TOPICS */
-
-  // when adding a topic, removes button after 3 are added
-  //addTopic.addEventListener('click', () => {
-  //  numTopics++; 
-  //  document.querySelector(`#t${numTopics}`).style.display = "inline-block";
-  //  
-  //   if (numTopics === 3) {
-  //    //$('#topicBtn').addClass('disabled');
-  //    $('#topicBtn').hide();
-  //  }
-  //});
 
   $("#topicBtn").click(function () {
     numTopics++;
@@ -443,7 +495,8 @@ var changeFocus = function changeFocus(data) {
 
 // Add all of the notes in the current room to the notes list
 var addAllNotes = function addAllNotes(data) {
-  notes = data;
+  setUser(data);
+  notes = data.note;
 };
 
 // Add the note to the list if it doesn't exist
@@ -456,9 +509,64 @@ var updateNoteList = function updateNoteList(data) {
   }
 };
 
+//when we receive a character update
+var update = function update(data) {
+  // add if we do not have that character (based on their id)
+  if (!users[data.hash]) {
+    users[data.hash] = data;
+    return;
+  }
+
+  //if we received an old message, just drop it
+  if (users[data.hash].lastUpdate >= data.lastUpdate) {
+    return;
+  }
+
+  // if the data is this user, don't bother
+  if (data.hash === hash) {
+    return;
+  }
+
+  //grab the character based on the character id we received
+  var user = users[data.hash];
+  //update their direction and movement information
+  //but NOT their x/y since we are animating those
+  user.prevX = data.prevX;
+  user.prevY = data.prevY;
+  user.destX = data.destX;
+  user.destY = data.destY;
+  user.alpha = 0.25;
+};
+
+//function to set this user's character
+var setUser = function setUser(data) {
+  hash = data.user.hash; //set this user's hash to the unique one they received
+  users[hash] = data.user; //set the character by their hash
+
+  // get name from when user connected
+  var name = document.querySelector("#username").value;
+  users[hash].name = name;
+  // tell server
+  socket.emit('join', { name: name, hash: hash });
+  requestAnimationFrame(redraw); //start animating
+};
+
+//function to remove a character from our character list
+var removeUser = function removeUser(data) {
+  //if we have that character, remove them
+  if (users[data.hash]) {
+    delete users[data.hash];
+  }
+};
+
 // When the user connects, set up socket pipelines
 var connectSocket = function connectSocket(e) {
   socket = io.connect();
+
+  //when players move
+  socket.on('updatedMovement', update);
+  //when a user leaves
+  socket.on('left', removeUser);
 
   socket.on('addedNote', updateNoteList);
   socket.on('joined', addAllNotes);
