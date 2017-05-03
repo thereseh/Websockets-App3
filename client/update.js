@@ -73,6 +73,6 @@ const addNote = (color, position, text) => {
   note.text = text;
   note.position = position;
   note.username = username;
-  
+  note.room = currRoom;
   socket.emit('addNote', note);
 };

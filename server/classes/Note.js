@@ -12,6 +12,7 @@ class Note {
     this.text = text;
     this.color = color;
     this.focus = false;
+    this.room = '';
   }
 }
 

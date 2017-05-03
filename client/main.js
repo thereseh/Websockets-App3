@@ -34,6 +34,12 @@ let greynote = {};
 // Flag for thread/note canvas - 0 for thread, 1 for note
 let canvasBool;
 
+// what room we are in
+let currRoom;
+
+// where to add notes
+let currNotes;
+
 const init = () => {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
@@ -91,12 +97,8 @@ const init = () => {
     } else {
       console.log('connect');
       canvasBool = 1;
-      //$(".clearfix1").hide();
-      //$(".clearfix2").hide();
-      //$(".clearfix3").hide();
       document.querySelector('.topics').style.display = "block";
       document.querySelector('.login').style.display = "none";
-      connectSocket();
     }
   });
   
@@ -230,6 +232,9 @@ const init = () => {
     $(".topics").hide('slow', 'swing', function() {
       $(".can").show('slow', 'swing', function() {
         // then first send name of topic to server of course
+          connectSocket();
+        currRoom = 'room1';
+        socket.emit('enterRoom', {room: 'room1'});
           createGrayNote();
       });
     });
@@ -239,6 +244,9 @@ const init = () => {
     $(".topics").hide('slow', 'swing', function() {
       $(".can").show('slow', 'swing', function() {
         // then first send name of topic to server of course
+        connectSocket();
+        currRoom = 'room2';
+          socket.emit('enterRoom', {room: 'room2'});
           createGrayNote();
       });
     });
@@ -248,6 +256,9 @@ const init = () => {
     $(".topics").hide('slow', 'swing', function() {
       $(".can").show('slow', 'swing', function() {
         // then first send name of topic to server of course
+        connectSocket();
+        currRoom = 'room3';
+        socket.emit('enterRoom', {room: 'room3'});
           createGrayNote();
       });
     });
