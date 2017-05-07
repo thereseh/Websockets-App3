@@ -1,6 +1,6 @@
 // A class to contain all the information for each note
-class Note {
-  constructor(hash, username, x, y, text, color, textX, textY, room) {
+class TextField {
+  constructor(hash, username, x, y, text, color) {
     this.hash = hash;
     this.username = username;
     this.x = x; // NOTE: This is center x
@@ -10,12 +10,10 @@ class Note {
     this.width = 100;
     this.height = 100;
     this.text = text;
-    this.textPosX = textX;
-    this.textPosY = textY;
     this.color = color;
     this.focus = false;
-    this.room = room;
+    this.room = '';
   }
 }
 
-module.exports = Note;
+module.exports = TextField;

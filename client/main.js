@@ -37,13 +37,18 @@ let canvasBool;
 // what room we are in
 let currRoom;
 
-// where to add notes
-let currNotes;
+
+let currAction = "";
+
+let objectPlaced = false;
 
 //character list
 let users = {}; 
 //user's unique character id (from the server)
 let hash; 
+
+// curr note created
+let currNote = {};
 
 //our next animation frame function
 let animationFrame; 
@@ -76,26 +81,32 @@ const init = () => {
   canvas.addEventListener('mouseup', mouseUpHandler);
   canvas.addEventListener('mousemove', mouseMoveHandler);
   
-  // Event handlers for sidebar
-  stickyColor = ColorEnum.YELLOW;
+  // listening for key press, to stop curr action
+  window.addEventListener("keydown", keypress, false);
+ 
+ 
   // Yellow sticky note
   const yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function() {
-    stickyColor = ColorEnum.YELLOW;
+    stickyColor = 'yellow';
+    currAction = "note";
+    createTempNote();
   });
   // Green sticky note
   const greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function() {
-    stickyColor = ColorEnum.GREEN;
+    stickyColor = 'greenyellow';
+    currAction = "note";
+    createTempNote();
   });
   // Blue sticky note
   const blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function() {
-    stickyColor = ColorEnum.BLUE;
+    stickyColor = 'deepskyblue';
+    currAction = "note";
+    createTempNote();
   });
   
-  // Used for getting text
-  textField = document.querySelector('#textField');
   
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', () => {
@@ -139,6 +150,29 @@ const init = () => {
   
   // ---------------------
   
+  /* ADD COMMENT TO NOTE */
+   $("#submitNote").click(function(){
+    let text = document.querySelector('#comment').value;
+    currNote.text = text;
+     
+    document.querySelector('#comment').value = ""; document.querySelector('#tempTextField').style.display = "none";
+     
+     if (currAction === "note") {
+        socket.emit('addNote', currNote);
+     } else if (currAction === "text") {
+       socket.emit('addTextField', currNote);
+     } else if (currAction === "updateNote") {
+        socket.emit('updateNoteText', currNote);
+     }
+     currAction = "";
+     currNote = {};
+     objectPlaced = false;
+
+  });
+  
+  
+  // ---------------------
+  
   /* WILL TOGGLE EDITING FOR TOPICS */
     
   $("#showSettings1").click(function(){
@@ -161,18 +195,24 @@ const init = () => {
   
    $("#submitTopic1").click(function(){
     let text = $("#name1").val();
+    $(".settings1").toggle('fast', 'swing');
+
 
     $("#topicsName1").html(text);
   });
   
   $("#submitTopic2").click(function(){
     let text = $("#name2").val();
+    $(".settings2").toggle('fast', 'swing');
+
 
     $("#topicsName2").html(text);
   });
   
   $("#submitTopic3").click(function(){
     let text = $("#name3").val();
+    $(".settings3").toggle('fast', 'swing');
+
 
     $("#topicsName3").html(text);
   });
@@ -205,7 +245,7 @@ const init = () => {
   $("#delete3").click(function(){
     $("#name3").val('');
 
-    $("#topicsName2").html('3');
+    $("#topicsName3").html('3');
      numTopics--;
       $(".clearfix3").hide();
       $(".settings3").hide();
@@ -233,10 +273,9 @@ const init = () => {
     $(".topics").hide('slow', 'swing', function() {
       $(".can").show('slow', 'swing', function() {
         // then first send name of topic to server of course
-          connectSocket();
+        connectSocket();
         currRoom = 'room1';
         socket.emit('enterRoom', {room: 'room1'});
-          createGrayNote();
       });
     });
   });
@@ -248,7 +287,7 @@ const init = () => {
         connectSocket();
         currRoom = 'room2';
           socket.emit('enterRoom', {room: 'room2'});
-          createGrayNote();
+         // createGrayNote();
       });
     });
   });
@@ -260,7 +299,7 @@ const init = () => {
         connectSocket();
         currRoom = 'room3';
         socket.emit('enterRoom', {room: 'room3'});
-          createGrayNote();
+          //createGrayNote();
       });
     });
   });

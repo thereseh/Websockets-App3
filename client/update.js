@@ -1,18 +1,34 @@
 // Ensures all notes besides the active note are not in focus
 const changeFocus = (data) => {
   const keys = Object.keys(notes);
-  
+  console.dir(data);
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
       const note = notes[keys[i]];
       
-      if(note.hash !== data.hash) {
+      if(note.hash != data.hash) {
         note.focus = false;
       }
     }
   }
+  currAction = "updateNote";
+  updateNoteText(data);
+  currNote = data;
+  data.text = "";
 };
 
+const updateNoteText = (focusnote) => {
+  console.dir(focusnote);
+  
+  let field = document.querySelector('#tempTextField');
+  field.style.display = "block";
+  field.style.left = focusnote.textPosX;
+  field.style.top = focusnote.textPosY;
+  
+  let comment = document.querySelector('#comment');
+  comment.value = currNote.text;
+  
+};
 // Add all of the notes in the current room to the notes list
 const addAllNotes = (data) => {
   setUser(data);
@@ -21,11 +37,17 @@ const addAllNotes = (data) => {
 
 // Add the note to the list if it doesn't exist
 const updateNoteList = (data) => {
+  console.dir(data);
+  console.dir(notes);
   const note = data;
   note.focus = true;
   if (!notes[data.hash]) {
     notes[data.hash] = note;
     return;
+  } else if (notes[data.hash]) {
+    console.dir(data);
+    console.dir(notes);
+    notes[data.hash] = data;
   }
 };
 
@@ -90,6 +112,7 @@ const connectSocket = (e) => {
   socket.on('left', removeUser);
 
   socket.on('addedNote', updateNoteList);
+  
   socket.on('joined', addAllNotes);
 };
 
@@ -100,7 +123,16 @@ const updateGrayNote = (position) => {
 };
 
 // Adds the grey note object to the notes list for drawing
-const createGrayNote = () => {
+//const createGrayNote = () => {
+//  greynote.x = 0;
+//  greynote.y = 0;
+//  greynote.radiusx = 50;
+//  greynote.radiusy = 50;
+//  greynote.width = 100;
+//  greynote.height = 100;
+//};
+
+const createTempNote = () => {
   greynote.x = 0;
   greynote.y = 0;
   greynote.radiusx = 50;
@@ -109,27 +141,25 @@ const createGrayNote = () => {
   greynote.height = 100;
 };
 
+
 // Create a note object and add it to the notes list
-const addNote = (color, position, text) => {
-  let note = {};
-  
-  switch (color) {
-    case 1: // Yellow
-      note.color = "yellow";
-      break;
-    case 2: // Green
-      note.color = "greenyellow";
-      break;
-    case 3: // Blue
-      note.color = "deepskyblue";
-      break;
-    default:  // Default Yellow
-      note.color = "yellow";
-      break;
-   }  
-  note.text = text;
-  note.position = position;
-  note.username = username;
-  note.room = currRoom;
-  socket.emit('addNote', note);
+const addNote = (position, notePosX, notePosY) => {
+  console.log(currRoom);
+  currNote = {};
+  currNote.color = stickyColor;
+  currNote.textPosX = notePosX;
+  currNote.textPosY = notePosY;
+  currNote.position = position;
+  currNote.username = username;
+  currNote.room = currRoom;
+};
+
+// Create a note object and add it to the notes list
+const addTextField = (position) => {
+  console.log(currRoom);
+  currNote = {};
+  currNote.color = "red";
+  currNote.position = position;
+  currNote.username = username;
+  currNote.room = currRoom;
 };

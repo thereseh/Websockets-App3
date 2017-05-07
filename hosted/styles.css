@@ -30,6 +30,23 @@
 margin-bottom: 30px;
 }
 
+#comment {
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+#tempTextField {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: none;
+}
+
+.input-group-btn {
+  padding: 0;
+  vertical-align: top;
+}
+
 #topic1, #topic2, #topic3{
   width: 200px;
   height: 200px;
@@ -200,6 +217,7 @@ margin-bottom: 30px;
    .can {
      text-align: center;
      display: none;
+     position: relative;
    }
    
    .row {

@@ -1,5 +1,7 @@
 // Checks to see if the user clicked within interactable spaces
 const checkClickOnRec = (position, type) => {
+  if (currAction === "") {
+  
   // Get mouse positions
   const mousex = position.x;
   const mousey = position.y;
@@ -33,6 +35,7 @@ const checkClickOnRec = (position, type) => {
     }
   }
   else return false;
+  }
 };
 
 // Gets the position of the mouse on the canvas
@@ -49,28 +52,70 @@ const getMousePos = (e, can) => {
     return position;
 };
 
-//handler for key up events
-const mouseUpHandler = (e) => { 
-  // Determines where the user clicked
-  const position = getMousePos(e, canvas);
-  
-  if(canvasBool === 1) {
-    let text = textField.value;
-    textField.value = "";
-    
-    if(checkClickOnRec(position, 1)) {
-      changeFocus(checkClickOnRec(position, 1));  // Focuses on the note the user clicked on
-    } else {
-      if(text.trim().length === 0) {
-        return;
-      }
-      addNote(stickyColor, position, text.trim());  // Adds a note if no note was clicked on
+
+// if you press Q, then it will stop the action
+const keypress = (e) => { 
+  if (e.keyCode === 81) {
+      currAction = "";
     }
-  }
-  else {  // TODO - Add handler support on thread canvas
-  };
 };
 
+//handler for key up events
+const mouseUpHandler = (e) => { 
+    // Determines where the user clicked
+  const position = getMousePos(e, canvas);
+  let posX = position.x - 50;
+  let posY = position.y - 60;
+  
+  let textField = document.querySelector('#tempTextField');
+
+  
+  if(canvasBool === 1) {
+    //let text = textField.value;
+    //textField.value = "";
+    
+    if(checkClickOnRec(position, 1)) {
+      changeFocus(checkClickOnRec(position, 1));
+      // Focuses on the note the user clicked on
+    } if (currAction === "note") {
+      // adds a note
+      
+      addNote(position, posX, posY);
+        objectPlaced = true;
+        textField.style.display = 'block';
+        textField.style.left = posX + 'px';
+        textField.style.top = posY + 'px';
+      } if (currAction === "text") {
+      // adds a text field
+        addTextField(position);
+        objectPlaced = true;
+        textField.style.display = 'block';
+        textField.style.left = posX + 'px';
+        textField.style.top = posY + 'px';
+    }
+  }
+  
+};
+
+// function from http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
+const wrapText = (text, x, y, maxWidth, lineHeight) => {
+  let words = text.split(' ');
+  let line = '';
+
+  for(var n = 0; n < words.length; n++) {
+    let testLine = line + words[n] + ' ';
+    let metrics = ctx.measureText(testLine);
+    let testWidth = metrics.width;
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, x, y);
+      line = words[n] + ' ';
+      y += lineHeight;
+    } else {
+        line = testLine;
+      }
+    }
+      ctx.fillText(line, x, y);
+}
 
 // calculats the lerp for smooth transition between frames
 const lerp = (v0, v1, alpha) => {
@@ -81,7 +126,9 @@ const lerp = (v0, v1, alpha) => {
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
   if(position) {
-    updateGrayNote(position);
+    if (!objectPlaced) {
+      updateGrayNote(position);
+    }
     
     const user = users[hash];
 

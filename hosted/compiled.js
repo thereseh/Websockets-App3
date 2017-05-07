@@ -6,50 +6,18 @@ var redraw = function redraw() {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.save();
-  ctx.globalAlpha = 0.5;
-  ctx.shadowBlur = 5;
-  ctx.shadowOffsetX = 2;
-  ctx.shadowOffsetY = 2;
-  ctx.shadowColor = "black";
-  ctx.fill();
-  ctx.fillStyle = "silver";
-  ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
-  ctx.restore();
-
-  //// draws all the users
-  //const userKey = Object.keys(users);
-  //for(let i = 0; i < userKey.length; i++) {
-  //  ctx.save();
-  //  const user = users[userKey[i]];
-  //
-  //    //if alpha less than 1, increase it by 0.1
-  //    if(user.alpha < 1) user.alpha += 0.1;
-  //
-  //    // calc lerp for both x and y pos
-  //    user.x = lerp(user.prevX, user.destX, user.alpha);
-  //    user.y = lerp(user.prevY, user.destY, user.alpha);
-  //    
-  //    ctx.fillStyle = user.color;
-  //    // begin to draw
-  //    ctx.beginPath();
-  //    ctx.arc(user.x, user.y, user.rad, 0, 2 * Math.PI, false);
-  //    // all users set their own color
-  //    ctx.fill();
-  //    ctx.closePath();
-  //    // the second circle to get a cool stroke of a larger radius, for to make the user stand out more from added circles
-  //    ctx.beginPath();
-  //    ctx.strokeStyle = strokeColor;
-  //    ctx.arc(user.x, user.y, user.rad+4, 0, 2 * Math.PI, false);
-  //    ctx.stroke();
-  //    ctx.closePath();
-  //    // draw the name of the user, centered above the user circles
-  //    ctx.fillStyle = "black";
-  //    ctx.font = "30px";
-  //    ctx.textAlign = 'center';
-  //    ctx.fillText(user.name,user.x, user.y-15);
-  //    ctx.restore();
-  //  }
+  if (currAction === "note") {
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    //ctx.shadowBlur = 5;
+    //ctx.shadowOffsetX = 2;
+    //ctx.shadowOffsetY = 2;
+    //ctx.shadowColor = "black";
+    ctx.fillStyle = stickyColor;
+    ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
+    ctx.fill();
+    ctx.restore();
+  }
 
   var keys = Object.keys(notes);
 
@@ -60,12 +28,12 @@ var redraw = function redraw() {
 
       ctx.save();
       if (note.focus) {
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.shadowColor = note.color;
+        //ctx.shadowBlur = 5;
+        //ctx.shadowOffsetX = 2;
+        //ctx.shadowOffsetY = 2;
+        ctx.shadowColor = "black";
       } else {
-        ctx.shadowBlur = 5;
+        ctx.shadowBlur = 3;
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
         ctx.shadowColor = "black";
@@ -74,16 +42,40 @@ var redraw = function redraw() {
       ctx.fillStyle = note.color;
       ctx.fillRect(note.x - note.radiusx, note.y - note.radiusy, note.width, note.height);
       ctx.restore();
-      ctx.font = "24px Arial";
+      ctx.font = "15px Arial";
       ctx.fillStyle = "black";
       ctx.textAlign = "center";
-      ctx.fillText(note.text, note.x, note.y + 10);
+
+      wrapText(note.text, note.x + 2, note.y - 25, 85, 18);
+
       ctx.font = "12px Arial";
       ctx.fillStyle = "gray";
       ctx.textAlign = "right";
       ctx.fillText(note.username, note.x + note.radiusx - 2, note.y + note.radiusy - 2);
+      ctx.restore();
     }
   }
+
+  ctx.save();
+  // draws all the users
+  var userKey = Object.keys(users);
+  for (var _i = 0; _i < userKey.length; _i++) {
+    var user = users[userKey[_i]];
+
+    //if alpha less than 1, increase it by 0.1
+    if (user.alpha < 1) user.alpha += 0.1;
+
+    // calc lerp for both x and y pos
+    user.x = lerp(user.prevX, user.destX, user.alpha);
+    user.y = lerp(user.prevY, user.destY, user.alpha);
+
+    // draw the name of the user, centered above the user circles
+    ctx.fillStyle = "black";
+    ctx.font = "15px Arial";
+    ctx.textAlign = 'center';
+    ctx.fillText(user.name, user.x, user.y - 15);
+  }
+  ctx.restore();
 
   requestAnimationFrame(redraw);
 };
@@ -91,37 +83,40 @@ var redraw = function redraw() {
 
 // Checks to see if the user clicked within interactable spaces
 var checkClickOnRec = function checkClickOnRec(position, type) {
-  // Get mouse positions
-  var mousex = position.x;
-  var mousey = position.y;
+  if (currAction === "") {
 
-  var keys = void 0;
+    // Get mouse positions
+    var mousex = position.x;
+    var mousey = position.y;
 
-  if (type === 1) {
-    keys = Object.keys(notes);
-  } else {}
-  // TODO - FILL IN FOR THREADS
+    var keys = void 0;
+
+    if (type === 1) {
+      keys = Object.keys(notes);
+    } else {}
+    // TODO - FILL IN FOR THREADS
 
 
-  // Check if user clicked on an interactable space
-  if (keys.length > 0) {
-    for (var i = 0; i < keys.length; i++) {
-      var rec = void 0;
+    // Check if user clicked on an interactable space
+    if (keys.length > 0) {
+      for (var i = 0; i < keys.length; i++) {
+        var rec = void 0;
 
-      if (type === 1) {
-        rec = notes[keys[i]];
-      } else {
-        // TODO - FILL IN FOR THREADS
+        if (type === 1) {
+          rec = notes[keys[i]];
+        } else {
+          // TODO - FILL IN FOR THREADS
+        }
+
+        if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx && mousey > rec.y - rec.radiusy && mousey < rec.y + rec.radiusy) {
+          rec.focus = true;
+          return rec;
+        } else {
+          rec.focus = false;
+        }
       }
-
-      if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx && mousey > rec.y - rec.radiusy && mousey < rec.y + rec.radiusy) {
-        rec.focus = true;
-        return rec;
-      } else {
-        rec.focus = false;
-      }
-    }
-  } else return false;
+    } else return false;
+  }
 };
 
 // Gets the position of the mouse on the canvas
@@ -138,25 +133,66 @@ var getMousePos = function getMousePos(e, can) {
   return position;
 };
 
+// if you press Q, then it will stop the action
+var keypress = function keypress(e) {
+  if (e.keyCode === 81) {
+    currAction = "";
+  }
+};
+
 //handler for key up events
 var mouseUpHandler = function mouseUpHandler(e) {
   // Determines where the user clicked
   var position = getMousePos(e, canvas);
+  var posX = position.x - 50;
+  var posY = position.y - 60;
+
+  var textField = document.querySelector('#tempTextField');
 
   if (canvasBool === 1) {
-    var text = textField.value;
-    textField.value = "";
+    //let text = textField.value;
+    //textField.value = "";
 
     if (checkClickOnRec(position, 1)) {
-      changeFocus(checkClickOnRec(position, 1)); // Focuses on the note the user clicked on
-    } else {
-      if (text.trim().length === 0) {
-        return;
-      }
-      addNote(stickyColor, position, text.trim()); // Adds a note if no note was clicked on
+      changeFocus(checkClickOnRec(position, 1));
+      // Focuses on the note the user clicked on
+    }if (currAction === "note") {
+      // adds a note
+
+      addNote(position, posX, posY);
+      objectPlaced = true;
+      textField.style.display = 'block';
+      textField.style.left = posX + 'px';
+      textField.style.top = posY + 'px';
+    }if (currAction === "text") {
+      // adds a text field
+      addTextField(position);
+      objectPlaced = true;
+      textField.style.display = 'block';
+      textField.style.left = posX + 'px';
+      textField.style.top = posY + 'px';
     }
-  } else {// TODO - Add handler support on thread canvas
-    };
+  }
+};
+
+// function from http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
+var wrapText = function wrapText(text, x, y, maxWidth, lineHeight) {
+  var words = text.split(' ');
+  var line = '';
+
+  for (var n = 0; n < words.length; n++) {
+    var testLine = line + words[n] + ' ';
+    var metrics = ctx.measureText(testLine);
+    var testWidth = metrics.width;
+    if (testWidth > maxWidth && n > 0) {
+      ctx.fillText(line, x, y);
+      line = words[n] + ' ';
+      y += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, x, y);
 };
 
 // calculats the lerp for smooth transition between frames
@@ -168,7 +204,9 @@ var lerp = function lerp(v0, v1, alpha) {
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
   if (position) {
-    updateGrayNote(position);
+    if (!objectPlaced) {
+      updateGrayNote(position);
+    }
 
     var user = users[hash];
 
@@ -193,7 +231,7 @@ var resizeCanvas = function resizeCanvas(e) {
 
   redraw();
 };
-'use strict';
+"use strict";
 
 var canvas = void 0;
 var ctx = void 0;
@@ -234,13 +272,17 @@ var canvasBool = void 0;
 // what room we are in
 var currRoom = void 0;
 
-// where to add notes
-var currNotes = void 0;
+var currAction = "";
+
+var objectPlaced = false;
 
 //character list
 var users = {};
 //user's unique character id (from the server)
 var hash = void 0;
+
+// curr note created
+var currNote = {};
 
 //our next animation frame function
 var animationFrame = void 0;
@@ -272,26 +314,30 @@ var init = function init() {
   canvas.addEventListener('mouseup', mouseUpHandler);
   canvas.addEventListener('mousemove', mouseMoveHandler);
 
-  // Event handlers for sidebar
-  stickyColor = ColorEnum.YELLOW;
+  // listening for key press, to stop curr action
+  window.addEventListener("keydown", keypress, false);
+
   // Yellow sticky note
   var yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function () {
-    stickyColor = ColorEnum.YELLOW;
+    stickyColor = 'yellow';
+    currAction = "note";
+    createTempNote();
   });
   // Green sticky note
   var greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function () {
-    stickyColor = ColorEnum.GREEN;
+    stickyColor = 'greenyellow';
+    currAction = "note";
+    createTempNote();
   });
   // Blue sticky note
   var blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function () {
-    stickyColor = ColorEnum.BLUE;
+    stickyColor = 'deepskyblue';
+    currAction = "note";
+    createTempNote();
   });
-
-  // Used for getting text
-  textField = document.querySelector('#textField');
 
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', function () {
@@ -331,6 +377,27 @@ var init = function init() {
 
   // ---------------------
 
+  /* ADD COMMENT TO NOTE */
+  $("#submitNote").click(function () {
+    var text = document.querySelector('#comment').value;
+    currNote.text = text;
+
+    document.querySelector('#comment').value = "";document.querySelector('#tempTextField').style.display = "none";
+
+    if (currAction === "note") {
+      socket.emit('addNote', currNote);
+    } else if (currAction === "text") {
+      socket.emit('addTextField', currNote);
+    } else if (currAction === "updateNote") {
+      socket.emit('updateNoteText', currNote);
+    }
+    currAction = "";
+    currNote = {};
+    objectPlaced = false;
+  });
+
+  // ---------------------
+
   /* WILL TOGGLE EDITING FOR TOPICS */
 
   $("#showSettings1").click(function () {
@@ -351,18 +418,21 @@ var init = function init() {
 
   $("#submitTopic1").click(function () {
     var text = $("#name1").val();
+    $(".settings1").toggle('fast', 'swing');
 
     $("#topicsName1").html(text);
   });
 
   $("#submitTopic2").click(function () {
     var text = $("#name2").val();
+    $(".settings2").toggle('fast', 'swing');
 
     $("#topicsName2").html(text);
   });
 
   $("#submitTopic3").click(function () {
     var text = $("#name3").val();
+    $(".settings3").toggle('fast', 'swing');
 
     $("#topicsName3").html(text);
   });
@@ -394,7 +464,7 @@ var init = function init() {
   $("#delete3").click(function () {
     $("#name3").val('');
 
-    $("#topicsName2").html('3');
+    $("#topicsName3").html('3');
     numTopics--;
     $(".clearfix3").hide();
     $(".settings3").hide();
@@ -424,7 +494,6 @@ var init = function init() {
         connectSocket();
         currRoom = 'room1';
         socket.emit('enterRoom', { room: 'room1' });
-        createGrayNote();
       });
     });
   });
@@ -436,7 +505,7 @@ var init = function init() {
         connectSocket();
         currRoom = 'room2';
         socket.emit('enterRoom', { room: 'room2' });
-        createGrayNote();
+        // createGrayNote();
       });
     });
   });
@@ -448,7 +517,7 @@ var init = function init() {
         connectSocket();
         currRoom = 'room3';
         socket.emit('enterRoom', { room: 'room3' });
-        createGrayNote();
+        //createGrayNote();
       });
     });
   });
@@ -476,23 +545,38 @@ var init = function init() {
 };
 
 window.onload = init;
-'use strict';
+"use strict";
 
 // Ensures all notes besides the active note are not in focus
 var changeFocus = function changeFocus(data) {
   var keys = Object.keys(notes);
-
+  console.dir(data);
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
       var note = notes[keys[i]];
 
-      if (note.hash !== data.hash) {
+      if (note.hash != data.hash) {
         note.focus = false;
       }
     }
   }
+  currAction = "updateNote";
+  updateNoteText(data);
+  currNote = data;
+  data.text = "";
 };
 
+var updateNoteText = function updateNoteText(focusnote) {
+  console.dir(focusnote);
+
+  var field = document.querySelector('#tempTextField');
+  field.style.display = "block";
+  field.style.left = focusnote.textPosX;
+  field.style.top = focusnote.textPosY;
+
+  var comment = document.querySelector('#comment');
+  comment.value = currNote.text;
+};
 // Add all of the notes in the current room to the notes list
 var addAllNotes = function addAllNotes(data) {
   setUser(data);
@@ -501,11 +585,17 @@ var addAllNotes = function addAllNotes(data) {
 
 // Add the note to the list if it doesn't exist
 var updateNoteList = function updateNoteList(data) {
+  console.dir(data);
+  console.dir(notes);
   var note = data;
   note.focus = true;
   if (!notes[data.hash]) {
     notes[data.hash] = note;
     return;
+  } else if (notes[data.hash]) {
+    console.dir(data);
+    console.dir(notes);
+    notes[data.hash] = data;
   }
 };
 
@@ -569,6 +659,7 @@ var connectSocket = function connectSocket(e) {
   socket.on('left', removeUser);
 
   socket.on('addedNote', updateNoteList);
+
   socket.on('joined', addAllNotes);
 };
 
@@ -579,7 +670,16 @@ var updateGrayNote = function updateGrayNote(position) {
 };
 
 // Adds the grey note object to the notes list for drawing
-var createGrayNote = function createGrayNote() {
+//const createGrayNote = () => {
+//  greynote.x = 0;
+//  greynote.y = 0;
+//  greynote.radiusx = 50;
+//  greynote.radiusy = 50;
+//  greynote.width = 100;
+//  greynote.height = 100;
+//};
+
+var createTempNote = function createTempNote() {
   greynote.x = 0;
   greynote.y = 0;
   greynote.radiusx = 50;
@@ -589,30 +689,23 @@ var createGrayNote = function createGrayNote() {
 };
 
 // Create a note object and add it to the notes list
-var addNote = function addNote(color, position, text) {
-  var note = {};
+var addNote = function addNote(position, notePosX, notePosY) {
+  console.log(currRoom);
+  currNote = {};
+  currNote.color = stickyColor;
+  currNote.textPosX = notePosX;
+  currNote.textPosY = notePosY;
+  currNote.position = position;
+  currNote.username = username;
+  currNote.room = currRoom;
+};
 
-  switch (color) {
-    case 1:
-      // Yellow
-      note.color = "yellow";
-      break;
-    case 2:
-      // Green
-      note.color = "greenyellow";
-      break;
-    case 3:
-      // Blue
-      note.color = "deepskyblue";
-      break;
-    default:
-      // Default Yellow
-      note.color = "yellow";
-      break;
-  }
-  note.text = text;
-  note.position = position;
-  note.username = username;
-  note.room = currRoom;
-  socket.emit('addNote', note);
+// Create a note object and add it to the notes list
+var addTextField = function addTextField(position) {
+  console.log(currRoom);
+  currNote = {};
+  currNote.color = "red";
+  currNote.position = position;
+  currNote.username = username;
+  currNote.room = currRoom;
 };
