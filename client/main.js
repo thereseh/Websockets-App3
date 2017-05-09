@@ -17,7 +17,7 @@ const ColorEnum = {
 };
 
 // to limit topics
-let numTopics = 0;
+//let numTopics = 0;
 
 // Determines which color the sticky note is
 let stickyColor;
@@ -130,7 +130,8 @@ const init = () => {
   
 
   $("#topicBtn").click(function(){
-    numTopics++; 
+    //numTopics++; 
+      
     
       if ($(".clearfix1").is(":hidden")) {
           $(".clearfix1").show();
@@ -142,9 +143,9 @@ const init = () => {
         $(".clearfix3").show();
       }
     
-    if (numTopics === 3) {
-      $('#topicBtn').hide();
-    }
+    //if (numTopics === 3) {
+    //  $('#topicBtn').hide();
+    //}
   });
   
   
@@ -273,9 +274,11 @@ const init = () => {
     $(".topics").hide('slow', 'swing', function() {
       $(".can").show('slow', 'swing', function() {
         // then first send name of topic to server of course
+        let text = $("#topicsName1").val();
+        console.log($("#topicsName1").val());
         connectSocket();
-        currRoom = 'room1';
-        socket.emit('enterRoom', {room: 'room1'});
+        currRoom = text;
+        socket.emit('enterRoom', {room: text});
       });
     });
   });

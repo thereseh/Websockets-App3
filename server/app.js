@@ -3,8 +3,18 @@ const path = require('path');
 const express = require('express');
 const socketio = require('socket.io');
 const sockets = require('./sockets.js');
+const mongoose = require('mongoose');
 
 const PORT = process.env.PORT || process.env.NODE_PORT || 3000;
+
+const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/mindmap';
+
+mongoose.connect(dbURL, (err) => {
+  if (err) {
+    console.log('Could not connect to MongoDB');
+    throw err;
+  }
+});
 
 const app = express();
 

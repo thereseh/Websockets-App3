@@ -30,6 +30,7 @@ const setupSockets = (ioServer) => {
 
     // when the user picks a topic to enter
     socket.on('enterRoom', (data) => {
+      console.log(data);
       room = data.room;
       socket.join(room);
 
@@ -42,14 +43,16 @@ const setupSockets = (ioServer) => {
 
       // add the id to the user's socket object for quick reference
       socket.hash = hash;
+      
+      io.sockets.in(room).emit('joined', {note: notes1, user: users[hash] });
 
-      if (room === 'room1') {
-        socket.emit('joined', { note: notes1, user: users[hash] });
-      } else if (room === 'room2') {
-        socket.emit('joined', { note: notes2, user: users[hash] });
-      } else if (room === 'room3') {
-        socket.emit('joined', { note: notes2, user: users[hash] });
-      }
+      //if (room === 'room1') {
+      //  socket.emit('joined', { note: notes1, user: users[hash] });
+      //} else if (room === 'room2') {
+      //  socket.emit('joined', { note: notes2, user: users[hash] });
+      //} else if (room === 'room3') {
+      //  socket.emit('joined', { note: notes2, user: users[hash] });
+      //}
     });
 
     // when this user sends the server a movement update
