@@ -3,7 +3,6 @@ const redraw = () => {
   // Background image
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;
@@ -16,15 +15,15 @@ const redraw = () => {
     ctx.fill();
     ctx.restore();
   }
-
   const keys = Object.keys(notes);
   
   // Draw each note to the screen
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
+      ctx.save();
       const note = notes[keys[i]];
   
-      ctx.save();
+      if (note.objectType = "note") {
       if (note.focus) {
         //ctx.shadowBlur = 5;
         //ctx.shadowOffsetX = 2;
@@ -41,20 +40,25 @@ const redraw = () => {
       ctx.fillRect(note.x - note.radiusx, note.y - note.radiusy, note.width, note.height);
       ctx.restore();
       ctx.font = "15px Arial";
-      ctx.fillStyle = "black";
       ctx.textAlign = "center";
-      
-       wrapText(note.text, note.x+2, note.y-25, 85, 18);
+      ctx.fillStyle = "black";
+      wrapText(note.text, note.x+2, note.y-25, 85, 18);
 
       ctx.font = "12px Arial";
       ctx.fillStyle = "gray";
       ctx.textAlign = "right";
       ctx.fillText(note.username, note.x + note.radiusx - 2, note.y + note.radiusy - 2);
+    }
+    if (note.objectType = "textField") {
+      ctx.save();
+      ctx.font = "15px Arial";
+      ctx.textAlign = "center";
+      ctx.fillStyle = note.color;
+      wrapText(note.text, note.x, note.y, 85, 18);
       ctx.restore();
     }
   }
-  
-   ctx.save();
+}
    // draws all the users
   const userKey = Object.keys(users);
   for(let i = 0; i < userKey.length; i++) {

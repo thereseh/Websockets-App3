@@ -164,10 +164,11 @@ const init = () => {
     currNote.text = text;
     document.querySelector('#comment').value = ""; 
     movingTextField.style.display = "none";
-     
     if (currAction === "note") {
+      console.log('adding note');
       socket.emit('addNote', currNote);
     } else if (currAction === "text") {
+      console.log('adding text');
       socket.emit('addTextField', currNote);
     } else if (currAction === "updateNote") {
       socket.emit('updateNoteText', currNote);
@@ -317,7 +318,6 @@ const init = () => {
   
   $('#close').click(function(){
         $('.sideBar').animate({width:"0px"}, 500, function() {
-        console.log('done');
        $('#toggle').hide();
        $('#open').show();
        $('#close').hide();

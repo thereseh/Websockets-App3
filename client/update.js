@@ -1,6 +1,5 @@
 // Ensures all notes besides the active note are not in focus
 const changeFocus = (data) => {
-  console.dir(data);
   currAction = "updateNote";
   updateNoteText(data);
   const keys = Object.keys(notes);
@@ -17,7 +16,6 @@ const changeFocus = (data) => {
 
 const updateNoteText = (focusnote) => {
   currNote = focusnote;
-  console.log('currnote');
   movingTextField.style.display = "block";
   movingTextField.style.left = currNote.textPosX + "px";
   movingTextField.style.top = currNote.textPosY + "px";
@@ -34,12 +32,15 @@ const addAllNotes = (data) => {
 
 // Add the note to the list if it doesn't exist
 const updateNoteList = (data) => {
+  console.dir(data);
   const note = data;
   note.focus = true;
   if (!notes[data.hash]) {
+    console.log('dont exist');
     notes[data.hash] = note;
     return;
   } else if (notes[data.hash]) {
+    console.log('exist');
     notes[data.hash] = data;
   }
 };
@@ -96,7 +97,6 @@ const removeUser = (data) => {
 };
 
 const removeNote = (data) => {
-  console.dir(data);
   //if we have that character, remove them
   if(notes[data]) {
     delete notes[data];

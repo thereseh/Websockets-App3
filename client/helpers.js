@@ -118,7 +118,7 @@ const wrapText = (text, x, y, maxWidth, lineHeight) => {
         line = testLine;
       }
     }
-      ctx.fillText(line, x, y);
+  ctx.fillText(line, x, y);
 }
 
 // calculats the lerp for smooth transition between frames
