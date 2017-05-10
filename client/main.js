@@ -58,6 +58,24 @@ let animationFrame;
 
 let strokeColor = "black";
 
+const connectFunction = () => {
+    username = document.querySelector('#username').value;
+  
+    createTempNote();
+
+    // listening for key press, to stop curr action
+    window.addEventListener("keydown", keypress, false);
+    // If the username is over 15 characters, display a popup
+    if (username.length > 15) {      
+      let popup = document.getElementById('namePopup');
+      popup.classList.toggle("show");
+    } else {
+      console.log('connect');
+      canvasBool = 1;
+      document.querySelector('.topics').style.display = "block";
+      document.querySelector('.login').style.display = "none";
+    }
+};
 
 const init = () => {
   canvas = document.querySelector('#canvas');
@@ -85,12 +103,15 @@ const init = () => {
   canvas.addEventListener('mousemove', mouseMoveHandler);
  
   movingTextField = document.querySelector('#tempTextField');
- 
+  
   // Yellow sticky note
   const yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function() {
     stickyColor = 'yellow';
     currAction = "note";
+    yellowSticky.style.border = "2px solid #454545";
+    greenSticky.style.border = "none";
+    blueSticky.style.border = "none";
     createTempNote();
   });
   // Green sticky note
@@ -98,6 +119,9 @@ const init = () => {
   greenSticky.addEventListener('click', function() {
     stickyColor = 'greenyellow';
     currAction = "note";
+    yellowSticky.style.border = "none";
+    greenSticky.style.border = "2px solid #454545";
+    blueSticky.style.border = "none";
     createTempNote();
   });
   // Blue sticky note
@@ -105,10 +129,13 @@ const init = () => {
   blueSticky.addEventListener('click', function() {
     stickyColor = 'deepskyblue';
     currAction = "note";
+    yellowSticky.style.border = "none";
+    greenSticky.style.border = "none";
+    blueSticky.style.border = "2px solid #454545";
     createTempNote();
   });
   
-   const addTextField = document.querySelector('#textField');
+  const addTextField = document.querySelector('#textField');
   addTextField.addEventListener('click', function() {
     currAction = "text";
     createTempText();
@@ -116,22 +143,14 @@ const init = () => {
   
   
   // when connecting, display canvas and hide the log in objecs
-  connect.addEventListener('click', () => {
-    username = document.querySelector('#username').value;
-
-    // listening for key press, to stop curr action
-  window.addEventListener("keydown", keypress, false);
-    // If the username is over 15 characters, display a popup
-    if (username.length > 15) {      
-      let popup = document.getElementById('namePopup');
-      popup.classList.toggle("show");
-    } else {
-      console.log('connect');
-      canvasBool = 1;
-      document.querySelector('.topics').style.display = "block";
-      document.querySelector('.login').style.display = "none";
+  // Can now click or press enter to connect
+  connect.addEventListener('click', connectFunction);
+  document.querySelector("#inputUser").addEventListener('keyup', (e) => {
+    if (e.keyCode === 13) {
+      console.log("here");
+      connectFunction();
     }
-  });
+  })
   
   // ---------------------
   

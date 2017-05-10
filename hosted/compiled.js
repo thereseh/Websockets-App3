@@ -6,6 +6,7 @@ var redraw = function redraw() {
   // Background image
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;
@@ -217,9 +218,9 @@ var lerp = function lerp(v0, v1, alpha) {
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
   if (position) {
-    if (currAction === "note" && !objectPlaced) {
-      updateGrayNote(position);
-    }
+    //if (currAction === "note" && !objectPlaced) {
+    updateGrayNote(position);
+    //}
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
@@ -310,6 +311,25 @@ var animationFrame = void 0;
 
 var strokeColor = "black";
 
+var connectFunction = function connectFunction() {
+  username = document.querySelector('#username').value;
+
+  createTempNote();
+
+  // listening for key press, to stop curr action
+  window.addEventListener("keydown", keypress, false);
+  // If the username is over 15 characters, display a popup
+  if (username.length > 15) {
+    var popup = document.getElementById('namePopup');
+    popup.classList.toggle("show");
+  } else {
+    console.log('connect');
+    canvasBool = 1;
+    document.querySelector('.topics').style.display = "block";
+    document.querySelector('.login').style.display = "none";
+  }
+};
+
 var init = function init() {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
@@ -342,6 +362,9 @@ var init = function init() {
   yellowSticky.addEventListener('click', function () {
     stickyColor = 'yellow';
     currAction = "note";
+    yellowSticky.style.border = "2px solid #454545";
+    greenSticky.style.border = "none";
+    blueSticky.style.border = "none";
     createTempNote();
   });
   // Green sticky note
@@ -349,6 +372,9 @@ var init = function init() {
   greenSticky.addEventListener('click', function () {
     stickyColor = 'greenyellow';
     currAction = "note";
+    yellowSticky.style.border = "none";
+    greenSticky.style.border = "2px solid #454545";
+    blueSticky.style.border = "none";
     createTempNote();
   });
   // Blue sticky note
@@ -356,6 +382,9 @@ var init = function init() {
   blueSticky.addEventListener('click', function () {
     stickyColor = 'deepskyblue';
     currAction = "note";
+    yellowSticky.style.border = "none";
+    greenSticky.style.border = "none";
+    blueSticky.style.border = "2px solid #454545";
     createTempNote();
   });
 
@@ -366,20 +395,12 @@ var init = function init() {
   });
 
   // when connecting, display canvas and hide the log in objecs
-  connect.addEventListener('click', function () {
-    username = document.querySelector('#username').value;
-
-    // listening for key press, to stop curr action
-    window.addEventListener("keydown", keypress, false);
-    // If the username is over 15 characters, display a popup
-    if (username.length > 15) {
-      var popup = document.getElementById('namePopup');
-      popup.classList.toggle("show");
-    } else {
-      console.log('connect');
-      canvasBool = 1;
-      document.querySelector('.topics').style.display = "block";
-      document.querySelector('.login').style.display = "none";
+  // Can now click or press enter to connect
+  connect.addEventListener('click', connectFunction);
+  document.querySelector("#inputUser").addEventListener('keyup', function (e) {
+    if (e.keyCode === 13) {
+      console.log("here");
+      connectFunction();
     }
   });
 

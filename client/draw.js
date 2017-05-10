@@ -4,6 +4,7 @@ const redraw = () => {
   // Background image
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;

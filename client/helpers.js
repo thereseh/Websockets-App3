@@ -130,9 +130,9 @@ const lerp = (v0, v1, alpha) => {
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
   if(position) {
-    if (currAction === "note" && !objectPlaced) {
+    //if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
-    }
+    //}
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
