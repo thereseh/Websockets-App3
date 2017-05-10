@@ -25,7 +25,7 @@ var redraw = function redraw() {
       ctx.save();
       var note = notes[keys[i]];
 
-      if (note.objectType = "note") {
+      if (note.objectType === "note") {
         if (note.focus) {
           //ctx.shadowBlur = 5;
           //ctx.shadowOffsetX = 2;
@@ -51,7 +51,7 @@ var redraw = function redraw() {
         ctx.textAlign = "right";
         ctx.fillText(note.username, note.x + note.radiusx - 2, note.y + note.radiusy - 2);
       }
-      if (note.objectType = "textField") {
+      if (note.objectType === "textField") {
         ctx.save();
         ctx.font = "15px Arial";
         ctx.textAlign = "center";
