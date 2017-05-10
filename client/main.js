@@ -25,6 +25,7 @@ let stickyColor;
 // Used to get the value of text
 let textField;
 
+// USE THIS
 let movingTextField;
 
 // Holds each note

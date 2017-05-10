@@ -42,6 +42,7 @@ margin-bottom: 30px;
   width: 100px;
   height: 100px;
   background-color: rgba(255, 255, 255, 0.2);
+  resize: none;
 }
 #tempTextField {
   position: relative;

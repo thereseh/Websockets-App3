@@ -20,6 +20,7 @@ const updateNoteText = (focusnote) => {
   movingTextField.style.left = currNote.textPosX + "px";
   movingTextField.style.top = currNote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
+  //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
