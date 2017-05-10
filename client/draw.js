@@ -1,8 +1,9 @@
 // Redraw to the canvas
 const redraw = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background image
   ctx.fillStyle = pattern;
-  ctx.drawImage(background, 0, 0);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;

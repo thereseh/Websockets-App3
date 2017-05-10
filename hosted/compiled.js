@@ -2,9 +2,10 @@
 
 // Redraw to the canvas
 var redraw = function redraw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   // Background image
   ctx.fillStyle = pattern;
-  ctx.drawImage(background, 0, 0);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;
@@ -235,7 +236,6 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
         user.destY = position.y;
         user.lastUpdate = new Date().getTime();
         user.alpha = 0.3;
-        console.dir(user.x);
         socket.emit('movementUpdate', user);
       }
     }
@@ -244,8 +244,8 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
 
 // Resizes the canvas
 var resizeCanvas = function resizeCanvas(e) {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = Math.floor(window.innerWidth);
+  canvas.height = Math.floor(window.innerHeight);
 
   redraw();
 };

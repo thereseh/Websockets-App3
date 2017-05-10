@@ -150,7 +150,6 @@ const mouseMoveHandler = (e) => {
         user.destY = position.y;
         user.lastUpdate = new Date().getTime();
         user.alpha = 0.3;
-        console.dir(user.x);
         socket.emit('movementUpdate', user);
       }
     }
@@ -159,8 +158,8 @@ const mouseMoveHandler = (e) => {
 
 // Resizes the canvas
 const resizeCanvas = (e) => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = Math.floor(window.innerWidth);
+  canvas.height = Math.floor(window.innerHeight);
   
   redraw();
 };
