@@ -137,6 +137,8 @@ var getMousePos = function getMousePos(e, can) {
 var keypress = function keypress(e) {
   if (e.keyCode === 81) {
     currAction = "";
+    movingTextField.style.display = "none";
+    document.querySelector(".btn-group").style.display = "none";
   }
 };
 
@@ -146,31 +148,34 @@ var mouseUpHandler = function mouseUpHandler(e) {
   var position = getMousePos(e, canvas);
   var posX = position.x - 50;
   var posY = position.y - 60;
-
-  var textField = document.querySelector('#tempTextField');
+  console.log(currAction);
 
   if (canvasBool === 1) {
     //let text = textField.value;
     //textField.value = "";
-
     if (checkClickOnRec(position, 1)) {
       changeFocus(checkClickOnRec(position, 1));
       // Focuses on the note the user clicked on
-    }if (currAction === "note") {
-      // adds a note
-
+    } else if (currAction === "note") {
+      // adds a note 
       addNote(position, posX, posY);
       objectPlaced = true;
-      textField.style.display = 'block';
-      textField.style.left = posX + 'px';
-      textField.style.top = posY + 'px';
-    }if (currAction === "text") {
+      movingTextField.style.display = 'block';
+      movingTextField.style.left = posX + 'px';
+      movingTextField.style.top = posY + 'px';
+    } else if (currAction === "text") {
+      console.log(currAction);
       // adds a text field
-      addTextField(position);
+      document.querySelector("#fakeTextField").style.display = "none";
+      addTextField(position, posX, posY);
       objectPlaced = true;
-      textField.style.display = 'block';
-      textField.style.left = posX + 'px';
-      textField.style.top = posY + 'px';
+      console.log("objectPlaced: " + objectPlaced);
+      movingTextField.style.display = 'block';
+      movingTextField.style.left = posX + 'px';
+      movingTextField.style.top = posY + 'px';
+      document.querySelector(".btn-group").style.display = "block";
+      document.querySelector(".btn-group").style.left = posX + 150 + "px";
+      document.querySelector(".btn-group").style.top = posY - 50 + "px";
     }
   }
 };
@@ -204,8 +209,11 @@ var lerp = function lerp(v0, v1, alpha) {
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
   if (position) {
-    if (!objectPlaced) {
+    if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
+    }
+    if (currAction === "text" && !objectPlaced) {
+      updateTempTextField(position);
     }
 
     var user = users[hash];
@@ -259,6 +267,8 @@ var stickyColor = void 0;
 
 // Used to get the value of text
 var textField = void 0;
+
+var movingTextField = void 0;
 
 // Holds each note
 var notes = {};
@@ -314,8 +324,7 @@ var init = function init() {
   canvas.addEventListener('mouseup', mouseUpHandler);
   canvas.addEventListener('mousemove', mouseMoveHandler);
 
-  // listening for key press, to stop curr action
-  window.addEventListener("keydown", keypress, false);
+  movingTextField = document.querySelector('#tempTextField');
 
   // Yellow sticky note
   var yellowSticky = document.querySelector('#stickyNote1');
@@ -339,10 +348,18 @@ var init = function init() {
     createTempNote();
   });
 
+  var addTextField = document.querySelector('#textField');
+  addTextField.addEventListener('click', function () {
+    currAction = "text";
+    createTempText();
+  });
+
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', function () {
     username = document.querySelector('#username').value;
 
+    // listening for key press, to stop curr action
+    window.addEventListener("keydown", keypress, false);
     // If the username is over 15 characters, display a popup
     if (username.length > 15) {
       var popup = document.getElementById('namePopup');
@@ -378,11 +395,12 @@ var init = function init() {
   // ---------------------
 
   /* ADD COMMENT TO NOTE */
+
   $("#submitNote").click(function () {
     var text = document.querySelector('#comment').value;
     currNote.text = text;
-
-    document.querySelector('#comment').value = "";document.querySelector('#tempTextField').style.display = "none";
+    document.querySelector('#comment').value = "";
+    movingTextField.style.display = "none";
 
     if (currAction === "note") {
       socket.emit('addNote', currNote);
@@ -394,6 +412,18 @@ var init = function init() {
     currAction = "";
     currNote = {};
     objectPlaced = false;
+    document.querySelector(".btn-group").style.display = "none";
+  });
+
+  // ---------------------
+
+  /* DELETE NOTE */
+
+  $("#deleteNote").click(function () {
+    socket.emit('removeNote', currNote);
+    currAction = "";
+    currNote = {};document.querySelector('#comment').value = "";
+    movingTextField.style.display = "none";
   });
 
   // ---------------------
@@ -439,7 +469,7 @@ var init = function init() {
 
   // ---------------------
 
-  /* WILL GET THE NEW NAME FOR TOPIC */
+  /* WILL DELETE TOPIC */
 
   $("#delete1").click(function () {
     $("#name1").val('');
@@ -471,21 +501,9 @@ var init = function init() {
     $('#topicBtn').show();
   });
 
-  $("#submitTopic2").click(function () {
-    var text = $("#name2").val();
-
-    $("#topicsName2").html(text);
-  });
-
-  $("#submitTopic3").click(function () {
-    var text = $("#name3").val();
-
-    $("#topicsName3").html(text);
-  });
-
   // ---------------------
 
-  /* WILL GET THE NEW NAME FOR TOPIC */
+  /* WILL CONNECT T0 A TOPIC */
 
   $("#topic1").click(function () {
     $(".topics").hide('slow', 'swing', function () {
@@ -549,8 +567,10 @@ window.onload = init;
 
 // Ensures all notes besides the active note are not in focus
 var changeFocus = function changeFocus(data) {
-  var keys = Object.keys(notes);
   console.dir(data);
+  currAction = "updateNote";
+  updateNoteText(data);
+  var keys = Object.keys(notes);
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
       var note = notes[keys[i]];
@@ -560,41 +580,33 @@ var changeFocus = function changeFocus(data) {
       }
     }
   }
-  currAction = "updateNote";
-  updateNoteText(data);
-  currNote = data;
-  data.text = "";
 };
 
 var updateNoteText = function updateNoteText(focusnote) {
-  console.dir(focusnote);
-
-  var field = document.querySelector('#tempTextField');
-  field.style.display = "block";
-  field.style.left = focusnote.textPosX;
-  field.style.top = focusnote.textPosY;
-
-  var comment = document.querySelector('#comment');
-  comment.value = currNote.text;
+  currNote = focusnote;
+  console.log('currnote');
+  movingTextField.style.display = "block";
+  movingTextField.style.left = currNote.textPosX + "px";
+  movingTextField.style.top = currNote.textPosY + "px";
+  document.querySelector('#comment').value = focusnote.text;
+  focusnote.text = "";
+  document.querySelector("#deleteNote").style.display = "block";
 };
 // Add all of the notes in the current room to the notes list
 var addAllNotes = function addAllNotes(data) {
   setUser(data);
+  console.dir(data.note);
   notes = data.note;
 };
 
 // Add the note to the list if it doesn't exist
 var updateNoteList = function updateNoteList(data) {
-  console.dir(data);
-  console.dir(notes);
   var note = data;
   note.focus = true;
   if (!notes[data.hash]) {
     notes[data.hash] = note;
     return;
   } else if (notes[data.hash]) {
-    console.dir(data);
-    console.dir(notes);
     notes[data.hash] = data;
   }
 };
@@ -649,6 +661,14 @@ var removeUser = function removeUser(data) {
   }
 };
 
+var removeNote = function removeNote(data) {
+  console.dir(data);
+  //if we have that character, remove them
+  if (notes[data]) {
+    delete notes[data];
+  }
+};
+
 // When the user connects, set up socket pipelines
 var connectSocket = function connectSocket(e) {
   socket = io.connect();
@@ -657,6 +677,8 @@ var connectSocket = function connectSocket(e) {
   socket.on('updatedMovement', update);
   //when a user leaves
   socket.on('left', removeUser);
+
+  socket.on('removeNote', removeNote);
 
   socket.on('addedNote', updateNoteList);
 
@@ -667,6 +689,11 @@ var connectSocket = function connectSocket(e) {
 var updateGrayNote = function updateGrayNote(position) {
   greynote.x = position.x;
   greynote.y = position.y;
+};
+
+var updateTempTextField = function updateTempTextField(position) {
+  document.querySelector("#fakeTextField").style.left = position.x - 50 + "px";
+  document.querySelector("#fakeTextField").style.top = position.y - 50 + "px";
 };
 
 // Adds the grey note object to the notes list for drawing
@@ -688,9 +715,12 @@ var createTempNote = function createTempNote() {
   greynote.height = 100;
 };
 
+var createTempText = function createTempText() {
+  document.querySelector("#fakeTextField").style.display = "block";
+};
+
 // Create a note object and add it to the notes list
 var addNote = function addNote(position, notePosX, notePosY) {
-  console.log(currRoom);
   currNote = {};
   currNote.color = stickyColor;
   currNote.textPosX = notePosX;
@@ -701,8 +731,7 @@ var addNote = function addNote(position, notePosX, notePosY) {
 };
 
 // Create a note object and add it to the notes list
-var addTextField = function addTextField(position) {
-  console.log(currRoom);
+var addTextField = function addTextField(position, notePosX, notePosY) {
   currNote = {};
   currNote.color = "red";
   currNote.position = position;

@@ -57,6 +57,8 @@ const getMousePos = (e, can) => {
 const keypress = (e) => { 
   if (e.keyCode === 81) {
       currAction = "";
+      movingTextField.style.display = "none";
+      document.querySelector(".btn-group").style.display = "none";
     }
 };
 
@@ -66,32 +68,34 @@ const mouseUpHandler = (e) => {
   const position = getMousePos(e, canvas);
   let posX = position.x - 50;
   let posY = position.y - 60;
-  
-  let textField = document.querySelector('#tempTextField');
-
+  console.log(currAction);
   
   if(canvasBool === 1) {
     //let text = textField.value;
     //textField.value = "";
-    
     if(checkClickOnRec(position, 1)) {
       changeFocus(checkClickOnRec(position, 1));
       // Focuses on the note the user clicked on
-    } if (currAction === "note") {
-      // adds a note
-      
+    } else if (currAction === "note") {
+      // adds a note 
       addNote(position, posX, posY);
-        objectPlaced = true;
-        textField.style.display = 'block';
-        textField.style.left = posX + 'px';
-        textField.style.top = posY + 'px';
-      } if (currAction === "text") {
+      objectPlaced = true;
+      movingTextField.style.display = 'block';
+      movingTextField.style.left = posX + 'px';
+      movingTextField.style.top = posY + 'px';
+    } else if (currAction === "text") {
+      console.log(currAction);
       // adds a text field
-        addTextField(position);
-        objectPlaced = true;
-        textField.style.display = 'block';
-        textField.style.left = posX + 'px';
-        textField.style.top = posY + 'px';
+      document.querySelector("#fakeTextField").style.display = "none";
+      addTextField(position, posX, posY);
+      objectPlaced = true;
+      console.log(`objectPlaced: ${objectPlaced}`);
+      movingTextField.style.display = 'block';
+      movingTextField.style.left = posX + 'px';
+      movingTextField.style.top = posY + 'px';
+      document.querySelector(".btn-group").style.display = "block";
+      document.querySelector(".btn-group").style.left = (posX+150) + "px";
+      document.querySelector(".btn-group").style.top = (posY-50) + "px";
     }
   }
   
@@ -126,9 +130,13 @@ const lerp = (v0, v1, alpha) => {
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
   if(position) {
-    if (!objectPlaced) {
+    if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
     }
+    if (currAction === "text" && !objectPlaced) {
+      updateTempTextField(position);
+    }
+    
     
     const user = users[hash];
 

@@ -60,6 +60,7 @@ const setupSockets = (ioServer) => {
 
     // Add a note to the note list
     socket.on('addNote', (data) => {
+      console.dir(data);
       // Create a unique id for the note
       const noteString = `${data.text}${new Date().getTime()}`;
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
@@ -89,8 +90,7 @@ const setupSockets = (ioServer) => {
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
 
       // Create the Note object and add to the list of notes
-      const field = new TextField(noteHash, data.username, data.position.x, data.position.y,
-                          data.text, data.color);
+      const field = new TextField(noteHash, data.username, data.x, data.y, data.text, data.color);
 
       // depending on which room, store and return correct object
       if (data.room === 'room1') {
@@ -102,6 +102,19 @@ const setupSockets = (ioServer) => {
       } else if (data.room === 'room3') {
         notes3[field.hash] = field;
         io.sockets.in(data.room).emit('addedNote', notes3[field.hash]);
+      }
+    });
+    
+    socket.on('removeNote', (data) => {
+      if (data.room === 'room1') {
+        io.sockets.in(data.room).emit('removeNote', data.hash);
+        delete notes1[data.hash];
+      } else if (data.room === 'room2') {
+        io.sockets.in(data.room).emit('removeNote', data.hash);
+        delete notes2[data.hash];
+      } else if (data.room === 'room3') {
+        io.sockets.in(data.room).emit('removeNote', data.hash);
+        delete notes3[data.hash];
       }
     });
 

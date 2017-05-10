@@ -30,6 +30,14 @@
 margin-bottom: 30px;
 }
 
+#fakeTextField {
+  width: 100px;
+  height: 100px;
+  border-style: solid;
+  position: relative;
+  display: none;
+  pointer-events: none;
+}
 #comment {
   width: 100px;
   height: 100px;
@@ -39,6 +47,17 @@ margin-bottom: 30px;
   position: relative;
   width: 100px;
   height: 100px;
+  display: none;
+  padding: 0;
+}
+
+#deleteNote {
+  cursor: pointer;
+  height: 25px;
+  width: 25px;
+  font-size: 25px;
+  display: block;
+  top: 40px;
   display: none;
 }
 
@@ -244,6 +263,71 @@ margin-bottom: 30px;
      text-align: center;
      font-size: 50px;
    }
+
+
+  .dropdown-menu {
+     min-width: 40px;
+     max-width: 110px;
+     text-align: center;
+     float: right;
+     left: -40px;
+     position: relative;
+   }
+   
+   #dropDown {
+     margin: 0 auto;
+   }
+ #colorDrop {
+     padding: 5px 5px 1px 5px;
+     -webkit-column-count: 2;
+     -webkit-column-gap: 0;
+     -webkit-column-fill: auto;
+     -moz-column-count: 2;
+     -moz-column-gap: 0;
+     -moz-column-fill: auto;
+     column-count: 2;
+     column-gap: 0;
+     column-fill: auto;
+   }
+   
+   #colorDrop>li {
+     align-content: center;
+     text-align: center;
+     margin: 0 auto;
+     padding: 0 0 5px 0;
+     vertical-align: middle;
+     display: inline-block;
+     -webkit-column-break-inside: avoid;
+     column-break-inside: avoid;
+     opacity: 1;
+     -webkit-transition: all .2s ease;
+     -moz-transition: all .2s ease;
+     -o-transition: all .2s ease;
+     cursor: pointer;
+   }
+   
+   #colorDrop>li>a {
+     align-content: center;
+     margin: 0 auto;
+     padding: 0;
+     height: 30px;
+     width: 40px;
+   }
+   
+   #colorDrop>li>a:hover {
+     background-color: white;
+   }
+   
+   .btn-group {
+     position: relative;
+     vertical-align: top;
+     align-content: center;
+     text-align: center;
+     display: none;
+     top: 0;
+     left: 0;
+   }
+
 
 /* Popup container */
 .popup {

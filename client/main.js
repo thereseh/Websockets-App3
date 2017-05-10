@@ -25,6 +25,8 @@ let stickyColor;
 // Used to get the value of text
 let textField;
 
+let movingTextField;
+
 // Holds each note
 let notes = {};
 
@@ -80,10 +82,8 @@ const init = () => {
   // mouse event handlers - NOTE: Lines are changed to get events for the canvas
   canvas.addEventListener('mouseup', mouseUpHandler);
   canvas.addEventListener('mousemove', mouseMoveHandler);
-  
-  // listening for key press, to stop curr action
-  window.addEventListener("keydown", keypress, false);
  
+  movingTextField = document.querySelector('#tempTextField');
  
   // Yellow sticky note
   const yellowSticky = document.querySelector('#stickyNote1');
@@ -107,11 +107,19 @@ const init = () => {
     createTempNote();
   });
   
+   const addTextField = document.querySelector('#textField');
+  addTextField.addEventListener('click', function() {
+    currAction = "text";
+    createTempText();
+  });
+  
   
   // when connecting, display canvas and hide the log in objecs
   connect.addEventListener('click', () => {
     username = document.querySelector('#username').value;
 
+    // listening for key press, to stop curr action
+  window.addEventListener("keydown", keypress, false);
     // If the username is over 15 characters, display a popup
     if (username.length > 15) {      
       let popup = document.getElementById('namePopup');
@@ -128,7 +136,6 @@ const init = () => {
   
   /* ADDING TOPICS */
   
-
   $("#topicBtn").click(function(){
     numTopics++; 
     
@@ -151,25 +158,36 @@ const init = () => {
   // ---------------------
   
   /* ADD COMMENT TO NOTE */
-   $("#submitNote").click(function(){
+  
+  $("#submitNote").click(function(){
     let text = document.querySelector('#comment').value;
     currNote.text = text;
+    document.querySelector('#comment').value = ""; 
+    movingTextField.style.display = "none";
      
-    document.querySelector('#comment').value = ""; document.querySelector('#tempTextField').style.display = "none";
-     
-     if (currAction === "note") {
-        socket.emit('addNote', currNote);
-     } else if (currAction === "text") {
-       socket.emit('addTextField', currNote);
-     } else if (currAction === "updateNote") {
-        socket.emit('updateNoteText', currNote);
-     }
+    if (currAction === "note") {
+      socket.emit('addNote', currNote);
+    } else if (currAction === "text") {
+      socket.emit('addTextField', currNote);
+    } else if (currAction === "updateNote") {
+      socket.emit('updateNoteText', currNote);
+    }
      currAction = "";
      currNote = {};
      objectPlaced = false;
-
+    document.querySelector(".btn-group").style.display = "none";
   });
   
+   // ---------------------
+  
+  /* DELETE NOTE */
+  
+  $("#deleteNote").click(function(){
+    socket.emit('removeNote', currNote);
+  currAction = "";
+     currNote = {};  document.querySelector('#comment').value = ""; 
+    movingTextField.style.display = "none";
+  });
   
   // ---------------------
   
@@ -193,7 +211,7 @@ const init = () => {
   /* WILL GET THE NEW NAME FOR TOPIC */
 
   
-   $("#submitTopic1").click(function(){
+  $("#submitTopic1").click(function(){
     let text = $("#name1").val();
     $(".settings1").toggle('fast', 'swing');
 
@@ -219,10 +237,10 @@ const init = () => {
   
   // ---------------------
   
-  /* WILL GET THE NEW NAME FOR TOPIC */
+  /* WILL DELETE TOPIC */
 
   
-   $("#delete1").click(function(){
+  $("#delete1").click(function(){
     $("#name1").val('');
 
     $("#topicsName1").html('1');
@@ -232,7 +250,7 @@ const init = () => {
       $('#topicBtn').show();
   });
   
-   $("#delete2").click(function(){
+  $("#delete2").click(function(){
     $("#name2").val('');
 
     $("#topicsName2").html('2');
@@ -252,24 +270,13 @@ const init = () => {
       $('#topicBtn').show();
   });
   
-  $("#submitTopic2").click(function(){
-    let text = $("#name2").val();
-
-    $("#topicsName2").html(text);
-  });
-  
-  $("#submitTopic3").click(function(){
-    let text = $("#name3").val();
-
-    $("#topicsName3").html(text);
-  });
   
   // ---------------------
   
-  /* WILL GET THE NEW NAME FOR TOPIC */
+  /* WILL CONNECT T0 A TOPIC */
 
   
-   $("#topic1").click(function(){
+  $("#topic1").click(function(){
     $(".topics").hide('slow', 'swing', function() {
       $(".can").show('slow', 'swing', function() {
         // then first send name of topic to server of course
@@ -306,9 +313,9 @@ const init = () => {
   
   // ---------------------
   
-    /* WILL TOGGLE THE SIDE BAR  */
+  /* WILL TOGGLE THE SIDE BAR  */
   
-   $('#close').click(function(){
+  $('#close').click(function(){
         $('.sideBar').animate({width:"0px"}, 500, function() {
         console.log('done');
        $('#toggle').hide();

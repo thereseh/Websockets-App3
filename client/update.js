@@ -1,7 +1,9 @@
 // Ensures all notes besides the active note are not in focus
 const changeFocus = (data) => {
-  const keys = Object.keys(notes);
   console.dir(data);
+  currAction = "updateNote";
+  updateNoteText(data);
+  const keys = Object.keys(notes);
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
       const note = notes[keys[i]];
@@ -11,42 +13,33 @@ const changeFocus = (data) => {
       }
     }
   }
-  currAction = "updateNote";
-  updateNoteText(data);
-  currNote = data;
-  data.text = "";
 };
 
 const updateNoteText = (focusnote) => {
-  console.dir(focusnote);
-  
-  let field = document.querySelector('#tempTextField');
-  field.style.display = "block";
-  field.style.left = focusnote.textPosX;
-  field.style.top = focusnote.textPosY;
-  
-  let comment = document.querySelector('#comment');
-  comment.value = currNote.text;
-  
+  currNote = focusnote;
+  console.log('currnote');
+  movingTextField.style.display = "block";
+  movingTextField.style.left = currNote.textPosX + "px";
+  movingTextField.style.top = currNote.textPosY + "px";
+  document.querySelector('#comment').value = focusnote.text;
+  focusnote.text = "";
+  document.querySelector("#deleteNote").style.display = "block";
 };
 // Add all of the notes in the current room to the notes list
 const addAllNotes = (data) => {
   setUser(data);
+  console.dir(data.note);
   notes = data.note;
 };
 
 // Add the note to the list if it doesn't exist
 const updateNoteList = (data) => {
-  console.dir(data);
-  console.dir(notes);
   const note = data;
   note.focus = true;
   if (!notes[data.hash]) {
     notes[data.hash] = note;
     return;
   } else if (notes[data.hash]) {
-    console.dir(data);
-    console.dir(notes);
     notes[data.hash] = data;
   }
 };
@@ -102,6 +95,14 @@ const removeUser = (data) => {
   }
 };
 
+const removeNote = (data) => {
+  console.dir(data);
+  //if we have that character, remove them
+  if(notes[data]) {
+    delete notes[data];
+  }
+};
+
 // When the user connects, set up socket pipelines
 const connectSocket = (e) => {
   socket = io.connect();
@@ -110,6 +111,8 @@ const connectSocket = (e) => {
   socket.on('updatedMovement', update); 
   //when a user leaves
   socket.on('left', removeUser);
+  
+  socket.on('removeNote', removeNote);
 
   socket.on('addedNote', updateNoteList);
   
@@ -120,6 +123,11 @@ const connectSocket = (e) => {
 const updateGrayNote = (position) => {
   greynote.x = position.x;
   greynote.y = position.y;
+};
+
+const updateTempTextField = (position) => {
+  document.querySelector("#fakeTextField").style.left = (position.x-50) + "px";
+  document.querySelector("#fakeTextField").style.top = (position.y-50) + "px";
 };
 
 // Adds the grey note object to the notes list for drawing
@@ -141,10 +149,13 @@ const createTempNote = () => {
   greynote.height = 100;
 };
 
+const createTempText = () => {
+  document.querySelector("#fakeTextField").style.display = "block";
+};
+
 
 // Create a note object and add it to the notes list
 const addNote = (position, notePosX, notePosY) => {
-  console.log(currRoom);
   currNote = {};
   currNote.color = stickyColor;
   currNote.textPosX = notePosX;
@@ -155,8 +166,7 @@ const addNote = (position, notePosX, notePosY) => {
 };
 
 // Create a note object and add it to the notes list
-const addTextField = (position) => {
-  console.log(currRoom);
+const addTextField = (position, notePosX, notePosY) => {
   currNote = {};
   currNote.color = "red";
   currNote.position = position;
