@@ -59,23 +59,26 @@ const redraw = () => {
     }
   }
 }
+  
    // draws all the users
   const userKey = Object.keys(users);
   for(let i = 0; i < userKey.length; i++) {
     const user = users[userKey[i]];
 
-    //if alpha less than 1, increase it by 0.1
-    if(user.alpha < 1) user.alpha += 0.1;
+    if(!(user.hash === hash)) {
+      //if alpha less than 1, increase it by 0.1
+      if(user.alpha < 1) user.alpha += 0.9;
 
-    // calc lerp for both x and y pos
-    user.x = lerp(user.prevX, user.destX, user.alpha);
-    user.y = lerp(user.prevY, user.destY, user.alpha);
-    
-    // draw the name of the user, centered above the user circles
-    ctx.fillStyle = "black";
-    ctx.font = "15px Arial";
-    ctx.textAlign = 'center';
-    ctx.fillText(user.name,user.x, user.y-15);
+      // calc lerp for both x and y pos
+      user.x = lerp(user.prevX, user.destX, user.alpha);
+      user.y = lerp(user.prevY, user.destY, user.alpha);
+      
+      // draw the name of the user, centered above the user circles
+      ctx.fillStyle = "black";
+      ctx.font = "15px Arial";
+      ctx.textAlign = 'center';
+      ctx.fillText(user.name, user.x, user.y-15);
+    }
   }
   ctx.restore();
   

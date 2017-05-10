@@ -139,16 +139,16 @@ const mouseMoveHandler = (e) => {
     
     
     const user = users[hash];
-
-    if (position.x > 0 && position.x < 950 && position.y > 0 && position.y < 500) {
+    
+    if (position.x > 0 && position.x < canvas.width && position.y > 0 && position.y < canvas.height) {
       if (user) {
-      user.prevX = user.x;
-      user.prevY = user.y;
-      user.destX = position.x;
-      user.destY = position.y;
-      user.lastUpdate = new Date().getTime();
-      user.alpha = 0.3;
-      socket.emit('movementUpdate', user);
+        user.prevX = user.x;
+        user.prevY = user.y;
+        user.destX = position.x;
+        user.destY = position.y;
+        user.lastUpdate = new Date().getTime();
+        user.alpha = 0.3;
+        socket.emit('movementUpdate', user);
       }
     }
   }

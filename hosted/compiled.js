@@ -61,23 +61,26 @@ var redraw = function redraw() {
       }
     }
   }
+
   // draws all the users
   var userKey = Object.keys(users);
   for (var _i = 0; _i < userKey.length; _i++) {
     var user = users[userKey[_i]];
 
-    //if alpha less than 1, increase it by 0.1
-    if (user.alpha < 1) user.alpha += 0.1;
+    if (!(user.hash === hash)) {
+      //if alpha less than 1, increase it by 0.1
+      if (user.alpha < 1) user.alpha += 0.9;
 
-    // calc lerp for both x and y pos
-    user.x = lerp(user.prevX, user.destX, user.alpha);
-    user.y = lerp(user.prevY, user.destY, user.alpha);
+      // calc lerp for both x and y pos
+      user.x = lerp(user.prevX, user.destX, user.alpha);
+      user.y = lerp(user.prevY, user.destY, user.alpha);
 
-    // draw the name of the user, centered above the user circles
-    ctx.fillStyle = "black";
-    ctx.font = "15px Arial";
-    ctx.textAlign = 'center';
-    ctx.fillText(user.name, user.x, user.y - 15);
+      // draw the name of the user, centered above the user circles
+      ctx.fillStyle = "black";
+      ctx.font = "15px Arial";
+      ctx.textAlign = 'center';
+      ctx.fillText(user.name, user.x, user.y - 15);
+    }
   }
   ctx.restore();
 
@@ -222,7 +225,7 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
 
     var user = users[hash];
 
-    if (position.x > 0 && position.x < 950 && position.y > 0 && position.y < 500) {
+    if (position.x > 0 && position.x < canvas.width && position.y > 0 && position.y < canvas.height) {
       if (user) {
         user.prevX = user.x;
         user.prevY = user.y;
@@ -272,6 +275,7 @@ var stickyColor = void 0;
 // Used to get the value of text
 var textField = void 0;
 
+// USE THIS
 var movingTextField = void 0;
 
 // Holds each note
@@ -591,6 +595,7 @@ var updateNoteText = function updateNoteText(focusnote) {
   movingTextField.style.left = currNote.textPosX + "px";
   movingTextField.style.top = currNote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
+  //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
