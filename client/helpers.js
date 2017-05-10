@@ -142,12 +142,15 @@ const mouseMoveHandler = (e) => {
     
     if (position.x > 0 && position.x < canvas.width && position.y > 0 && position.y < canvas.height) {
       if (user) {
-        user.prevX = user.x;
-        user.prevY = user.y;
+        //user.x = user.prevX;
+        //user.y = user.prevY;
+        user.prevX = user.destX;
+        user.prevY = user.destY;
         user.destX = position.x;
         user.destY = position.y;
         user.lastUpdate = new Date().getTime();
         user.alpha = 0.3;
+        console.dir(user.x);
         socket.emit('movementUpdate', user);
       }
     }

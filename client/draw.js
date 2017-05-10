@@ -2,7 +2,7 @@
 const redraw = () => {
   // Background image
   ctx.fillStyle = pattern;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(background, 0, 0);
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;
@@ -67,7 +67,7 @@ const redraw = () => {
 
     if(!(user.hash === hash)) {
       //if alpha less than 1, increase it by 0.1
-      if(user.alpha < 1) user.alpha += 0.9;
+      if(user.alpha < 1) user.alpha += 0.1;
 
       // calc lerp for both x and y pos
       user.x = lerp(user.prevX, user.destX, user.alpha);

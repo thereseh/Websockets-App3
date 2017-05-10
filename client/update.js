@@ -72,7 +72,7 @@ const update = (data) => {
   user.prevY = data.prevY;
   user.destX = data.destX;
   user.destY = data.destY;
-  user.alpha = 0.25;
+  user.alpha = 0.1;
 };
 
 //function to set this user's character

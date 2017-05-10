@@ -4,7 +4,7 @@
 var redraw = function redraw() {
   // Background image
   ctx.fillStyle = pattern;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(background, 0, 0);
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;
@@ -69,7 +69,7 @@ var redraw = function redraw() {
 
     if (!(user.hash === hash)) {
       //if alpha less than 1, increase it by 0.1
-      if (user.alpha < 1) user.alpha += 0.9;
+      if (user.alpha < 1) user.alpha += 0.1;
 
       // calc lerp for both x and y pos
       user.x = lerp(user.prevX, user.destX, user.alpha);
@@ -227,12 +227,15 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
 
     if (position.x > 0 && position.x < canvas.width && position.y > 0 && position.y < canvas.height) {
       if (user) {
-        user.prevX = user.x;
-        user.prevY = user.y;
+        //user.x = user.prevX;
+        //user.y = user.prevY;
+        user.prevX = user.destX;
+        user.prevY = user.destY;
         user.destX = position.x;
         user.destY = position.y;
         user.lastUpdate = new Date().getTime();
         user.alpha = 0.3;
+        console.dir(user.x);
         socket.emit('movementUpdate', user);
       }
     }
@@ -647,7 +650,7 @@ var update = function update(data) {
   user.prevY = data.prevY;
   user.destX = data.destX;
   user.destY = data.destY;
-  user.alpha = 0.25;
+  user.alpha = 0.1;
 };
 
 //function to set this user's character
