@@ -73,7 +73,7 @@ var redraw = function redraw() {
       var _note2 = notes[keys[_i2]];
       if (_note2.objectType === "textField") {
         ctx.save();
-        ctx.font = "15px Arial";
+        ctx.font = "40px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = _note2.textColor;
         wrapText(_note2.text, _note2.x, _note2.y, 85, 18);
@@ -813,7 +813,7 @@ var changeFocus = function changeFocus(data) {
     tempLine.room = currRoom;
     tempLine.toHash = data.hash;
     connectTwoNotes();
-  } else if (currAction === "") {
+  }if (currAction === "") {
     currAction = "updateNote";
     updateNoteText(data);
   }
@@ -835,6 +835,7 @@ var connectTwoNotes = function connectTwoNotes() {
 };
 
 var updateNoteText = function updateNoteText(focusnote) {
+  console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
   movingTextField.style.left = currNote.textPosX + "px";
@@ -953,16 +954,6 @@ var updateTempTextField = function updateTempTextField(position) {
     document.querySelector("#fakeTextField").style.top = position.y - 50 + "px";
   }
 };
-
-// Adds the grey note object to the notes list for drawing
-//const createGrayNote = () => {
-//  greynote.x = 0;
-//  greynote.y = 0;
-//  greynote.radiusx = 50;
-//  greynote.radiusy = 50;
-//  greynote.width = 100;
-//  greynote.height = 100;
-//};
 
 var createTempNote = function createTempNote() {
   greynote.x = 0;

@@ -111,8 +111,7 @@ const mouseUpHandler = (e) => {
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     }
-  }
-  
+  }  
 };
 
 // function from http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/

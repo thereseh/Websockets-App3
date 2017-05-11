@@ -14,7 +14,7 @@ const changeFocus = (data) => {
     tempLine.room = currRoom;
     tempLine.toHash = data.hash;
     connectTwoNotes();
-  } else if (currAction === ""){
+  } if (currAction === ""){
     currAction = "updateNote";
     updateNoteText(data);
   }
@@ -36,6 +36,7 @@ const connectTwoNotes = () => {
 };
 
 const updateNoteText = (focusnote) => {
+  console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
   movingTextField.style.left = currNote.textPosX + "px";
@@ -123,6 +124,7 @@ const removeNote = (data) => {
   if(notes[data]) {
     delete notes[data];
   }
+  
 };
 
 // When the user connects, set up socket pipelines
@@ -155,16 +157,6 @@ const updateTempTextField = (position) => {
     document.querySelector("#fakeTextField").style.top = (position.y-50) + "px";
   }
 };
-
-// Adds the grey note object to the notes list for drawing
-//const createGrayNote = () => {
-//  greynote.x = 0;
-//  greynote.y = 0;
-//  greynote.radiusx = 50;
-//  greynote.radiusy = 50;
-//  greynote.width = 100;
-//  greynote.height = 100;
-//};
 
 const createTempNote = () => {
   greynote.x = 0;

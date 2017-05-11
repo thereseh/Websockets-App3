@@ -71,7 +71,7 @@ const redraw = () => {
       const note = notes[keys[i]];
     if (note.objectType === "textField") {
       ctx.save();
-      ctx.font = "15px Arial";
+      ctx.font = "40px Arial";
       ctx.textAlign = "center";
       ctx.fillStyle = note.textColor;
       wrapText(note.text, note.x, note.y, 85, 18);
