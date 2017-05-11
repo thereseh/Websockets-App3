@@ -58,7 +58,11 @@ const keypress = (e) => {
   if (e.keyCode === 81) {
       currAction = "";
       movingTextField.style.display = "none";
-      document.querySelector(".btn-group").style.display = "none";
+      let fakeTextField = document.querySelector('#fakeTextField');
+      fakeTextField.style.zIndex = -1;
+      fakeTextField.style.left = 0;
+      fakeTextField.style.top = 0;
+      //document.querySelector(".btn-group").style.display = "none";
     }
 };
 
@@ -68,6 +72,7 @@ const mouseUpHandler = (e) => {
   const position = getMousePos(e, canvas);
   let posX = position.x - 50;
   let posY = position.y - 50;
+
   console.log(currAction);
   
   if(canvasBool === 1) {
@@ -77,13 +82,25 @@ const mouseUpHandler = (e) => {
       changeFocus(checkClickOnRec(position, 1));
       // Focuses on the note the user clicked on
     } else if (currAction === "note") {
-      // adds a note 
+      // adds a note
+      if(posX > canvas.width - 150) {
+        position.x = canvas.width - 50;
+      }
+      if(posY > canvas.height - 125) {
+        position.y= canvas.height - 50;
+      }
       addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "text") {
+      if(posX > canvas.width - 150) {
+        posX = canvas.width - 150;
+      }
+      if(posY > canvas.height - 125) {
+        posY = canvas.height - 125;
+      }
       console.log(currAction);
       // adds a text field
       let fakeTextField = document.querySelector("#fakeTextField")
@@ -136,7 +153,9 @@ const mouseMoveHandler = (e) => {
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
+    console.log(currAction);
     if (currAction === "connectNote" && !objectPlaced) {
+          console.log(objectPlaced);
       createLine(position);
     }
     

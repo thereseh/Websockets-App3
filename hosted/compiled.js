@@ -16,6 +16,7 @@ var redraw = function redraw() {
     ctx.restore();
   }
   if (currAction === "connectNote") {
+    console.log("hello");
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(tempLine.x, tempLine.y);
@@ -165,7 +166,11 @@ var keypress = function keypress(e) {
   if (e.keyCode === 81) {
     currAction = "";
     movingTextField.style.display = "none";
-    document.querySelector(".btn-group").style.display = "none";
+    var fakeTextField = document.querySelector('#fakeTextField');
+    fakeTextField.style.zIndex = -1;
+    fakeTextField.style.left = 0;
+    fakeTextField.style.top = 0;
+    //document.querySelector(".btn-group").style.display = "none";
   }
 };
 
@@ -175,6 +180,7 @@ var mouseUpHandler = function mouseUpHandler(e) {
   var position = getMousePos(e, canvas);
   var posX = position.x - 50;
   var posY = position.y - 50;
+
   console.log(currAction);
 
   if (canvasBool === 1) {
@@ -184,13 +190,25 @@ var mouseUpHandler = function mouseUpHandler(e) {
       changeFocus(checkClickOnRec(position, 1));
       // Focuses on the note the user clicked on
     } else if (currAction === "note") {
-      // adds a note 
+      // adds a note
+      if (posX > canvas.width - 150) {
+        position.x = canvas.width - 50;
+      }
+      if (posY > canvas.height - 125) {
+        position.y = canvas.height - 50;
+      }
       addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "text") {
+      if (posX > canvas.width - 150) {
+        posX = canvas.width - 150;
+      }
+      if (posY > canvas.height - 125) {
+        posY = canvas.height - 125;
+      }
       console.log(currAction);
       // adds a text field
       var fakeTextField = document.querySelector("#fakeTextField");
@@ -242,7 +260,9 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
+    console.log(currAction);
     if (currAction === "connectNote" && !objectPlaced) {
+      console.log(objectPlaced);
       createLine(position);
     }
 
@@ -391,6 +411,10 @@ var init = function init() {
     yellowSticky.style.border = "2px solid #454545";
     greenSticky.style.border = "none";
     blueSticky.style.border = "none";
+    var fakeTextField = document.querySelector("#fakeTextField");
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   // Green sticky note
@@ -401,6 +425,10 @@ var init = function init() {
     yellowSticky.style.border = "none";
     greenSticky.style.border = "2px solid #454545";
     blueSticky.style.border = "none";
+    var fakeTextField = document.querySelector("#fakeTextField");
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   // Blue sticky note
@@ -411,6 +439,10 @@ var init = function init() {
     yellowSticky.style.border = "none";
     greenSticky.style.border = "none";
     blueSticky.style.border = "2px solid #454545";
+    var fakeTextField = document.querySelector("#fakeTextField");
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
 
@@ -552,6 +584,10 @@ var init = function init() {
   var addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function () {
     currAction = "connect";
+    var fakeTextField = document.querySelector("#fakeTextField");
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
   });
 
   // when connecting, display canvas and hide the log in objecs
@@ -567,21 +603,24 @@ var init = function init() {
 
   /* ADDING TOPICS */
 
-  $("#topicBtn").click(function () {
-    numTopics++;
+  //$("#topicBtn").click(function(){
+  //  numTopics++; 
+  //  
+  //    if ($(".clearfix1").is(":hidden")) {
+  //        $(".clearfix1").show();
+  //    }
+  //    else if ($(".clearfix2").is(":hidden")) {
+  //        $(".clearfix2").show();
+  //    }
+  //    else if ($(".clearfix3").is(":hidden")) {
+  //      $(".clearfix3").show();
+  //    }
+  //  
+  //  if (numTopics === 3) {
+  //    $('#topicBtn').hide();
+  //  }
+  //});
 
-    if ($(".clearfix1").is(":hidden")) {
-      $(".clearfix1").show();
-    } else if ($(".clearfix2").is(":hidden")) {
-      $(".clearfix2").show();
-    } else if ($(".clearfix3").is(":hidden")) {
-      $(".clearfix3").show();
-    }
-
-    if (numTopics === 3) {
-      $('#topicBtn').hide();
-    }
-  });
 
   // ---------------------
 
@@ -619,78 +658,85 @@ var init = function init() {
 
   // ---------------------
 
-  /* WILL TOGGLE EDITING FOR TOPICS */
+  ///* WILL TOGGLE EDITING FOR TOPICS */
+  //  
+  //$("#showSettings1").click(function(){
+  //  $(".settings1").toggle('fast', 'swing');
+  //});
+  //
+  // $("#showSettings2").click(function(){
+  //  $(".settings2").toggle('fast', 'swing');
+  //});
+  //
+  // $("#showSettings3").click(function(){
+  //  $(".settings3").toggle('fast', 'swing');
+  //});
+  //
+  //
+  //// ---------------------
+  //
+  ///* WILL GET THE NEW NAME FOR TOPIC */
+  //
+  //
+  //$("#submitTopic1").click(function(){
+  //  let text = $("#name1").val();
+  //  $(".settings1").toggle('fast', 'swing');
+  //
+  //
+  //  $("#topicsName1").html(text);
+  //});
+  //
+  //$("#submitTopic2").click(function(){
+  //  let text = $("#name2").val();
+  //  $(".settings2").toggle('fast', 'swing');
+  //
+  //
+  //  $("#topicsName2").html(text);
+  //});
+  //
+  //$("#submitTopic3").click(function(){
+  //  let text = $("#name3").val();
+  //  $(".settings3").toggle('fast', 'swing');
+  //
+  //
+  //  $("#topicsName3").html(text);
+  //});
+  //
+  //// ---------------------
+  //
+  ///* WILL DELETE TOPIC */
+  //
+  //
+  //$("#delete1").click(function(){
+  //  $("#name1").val('');
+  //
+  //  $("#topicsName1").html('1');
+  //   numTopics--;
+  //    $(".clearfix1").hide();
+  //    $(".settings1").hide();
+  //    $('#topicBtn').show();
+  //});
+  //
+  //$("#delete2").click(function(){
+  //  $("#name2").val('');
+  //
+  //  $("#topicsName2").html('2');
+  //   numTopics--;
+  //    $(".clearfix2").hide();
+  //    $(".settings2").hide();
+  //    $('#topicBtn').show();
+  //});
+  //
+  //$("#delete3").click(function(){
+  //  $("#name3").val('');
+  //
+  //  $("#topicsName3").html('3');
+  //   numTopics--;
+  //    $(".clearfix3").hide();
+  //    $(".settings3").hide();
+  //    $('#topicBtn').show();
+  //});
 
-  $("#showSettings1").click(function () {
-    $(".settings1").toggle('fast', 'swing');
-  });
-
-  $("#showSettings2").click(function () {
-    $(".settings2").toggle('fast', 'swing');
-  });
-
-  $("#showSettings3").click(function () {
-    $(".settings3").toggle('fast', 'swing');
-  });
-
-  // ---------------------
-
-  /* WILL GET THE NEW NAME FOR TOPIC */
-
-  $("#submitTopic1").click(function () {
-    var text = $("#name1").val();
-    $(".settings1").toggle('fast', 'swing');
-
-    $("#topicsName1").html(text);
-  });
-
-  $("#submitTopic2").click(function () {
-    var text = $("#name2").val();
-    $(".settings2").toggle('fast', 'swing');
-
-    $("#topicsName2").html(text);
-  });
-
-  $("#submitTopic3").click(function () {
-    var text = $("#name3").val();
-    $(".settings3").toggle('fast', 'swing');
-
-    $("#topicsName3").html(text);
-  });
-
-  // ---------------------
-
-  /* WILL DELETE TOPIC */
-
-  $("#delete1").click(function () {
-    $("#name1").val('');
-
-    $("#topicsName1").html('1');
-    numTopics--;
-    $(".clearfix1").hide();
-    $(".settings1").hide();
-    $('#topicBtn').show();
-  });
-
-  $("#delete2").click(function () {
-    $("#name2").val('');
-
-    $("#topicsName2").html('2');
-    numTopics--;
-    $(".clearfix2").hide();
-    $(".settings2").hide();
-    $('#topicBtn').show();
-  });
-
-  $("#delete3").click(function () {
-    $("#name3").val('');
-
-    $("#topicsName3").html('3');
-    numTopics--;
-    $(".clearfix3").hide();
-    $(".settings3").hide();
-    $('#topicBtn').show();
-  });
 
   // ---------------------
 
@@ -757,10 +803,9 @@ window.onload = init;
 
 // Ensures all notes besides the active note are not in focus
 var changeFocus = function changeFocus(data) {
-  console.log(currAction);
-
   if (currAction === "connect") {
     currAction = "connectNote";
+    console.log(currAction);
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
     console.log(currAction);
@@ -772,9 +817,9 @@ var changeFocus = function changeFocus(data) {
     tempLine.room = currRoom;
     tempLine.toHash = data.hash;
     connectTwoNotes();
-  } else {
-    //currAction = "updateNote";
-    //updateNoteText(data);
+  } else if (currAction === '') {
+    currAction = "updateNote";
+    updateNoteText(data);
   }
   console.log(currAction);
   var keys = Object.keys(notes);
@@ -806,7 +851,6 @@ var updateNoteText = function updateNoteText(focusnote) {
 // Add all of the notes in the current room to the notes list
 var addAllNotes = function addAllNotes(data) {
   setUser(data);
-  console.dir(data.note);
   notes = data.note;
 };
 
@@ -815,14 +859,15 @@ var updateNoteList = function updateNoteList(data) {
   console.dir(data);
   var note = data;
   note.focus = true;
-  if (!notes[data.hash]) {
-    console.log('dont exist');
-    notes[data.hash] = note;
-    return;
-  } else if (notes[data.hash]) {
-    console.log('exist');
-    notes[data.hash] = data;
-  }
+  notes[note.hash] = note;
+  //if (!notes[data.hash]) {
+  //  console.log('dont exist');
+  //  notes[data.hash] = note;
+  //  return;
+  //} else if (notes[data.hash]) {
+  //  console.log('exist');
+  //  notes[data.hash] = data;
+  //}
 };
 
 //when we receive a character update
@@ -937,6 +982,7 @@ var createTempText = function createTempText() {
 };
 
 var createLine = function createLine(position) {
+  console.log("poops");
   tempLine.toX = position.x;
   tempLine.toY = position.y;
 };

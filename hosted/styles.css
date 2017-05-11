@@ -18,7 +18,7 @@
 
 .clearfix1, .clearfix2, .clearfix3 {
   overflow: auto;
-  display: none;
+  /*display: none;*/
 }
 .topics {
   display: none;
@@ -290,13 +290,21 @@ margin-bottom: 30px;
   width: 200px;
   height: auto;
   left: 20px;
-  top: 240px;
+  top: 375px;
   position: absolute;
   cursor: pointer;
   overflow: hidden;
 }
 .sideBar>#toggle>#makeConnection>img {
- width: 70%;
+ width: 50%;
+  left: 30px;
+  position: relative;
+}
+
+.sideBar>#toggle>#makeConnection>#arrowH2 {
+ font-size: 19px;
+  top: -50px;
+  position: relative;
 }
 
 .sideBar>#toggle>#textField:hover {
