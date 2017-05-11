@@ -43,7 +43,7 @@ const redraw = () => {
       ctx.restore();
       ctx.font = "15px Arial";
       ctx.textAlign = "center";
-      ctx.fillStyle = "black";
+      ctx.fillStyle = note.textColor;
       wrapText(note.text, note.x+2, note.y-25, 85, 18);
 
       ctx.font = "12px Arial";
@@ -55,7 +55,7 @@ const redraw = () => {
       ctx.save();
       ctx.font = "15px Arial";
       ctx.textAlign = "center";
-      ctx.fillStyle = note.color;
+      ctx.fillStyle = note.textColor;
       wrapText(note.text, note.x, note.y, 85, 18);
       ctx.restore();
     }

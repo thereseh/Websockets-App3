@@ -45,7 +45,7 @@ var redraw = function redraw() {
         ctx.restore();
         ctx.font = "15px Arial";
         ctx.textAlign = "center";
-        ctx.fillStyle = "black";
+        ctx.fillStyle = note.textColor;
         wrapText(note.text, note.x + 2, note.y - 25, 85, 18);
 
         ctx.font = "12px Arial";
@@ -57,7 +57,7 @@ var redraw = function redraw() {
         ctx.save();
         ctx.font = "15px Arial";
         ctx.textAlign = "center";
-        ctx.fillStyle = note.color;
+        ctx.fillStyle = note.textColor;
         wrapText(note.text, note.x, note.y, 85, 18);
         ctx.restore();
       }
@@ -156,7 +156,7 @@ var mouseUpHandler = function mouseUpHandler(e) {
   // Determines where the user clicked
   var position = getMousePos(e, canvas);
   var posX = position.x - 50;
-  var posY = position.y - 60;
+  var posY = position.y - 50;
   console.log(currAction);
 
   if (canvasBool === 1) {
@@ -186,8 +186,8 @@ var mouseUpHandler = function mouseUpHandler(e) {
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
       document.querySelector(".btn-group").style.display = "block";
-      document.querySelector(".btn-group").style.left = posX + 150 + "px";
-      document.querySelector(".btn-group").style.top = posY - 50 + "px";
+      document.querySelector(".btn-group").style.left = posX + 100 + "px";
+      document.querySelector(".btn-group").style.top = posY - 65 + "px";
     }
   }
 };
@@ -278,6 +278,9 @@ var numTopics = 0;
 
 // Determines which color the sticky note is
 var stickyColor = void 0;
+
+// Determines what color the text is
+var textColor = void 0;
 
 // Used to get the value of text
 var textField = void 0;
@@ -389,6 +392,135 @@ var init = function init() {
     greenSticky.style.border = "none";
     blueSticky.style.border = "2px solid #454545";
     createTempNote();
+  });
+
+  textColor = "#4ECDC4";
+
+  var textColor1 = document.querySelector('#textColor1');
+  textColor1.style.border = "2px solid #454545";
+  textColor1.addEventListener('click', function () {
+    textColor = "#4ECDC4";
+    textColor1.style.border = "2px solid #454545";
+    textColor2.style.border = "none";
+    textColor3.style.border = "none";
+    textColor4.style.border = "none";
+    textColor5.style.border = "none";
+    textColor6.style.border = "none";
+    textColor7.style.border = "none";
+    textColor8.style.border = "none";
+    textColor9.style.border = "none";
+  });
+
+  var textColor2 = document.querySelector('#textColor2');
+  textColor2.addEventListener('click', function () {
+    textColor = "#FF6B6B";
+    textColor1.style.border = "none";
+    textColor2.style.border = "2px solid #454545";
+    textColor3.style.border = "none";
+    textColor4.style.border = "none";
+    textColor5.style.border = "none";
+    textColor6.style.border = "none";
+    textColor7.style.border = "none";
+    textColor8.style.border = "none";
+    textColor9.style.border = "none";
+  });
+
+  var textColor3 = document.querySelector('#textColor3');
+  textColor3.addEventListener('click', function () {
+    textColor = "#f2f2f2";
+    textColor1.style.border = "none";
+    textColor2.style.border = "none";
+    textColor3.style.border = "2px solid #454545";
+    textColor4.style.border = "none";
+    textColor5.style.border = "none";
+    textColor6.style.border = "none";
+    textColor7.style.border = "none";
+    textColor8.style.border = "none";
+    textColor9.style.border = "none";
+  });
+
+  var textColor4 = document.querySelector('#textColor4');
+  textColor4.addEventListener('click', function () {
+    textColor = "#313638";
+    textColor1.style.border = "none";
+    textColor2.style.border = "none";
+    textColor3.style.border = "none";
+    textColor4.style.border = "2px solid #454545";
+    textColor5.style.border = "none";
+    textColor6.style.border = "none";
+    textColor7.style.border = "none";
+    textColor8.style.border = "none";
+    textColor9.style.border = "none";
+  });
+
+  var textColor5 = document.querySelector('#textColor5');
+  textColor5.addEventListener('click', function () {
+    textColor = "#FFCC66";
+    textColor1.style.border = "none";
+    textColor2.style.border = "none";
+    textColor3.style.border = "none";
+    textColor4.style.border = "none";
+    textColor5.style.border = "2px solid #454545";
+    textColor6.style.border = "none";
+    textColor7.style.border = "none";
+    textColor8.style.border = "none";
+    textColor9.style.border = "none";
+  });
+
+  var textColor6 = document.querySelector('#textColor6');
+  textColor6.addEventListener('click', function () {
+    textColor = "#FFE66D";
+    textColor1.style.border = "none";
+    textColor2.style.border = "none";
+    textColor3.style.border = "none";
+    textColor4.style.border = "none";
+    textColor5.style.border = "none";
+    textColor6.style.border = "2px solid #454545";
+    textColor7.style.border = "none";
+    textColor8.style.border = "none";
+    textColor9.style.border = "none";
+  });
+
+  var textColor7 = document.querySelector('#textColor7');
+  textColor7.addEventListener('click', function () {
+    textColor = "#AA80FF";
+    textColor1.style.border = "none";
+    textColor2.style.border = "none";
+    textColor3.style.border = "none";
+    textColor4.style.border = "none";
+    textColor5.style.border = "none";
+    textColor6.style.border = "none";
+    textColor7.style.border = "2px solid #454545";
+    textColor8.style.border = "none";
+    textColor9.style.border = "none";
+  });
+
+  var textColor8 = document.querySelector('#textColor8');
+  textColor8.addEventListener('click', function () {
+    textColor = "#800000";
+    textColor1.style.border = "none";
+    textColor2.style.border = "none";
+    textColor3.style.border = "none";
+    textColor4.style.border = "none";
+    textColor5.style.border = "none";
+    textColor6.style.border = "none";
+    textColor7.style.border = "none";
+    textColor8.style.border = "2px solid #454545";
+    textColor9.style.border = "none";
+  });
+
+  var textColor9 = document.querySelector('#textColor9');
+  textColor9.addEventListener('click', function () {
+    textColor = "#ADEBAD";
+    textColor1.style.border = "none";
+    textColor2.style.border = "none";
+    textColor3.style.border = "none";
+    textColor4.style.border = "none";
+    textColor5.style.border = "none";
+    textColor6.style.border = "none";
+    textColor7.style.border = "none";
+    textColor8.style.border = "none";
+    textColor9.style.border = "2px solid #454545";
   });
 
   var addTextField = document.querySelector('#textField');
@@ -767,12 +899,13 @@ var addNote = function addNote(position, notePosX, notePosY) {
   currNote.position = position;
   currNote.username = username;
   currNote.room = currRoom;
+  currNote.textColor = textColor;
 };
 
 // Create a note object and add it to the notes list
 var addTextField = function addTextField(position, notePosX, notePosY) {
   currNote = {};
-  currNote.color = "red";
+  currNote.textColor = textColor;
   currNote.position = position;
   currNote.username = username;
   currNote.room = currRoom;

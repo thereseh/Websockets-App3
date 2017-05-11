@@ -67,7 +67,7 @@ const mouseUpHandler = (e) => {
     // Determines where the user clicked
   const position = getMousePos(e, canvas);
   let posX = position.x - 50;
-  let posY = position.y - 60;
+  let posY = position.y - 50;
   console.log(currAction);
   
   if(canvasBool === 1) {
@@ -97,8 +97,8 @@ const mouseUpHandler = (e) => {
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
       document.querySelector(".btn-group").style.display = "block";
-      document.querySelector(".btn-group").style.left = (posX+150) + "px";
-      document.querySelector(".btn-group").style.top = (posY-50) + "px";
+      document.querySelector(".btn-group").style.left = (posX + 100) + "px";
+      document.querySelector(".btn-group").style.top = (posY - 65) + "px";
     }
   }
   

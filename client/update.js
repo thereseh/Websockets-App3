@@ -167,12 +167,13 @@ const addNote = (position, notePosX, notePosY) => {
   currNote.position = position;
   currNote.username = username;
   currNote.room = currRoom;
+  currNote.textColor = textColor;
 };
 
 // Create a note object and add it to the notes list
 const addTextField = (position, notePosX, notePosY) => {
   currNote = {};
-  currNote.color = "red";
+  currNote.textColor = textColor;
   currNote.position = position;
   currNote.username = username;
   currNote.room = currRoom;

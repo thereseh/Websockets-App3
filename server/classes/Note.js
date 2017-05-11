@@ -1,6 +1,6 @@
 // A class to contain all the information for each note
 class Note {
-  constructor(hash, username, x, y, text, color, textX, textY, room) {
+  constructor(hash, username, x, y, text, color, textColor, textX, textY, room) {
     this.objectType = "note";
     this.hash = hash;
     this.username = username;
@@ -14,6 +14,7 @@ class Note {
     this.textPosX = textX;
     this.textPosY = textY;
     this.color = color;
+    this.textColor = textColor;
     this.focus = false;
     this.room = room;
   }
