@@ -163,7 +163,7 @@ const updateGrayNote = (position) => {
 
 const updateTempTextField = (position) => {
   if(position.x - 50 < canvas.width - 125) {
-    document.querySelector("#fakeTextField").style.left = (position.x-50) + "px";
+  document.querySelector("#fakeTextField").style.left = (position.x-50) + "px";
   }
   if(position.y - 50 < canvas.height - 100) {
     document.querySelector("#fakeTextField").style.top = (position.y-50) + "px";

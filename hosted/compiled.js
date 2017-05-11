@@ -76,7 +76,7 @@ var redraw = function redraw() {
         ctx.font = "40px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = _note2.textColor;
-        wrapText(_note2.text, _note2.x, _note2.y, 85, 18);
+        wrapText(_note2.text, _note2.x, _note2.y, 85, 30);
         ctx.restore();
       }
     }
@@ -187,9 +187,13 @@ var mouseUpHandler = function mouseUpHandler(e) {
       // adds a note
       if (posX > canvas.width - 150) {
         position.x = canvas.width - 50;
+        position.x = position.x;
+        posX = position.x - 50;
       }
       if (posY > canvas.height - 125) {
         position.y = canvas.height - 50;
+        greynote.y = position.y;
+        posY = position.y - 50;
       }
       addNote(position, posX, posY);
       objectPlaced = true;
@@ -236,6 +240,7 @@ var wrapText = function wrapText(text, x, y, maxWidth, lineHeight) {
       line = testLine;
     }
   }
+
   ctx.fillText(line, x, y);
 };
 

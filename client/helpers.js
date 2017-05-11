@@ -80,9 +80,13 @@ const mouseUpHandler = (e) => {
       // adds a note
       if(posX > canvas.width - 150) {
         position.x = canvas.width - 50;
+        position.x = position.x;
+       posX = position.x - 50;
       }
       if(posY > canvas.height - 125) {
-        position.y= canvas.height - 50;
+        position.y = canvas.height - 50;
+        greynote.y = position.y;
+        posY = position.y - 50;
       }
       addNote(position, posX, posY);
       objectPlaced = true;
@@ -129,6 +133,7 @@ const wrapText = (text, x, y, maxWidth, lineHeight) => {
         line = testLine;
       }
     }
+
   ctx.fillText(line, x, y);
 }
 
