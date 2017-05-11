@@ -185,9 +185,6 @@ var mouseUpHandler = function mouseUpHandler(e) {
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
-      document.querySelector(".btn-group").style.display = "block";
-      document.querySelector(".btn-group").style.left = posX + 100 + "px";
-      document.querySelector(".btn-group").style.top = posY - 65 + "px";
     }
   }
 };
@@ -579,7 +576,6 @@ var init = function init() {
     currAction = "";
     currNote = {};
     objectPlaced = false;
-    document.querySelector(".btn-group").style.display = "none";
   });
 
   // ---------------------
