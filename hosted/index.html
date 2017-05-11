@@ -99,6 +99,8 @@
   <!-- / CANVAS -->
 
   <div class="can">
+    <div id="fakeTextField">
+    </div>
     <div class="sideBar">
       <div id="sideBarButton">
         <span class="glyphicon glyphicon-menu-left" id="close"></span>
@@ -112,10 +114,10 @@
         </div>
         <div id="stickyNote3">
         </div>
-        <h2 id="textFieldH2">Text Field</h2>
+        <button id="textField">Add Text Field</button>
         <!--CANNOT PUT WHITESPACE IN BETWEEN OPENING AND CLOSING TAG OR THIS WILL NOT WORK
         PROPERLY-->
-        <textarea id="textField" rows="1" cols="20" autocomplete="off"></textarea>
+        <!--<textarea id="textField" rows="1" cols="20" autocomplete="off"></textarea>-->
       </div>
        <div id="tempTextField">
         <div class="input-group" id="inputNote">
@@ -125,7 +127,7 @@
             <span class="glyphicon glyphicon-trash" aria-hidden="true" id="deleteNote"></span>
           </span>
         </div><!-- /input-group -->
-    </div>
+      </div>
        <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggle" id="dropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Change Color <span class="caret"></span></button>
         <ul class="dropdown-menu" id="colorDrop">
@@ -140,8 +142,6 @@
           <li><a href="#" data-value="#FFCC66" style="background-color:#FFCC66"></a></li>
         </ul>
           </div><!-- /btn-group -->
-    <div id="fakeTextField">
-      </div>
     </div>
     <canvas id="canvas">Please use an HTML 5 browser</canvas>
   </div>

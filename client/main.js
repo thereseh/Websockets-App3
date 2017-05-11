@@ -147,7 +147,6 @@ const init = () => {
   connect.addEventListener('click', connectFunction);
   document.querySelector("#inputUser").addEventListener('keyup', (e) => {
     if (e.keyCode === 13) {
-      console.log("here");
       connectFunction();
     }
   })

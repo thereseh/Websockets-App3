@@ -86,7 +86,10 @@ const mouseUpHandler = (e) => {
     } else if (currAction === "text") {
       console.log(currAction);
       // adds a text field
-      document.querySelector("#fakeTextField").style.display = "none";
+      let fakeTextField = document.querySelector("#fakeTextField")
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
       addTextField(position, posX, posY);
       objectPlaced = true;
       console.log(`objectPlaced: ${objectPlaced}`);

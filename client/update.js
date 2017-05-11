@@ -127,8 +127,12 @@ const updateGrayNote = (position) => {
 };
 
 const updateTempTextField = (position) => {
-  document.querySelector("#fakeTextField").style.left = (position.x-50) + "px";
-  document.querySelector("#fakeTextField").style.top = (position.y-50) + "px";
+  if(position.x - 50 < canvas.width - 125) {
+    document.querySelector("#fakeTextField").style.left = (position.x-50) + "px";
+  }
+  if(position.y - 50 < canvas.height - 100) {
+    document.querySelector("#fakeTextField").style.top = (position.y-50) + "px";
+  }
 };
 
 // Adds the grey note object to the notes list for drawing
@@ -151,9 +155,8 @@ const createTempNote = () => {
 };
 
 const createTempText = () => {
-  document.querySelector("#fakeTextField").style.display = "block";
+  document.querySelector("#fakeTextField").style.zIndex = "1";
 };
-
 
 // Create a note object and add it to the notes list
 const addNote = (position, notePosX, notePosY) => {

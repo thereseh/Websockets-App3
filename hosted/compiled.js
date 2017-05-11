@@ -175,7 +175,10 @@ var mouseUpHandler = function mouseUpHandler(e) {
     } else if (currAction === "text") {
       console.log(currAction);
       // adds a text field
-      document.querySelector("#fakeTextField").style.display = "none";
+      var fakeTextField = document.querySelector("#fakeTextField");
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
       addTextField(position, posX, posY);
       objectPlaced = true;
       console.log("objectPlaced: " + objectPlaced);
@@ -399,7 +402,6 @@ var init = function init() {
   connect.addEventListener('click', connectFunction);
   document.querySelector("#inputUser").addEventListener('keyup', function (e) {
     if (e.keyCode === 13) {
-      console.log("here");
       connectFunction();
     }
   });
@@ -725,8 +727,12 @@ var updateGrayNote = function updateGrayNote(position) {
 };
 
 var updateTempTextField = function updateTempTextField(position) {
-  document.querySelector("#fakeTextField").style.left = position.x - 50 + "px";
-  document.querySelector("#fakeTextField").style.top = position.y - 50 + "px";
+  if (position.x - 50 < canvas.width - 125) {
+    document.querySelector("#fakeTextField").style.left = position.x - 50 + "px";
+  }
+  if (position.y - 50 < canvas.height - 100) {
+    document.querySelector("#fakeTextField").style.top = position.y - 50 + "px";
+  }
 };
 
 // Adds the grey note object to the notes list for drawing
@@ -749,7 +755,7 @@ var createTempNote = function createTempNote() {
 };
 
 var createTempText = function createTempText() {
-  document.querySelector("#fakeTextField").style.display = "block";
+  document.querySelector("#fakeTextField").style.zIndex = "1";
 };
 
 // Create a note object and add it to the notes list
