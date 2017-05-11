@@ -2,10 +2,8 @@
 const changeFocus = (data) => {
   if (currAction === "connect") {
     currAction = "connectNote";
-    console.log(currAction);
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
-    console.log(currAction);
     tempLine.fromHash = data.hash;
   } if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
     currAction = "connectNotes";
@@ -18,7 +16,6 @@ const changeFocus = (data) => {
     currAction = "updateNote";
     updateNoteText(data);
   }
-  console.log(currAction);
   const keys = Object.keys(notes);
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
@@ -36,13 +33,11 @@ const connectTwoNotes = () => {
 };
 
 const updateNoteText = (focusnote) => {
-  console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
   movingTextField.style.left = currNote.textPosX + "px";
   movingTextField.style.top = currNote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
-  //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
@@ -54,7 +49,6 @@ const addAllNotes = (data) => {
 
 // Add the note to the list if it doesn't exist
 const updateNoteList = (data) => {
-  console.dir(data);
   const note = data;
   note.focus = true;
   notes[note.hash] = note;
@@ -123,8 +117,21 @@ const removeNote = (data) => {
   //if we have that character, remove them
   if(notes[data]) {
     delete notes[data];
-  }
-  
+    const keys = Object.keys(notes);
+    
+    if(keys.length > 0) {
+      for(let i = 0; i < keys.length; i++) {
+        const note = notes[keys[i]];
+        console.dir(note)
+        if (note.objectType === "line") {
+          if (note.noteParentFrom === data || note.noteParentTo === data) {
+            socket.emit('removeLine', note);
+            delete notes[note.hash];
+          }
+        }
+      }
+    }
+  } 
 };
 
 // When the user connects, set up socket pipelines
@@ -172,7 +179,6 @@ const createTempText = () => {
 };
 
 const createLine = (position) => {
-  console.log("poops");
   tempLine.toX = position.x;
   tempLine.toY = position.y;
 };

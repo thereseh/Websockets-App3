@@ -73,7 +73,6 @@ const connectFunction = () => {
       let popup = document.getElementById('namePopup');
       popup.classList.toggle("show");
     } else {
-      console.log('connect');
       canvasBool = 1;
       document.querySelector('.topics').style.display = "block";
       document.querySelector('.login').style.display = "none";
@@ -339,10 +338,8 @@ const init = () => {
     document.querySelector('#comment').value = ""; 
     movingTextField.style.display = "none";
     if (currAction === "note") {
-      console.log('adding note');
       socket.emit('addNote', currNote);
     } else if (currAction === "text") {
-      console.log('adding text');
       socket.emit('addTextField', currNote);
     } else if (currAction === "updateNote") {
       socket.emit('updateNoteText', currNote);
@@ -358,8 +355,8 @@ const init = () => {
   
   $("#deleteNote").click(function(){
     socket.emit('removeNote', currNote);
-  currAction = "";
-     currNote = {};  document.querySelector('#comment').value = ""; 
+    currAction = "";
+    currNote = {};  document.querySelector('#comment').value = ""; 
     movingTextField.style.display = "none";
   });
   

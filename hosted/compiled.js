@@ -179,8 +179,6 @@ var mouseUpHandler = function mouseUpHandler(e) {
   var posX = position.x - 50;
   var posY = position.y - 50;
 
-  console.log(currAction);
-
   if (canvasBool === 1) {
     if (checkClickOnRec(position, 1)) {
       changeFocus(checkClickOnRec(position, 1));
@@ -205,7 +203,6 @@ var mouseUpHandler = function mouseUpHandler(e) {
       if (posY > canvas.height - 125) {
         posY = canvas.height - 125;
       }
-      console.log(currAction);
       // adds a text field
       var fakeTextField = document.querySelector("#fakeTextField");
       fakeTextField.style.zIndex = "0";
@@ -213,10 +210,11 @@ var mouseUpHandler = function mouseUpHandler(e) {
       fakeTextField.style.top = "0";
       addTextField(position, posX, posY);
       objectPlaced = true;
-      console.log("objectPlaced: " + objectPlaced);
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
+    } else if (currAction === "connectNotes") {
+      currAction = "";
     }
   }
 };
@@ -256,9 +254,7 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
-    console.log(currAction);
     if (currAction === "connectNote" && !objectPlaced) {
-      console.log(objectPlaced);
       createLine(position);
     }
 
@@ -363,7 +359,6 @@ var connectFunction = function connectFunction() {
     var popup = document.getElementById('namePopup');
     popup.classList.toggle("show");
   } else {
-    console.log('connect');
     canvasBool = 1;
     document.querySelector('.topics').style.display = "block";
     document.querySelector('.login').style.display = "none";
@@ -628,10 +623,8 @@ var init = function init() {
     document.querySelector('#comment').value = "";
     movingTextField.style.display = "none";
     if (currAction === "note") {
-      console.log('adding note');
       socket.emit('addNote', currNote);
     } else if (currAction === "text") {
-      console.log('adding text');
       socket.emit('addTextField', currNote);
     } else if (currAction === "updateNote") {
       socket.emit('updateNoteText', currNote);
@@ -801,10 +794,8 @@ window.onload = init;
 var changeFocus = function changeFocus(data) {
   if (currAction === "connect") {
     currAction = "connectNote";
-    console.log(currAction);
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
-    console.log(currAction);
     tempLine.fromHash = data.hash;
   }if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
     currAction = "connectNotes";
@@ -817,7 +808,6 @@ var changeFocus = function changeFocus(data) {
     currAction = "updateNote";
     updateNoteText(data);
   }
-  console.log(currAction);
   var keys = Object.keys(notes);
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
@@ -835,13 +825,11 @@ var connectTwoNotes = function connectTwoNotes() {
 };
 
 var updateNoteText = function updateNoteText(focusnote) {
-  console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
   movingTextField.style.left = currNote.textPosX + "px";
   movingTextField.style.top = currNote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
-  //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
@@ -853,7 +841,6 @@ var addAllNotes = function addAllNotes(data) {
 
 // Add the note to the list if it doesn't exist
 var updateNoteList = function updateNoteList(data) {
-  console.dir(data);
   var note = data;
   note.focus = true;
   notes[note.hash] = note;
@@ -921,6 +908,20 @@ var removeNote = function removeNote(data) {
   //if we have that character, remove them
   if (notes[data]) {
     delete notes[data];
+    var keys = Object.keys(notes);
+
+    if (keys.length > 0) {
+      for (var i = 0; i < keys.length; i++) {
+        var note = notes[keys[i]];
+        console.dir(note);
+        if (note.objectType === "line") {
+          if (note.noteParentFrom === data || note.noteParentTo === data) {
+            socket.emit('removeLine', note);
+            delete notes[note.hash];
+          }
+        }
+      }
+    }
   }
 };
 
@@ -969,7 +970,6 @@ var createTempText = function createTempText() {
 };
 
 var createLine = function createLine(position) {
-  console.log("poops");
   tempLine.toX = position.x;
   tempLine.toY = position.y;
 };

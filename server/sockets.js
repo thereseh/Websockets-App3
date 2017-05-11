@@ -60,8 +60,6 @@ const setupSockets = (ioServer) => {
 
     // Add a note to the note list
     socket.on('addNote', (data) => {
-      console.log('note');
-      console.dir(data);
       // Create a unique id for the note
       const noteString = `${data.text}${new Date().getTime()}`;
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
@@ -73,7 +71,6 @@ const setupSockets = (ioServer) => {
       data.textPosY, data.textColor, data.room);
 
       // depending on which room, store and return correct object
-      console.log(data.room, 'room1');
       if (data.room === 'room1') {
         notes1[note.hash] = note;
         io.sockets.in('room1').emit('addedNote', notes1[note.hash]);
@@ -87,14 +84,14 @@ const setupSockets = (ioServer) => {
     });
 
     socket.on('addTextField', (data) => {
-      console.log('textField');
-      console.dir(data);
       // Create a unique id for the note
       const noteString = `${data.text}${new Date().getTime()}`;
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
 
       // Create the Note object and add to the list of notes
-      const field = new TextField(noteHash, data.username, data.position.x, data.position.y, data.text, data.textColor, data.room);
+      const field = new TextField(noteHash, data.username,
+                                  data.position.x, data.position.y,
+                                  data.text, data.textColor, data.room);
 
       // depending on which room, store and return correct object
       if (data.room === 'room1') {
@@ -111,13 +108,11 @@ const setupSockets = (ioServer) => {
 
      // Add a note to the note list
     socket.on('addLine', (data) => {
-      console.dir(data);
-      console.log('line');
       // Create a unique id for the note
       const noteString = `${data.fromX}${new Date().getTime()}`;
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
 
-      // Create the Note object and add to the list of notes
+      // Create the List object and add to the list of notes
       const line = new Line(noteHash, data.username, data.toX, data.toY, data.fromX, data.fromY,
                 data.room, data.toHash, data.fromHash);
 
@@ -144,6 +139,16 @@ const setupSockets = (ioServer) => {
         delete notes2[data.hash];
       } else if (data.room === 'room3') {
         io.sockets.in(data.room).emit('removeNote', data.hash);
+        delete notes3[data.hash];
+      }
+    });
+
+    socket.on('removeLine', (data) => {
+      if (data.room === 'room1') {
+        delete notes1[data.hash];
+      } else if (data.room === 'room2') {
+        delete notes2[data.hash];
+      } else if (data.room === 'room3') {
         delete notes3[data.hash];
       }
     });

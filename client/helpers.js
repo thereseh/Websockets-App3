@@ -71,8 +71,6 @@ const mouseUpHandler = (e) => {
   const position = getMousePos(e, canvas);
   let posX = position.x - 50;
   let posY = position.y - 50;
-
-  console.log(currAction);
   
   if(canvasBool === 1) {
     if(checkClickOnRec(position, 1)) {
@@ -98,7 +96,6 @@ const mouseUpHandler = (e) => {
       if(posY > canvas.height - 125) {
         posY = canvas.height - 125;
       }
-      console.log(currAction);
       // adds a text field
       let fakeTextField = document.querySelector("#fakeTextField")
       fakeTextField.style.zIndex = "0";
@@ -106,10 +103,11 @@ const mouseUpHandler = (e) => {
       fakeTextField.style.top = "0";
       addTextField(position, posX, posY);
       objectPlaced = true;
-      console.log(`objectPlaced: ${objectPlaced}`);
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
+    } else if (currAction === "connectNotes") {
+      currAction = "";
     }
   }  
 };
@@ -149,9 +147,7 @@ const mouseMoveHandler = (e) => {
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
-    console.log(currAction);
     if (currAction === "connectNote" && !objectPlaced) {
-          console.log(objectPlaced);
       createLine(position);
     }
     
