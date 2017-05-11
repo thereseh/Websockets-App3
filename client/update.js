@@ -15,9 +15,9 @@ const changeFocus = (data) => {
     tempLine.room = currRoom;
     tempLine.toHash = data.hash;
     connectTwoNotes();
-  } else {
-    //currAction = "updateNote";
-    //updateNoteText(data);
+  }  if (currAction === "") {
+    currAction = "updateNote";
+    updateNoteText(data);
   }
   console.log(currAction);
   const keys = Object.keys(notes);

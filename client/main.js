@@ -334,7 +334,6 @@ const init = () => {
      currAction = "";
      currNote = {};
      objectPlaced = false;
-    document.querySelector(".btn-group").style.display = "none";
   });
   
    // ---------------------

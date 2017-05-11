@@ -69,8 +69,6 @@ const setupSockets = (ioServer) => {
       // Create the Note object and add to the list of notes
       const note = new Note(noteHash, data.username, data.position.x,
                             data.position.y, data.text,
-                            data.color, data.textPosX,
-                            data.textPosY, data.room, data.to, data.from);
                             data.color, data.textColor, data.textPosX,
                             data.textPosY, data.room);
 

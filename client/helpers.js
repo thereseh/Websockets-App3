@@ -58,7 +58,6 @@ const keypress = (e) => {
   if (e.keyCode === 81) {
       currAction = "";
       movingTextField.style.display = "none";
-      document.querySelector(".btn-group").style.display = "none";
     }
 };
 
@@ -96,9 +95,6 @@ const mouseUpHandler = (e) => {
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
-      document.querySelector(".btn-group").style.display = "block";
-      document.querySelector(".btn-group").style.left = (posX + 100) + "px";
-      document.querySelector(".btn-group").style.top = (posY - 65) + "px";
     }
   }
   
