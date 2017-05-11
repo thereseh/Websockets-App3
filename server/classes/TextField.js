@@ -1,6 +1,6 @@
 // A class to contain all the information for each note
 class TextField {
-  constructor(hash, username, x, y, text, textColor, room) {
+  constructor(hash, username, x, y, text, textColor, textX, textY, room) {
     this.objectType = 'textField';
     this.hash = hash;
     this.username = username;
@@ -11,6 +11,8 @@ class TextField {
     this.width = 100;
     this.height = 100;
     this.text = text;
+    this.textPosX = textX;
+    this.textPosY = textY;
     this.textColor = textColor;
     this.focus = false;
     this.room = room;

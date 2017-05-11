@@ -56,6 +56,9 @@ let hash;
 // curr note created
 let currNote = {};
 
+//
+let placedNoteNoText = false;
+
 //our next animation frame function
 let animationFrame; 
 
@@ -111,6 +114,11 @@ const init = () => {
   // Yellow sticky note
   const yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function() {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'yellow';
     currAction = "note";
     yellowSticky.style.border = "2px solid #454545";
@@ -125,6 +133,11 @@ const init = () => {
   // Green sticky note
   const greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'greenyellow';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -139,6 +152,11 @@ const init = () => {
   // Blue sticky note
   const blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'deepskyblue';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -282,12 +300,22 @@ const init = () => {
   
   const addTextField = document.querySelector('#textField');
   addTextField.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "text";
     createTempText();
   });
   
   const addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "connect";
           let fakeTextField = document.querySelector("#fakeTextField")
       fakeTextField.style.zIndex = "0";
@@ -338,6 +366,7 @@ const init = () => {
     document.querySelector('#comment').value = ""; 
     movingTextField.style.display = "none";
     if (currAction === "note") {
+      placedNoteNoText = false;
       socket.emit('addNote', currNote);
     } else if (currAction === "text") {
       socket.emit('addTextField', currNote);

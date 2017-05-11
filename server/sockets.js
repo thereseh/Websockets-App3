@@ -91,7 +91,8 @@ const setupSockets = (ioServer) => {
       // Create the Note object and add to the list of notes
       const field = new TextField(noteHash, data.username,
                                   data.position.x, data.position.y,
-                                  data.text, data.textColor, data.room);
+                                  data.text, data.textColor, data.textPosX,
+                                  data.textPosY, data.room);
 
       // depending on which room, store and return correct object
       if (data.room === 'room1') {
@@ -165,6 +166,11 @@ const setupSockets = (ioServer) => {
         notes3[data.hash].text = data.text;
         io.sockets.in(data.room).emit('addedNote', notes3[data.hash]);
       }
+    });
+
+    socket.on('clickObject', (data) => {
+      // depending on which room, store and return correct object
+      io.sockets.in(data.room).emit('clickObject', data);
     });
 
     socket.on('connectNotes', (data) => {

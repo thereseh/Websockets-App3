@@ -342,6 +342,9 @@ var hash = void 0;
 // curr note created
 var currNote = {};
 
+//
+var placedNoteNoText = false;
+
 //our next animation frame function
 var animationFrame = void 0;
 
@@ -397,6 +400,11 @@ var init = function init() {
   // Yellow sticky note
   var yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'yellow';
     currAction = "note";
     yellowSticky.style.border = "2px solid #454545";
@@ -411,6 +419,11 @@ var init = function init() {
   // Green sticky note
   var greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'greenyellow';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -425,6 +438,11 @@ var init = function init() {
   // Blue sticky note
   var blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'deepskyblue';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -568,12 +586,22 @@ var init = function init() {
 
   var addTextField = document.querySelector('#textField');
   addTextField.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "text";
     createTempText();
   });
 
   var addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "connect";
     var fakeTextField = document.querySelector("#fakeTextField");
     fakeTextField.style.zIndex = "0";
@@ -623,6 +651,7 @@ var init = function init() {
     document.querySelector('#comment').value = "";
     movingTextField.style.display = "none";
     if (currAction === "note") {
+      placedNoteNoText = false;
       socket.emit('addNote', currNote);
     } else if (currAction === "text") {
       socket.emit('addTextField', currNote);
@@ -807,6 +836,7 @@ var changeFocus = function changeFocus(data) {
   }if (currAction === "") {
     currAction = "updateNote";
     updateNoteText(data);
+    console.dir(data);
   }
   var keys = Object.keys(notes);
   if (keys.length > 0) {
@@ -827,8 +857,10 @@ var connectTwoNotes = function connectTwoNotes() {
 var updateNoteText = function updateNoteText(focusnote) {
   currNote = focusnote;
   movingTextField.style.display = "block";
-  movingTextField.style.left = currNote.textPosX + "px";
-  movingTextField.style.top = currNote.textPosY + "px";
+  movingTextField.style.left = "0px";
+  movingTextField.style.top = "0px";
+  movingTextField.style.left = focusnote.textPosX + "px";
+  movingTextField.style.top = focusnote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
@@ -939,6 +971,8 @@ var connectSocket = function connectSocket(e) {
   socket.on('addedNote', updateNoteList);
 
   socket.on('joined', addAllNotes);
+
+  //socket.on('clickObject', clickObject);
 };
 
 // Updates the greynote's position for drawing to the canvas
@@ -991,6 +1025,8 @@ var addTextField = function addTextField(position, notePosX, notePosY) {
   currNote = {};
   currNote.textColor = textColor;
   currNote.position = position;
+  currNote.textPosX = notePosX;
+  currNote.textPosY = notePosY;
   currNote.username = username;
   currNote.room = currRoom;
 };

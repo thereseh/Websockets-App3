@@ -15,6 +15,7 @@ const changeFocus = (data) => {
   } if (currAction === ""){
     currAction = "updateNote";
     updateNoteText(data);
+    console.dir(data);
   }
   const keys = Object.keys(notes);
   if(keys.length > 0) {
@@ -35,8 +36,10 @@ const connectTwoNotes = () => {
 const updateNoteText = (focusnote) => {
   currNote = focusnote;
   movingTextField.style.display = "block";
-  movingTextField.style.left = currNote.textPosX + "px";
-  movingTextField.style.top = currNote.textPosY + "px";
+  movingTextField.style.left = "0px";
+  movingTextField.style.top = "0px";
+  movingTextField.style.left = focusnote.textPosX + "px";
+  movingTextField.style.top = focusnote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
@@ -148,6 +151,8 @@ const connectSocket = (e) => {
   socket.on('addedNote', updateNoteList);
   
   socket.on('joined', addAllNotes);
+  
+  //socket.on('clickObject', clickObject);
 };
 
 // Updates the greynote's position for drawing to the canvas
@@ -201,6 +206,8 @@ const addTextField = (position, notePosX, notePosY) => {
   currNote = {};
   currNote.textColor = textColor;
   currNote.position = position;
+  currNote.textPosX = notePosX;
+  currNote.textPosY = notePosY;
   currNote.username = username;
   currNote.room = currRoom;
 };
