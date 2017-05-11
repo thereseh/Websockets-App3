@@ -1,5 +1,5 @@
 class User {
-  constructor(hash, color) {
+  constructor(hash, color, room) {
     this.hash = hash;
     this.lastUpdate = new Date().getTime();
     this.x = 0;
@@ -13,6 +13,7 @@ class User {
     this.rad = 6;
     this.color = color;
     this.name = '';
+    this.room = room;
   }
 }
 

@@ -16,7 +16,7 @@ const redraw = () => {
   if (currAction === "connectNote") {
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(tempLine.x,tempLine.y);
+    ctx.moveTo(tempLine.fromX,tempLine.fromY);
     ctx.lineTo(tempLine.toX,tempLine.toY);
     ctx.stroke();
     ctx.restore();

@@ -1,9 +1,8 @@
 // Ensures all notes besides the active note are not in focus
 const changeFocus = (data) => {
-    console.log(currAction);
-
   if (currAction === "connect") {
     currAction = "connectNote";
+    console.log(currAction);
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
     console.log(currAction);
@@ -15,7 +14,7 @@ const changeFocus = (data) => {
     tempLine.room = currRoom;
     tempLine.toHash = data.hash;
     connectTwoNotes();
-  }  if (currAction === "") {
+  } else if (currAction === ""){
     currAction = "updateNote";
     updateNoteText(data);
   }
@@ -49,7 +48,6 @@ const updateNoteText = (focusnote) => {
 // Add all of the notes in the current room to the notes list
 const addAllNotes = (data) => {
   setUser(data);
-  console.dir(data.note);
   notes = data.note;
 };
 
@@ -58,14 +56,15 @@ const updateNoteList = (data) => {
   console.dir(data);
   const note = data;
   note.focus = true;
-  if (!notes[data.hash]) {
-    console.log('dont exist');
-    notes[data.hash] = note;
-    return;
-  } else if (notes[data.hash]) {
-    console.log('exist');
-    notes[data.hash] = data;
-  }
+  notes[note.hash] = note;
+  //if (!notes[data.hash]) {
+  //  console.log('dont exist');
+  //  notes[data.hash] = note;
+  //  return;
+  //} else if (notes[data.hash]) {
+  //  console.log('exist');
+  //  notes[data.hash] = data;
+  //}
 };
 
 //when we receive a character update
@@ -181,6 +180,7 @@ const createTempText = () => {
 };
 
 const createLine = (position) => {
+  console.log("poops");
   tempLine.toX = position.x;
   tempLine.toY = position.y;
 };

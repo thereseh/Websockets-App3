@@ -117,6 +117,10 @@ const init = () => {
     yellowSticky.style.border = "2px solid #454545";
     greenSticky.style.border = "none";
     blueSticky.style.border = "none";
+    let fakeTextField = document.querySelector("#fakeTextField")
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
     createTempNote();
   });
   // Green sticky note
@@ -127,6 +131,10 @@ const init = () => {
     yellowSticky.style.border = "none";
     greenSticky.style.border = "2px solid #454545";
     blueSticky.style.border = "none";
+    let fakeTextField = document.querySelector("#fakeTextField")
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
     createTempNote();
   });
   // Blue sticky note
@@ -137,6 +145,10 @@ const init = () => {
     yellowSticky.style.border = "none";
     greenSticky.style.border = "none";
     blueSticky.style.border = "2px solid #454545";
+    let fakeTextField = document.querySelector("#fakeTextField")
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
     createTempNote();
   });
   
@@ -278,6 +290,10 @@ const init = () => {
   const addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function() {
     currAction = "connect";
+          let fakeTextField = document.querySelector("#fakeTextField")
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
   });
   
   
@@ -294,23 +310,23 @@ const init = () => {
   
   /* ADDING TOPICS */
   
-  $("#topicBtn").click(function(){
-    numTopics++; 
-    
-      if ($(".clearfix1").is(":hidden")) {
-          $(".clearfix1").show();
-      }
-      else if ($(".clearfix2").is(":hidden")) {
-          $(".clearfix2").show();
-      }
-      else if ($(".clearfix3").is(":hidden")) {
-        $(".clearfix3").show();
-      }
-    
-    if (numTopics === 3) {
-      $('#topicBtn').hide();
-    }
-  });
+  //$("#topicBtn").click(function(){
+  //  numTopics++; 
+  //  
+  //    if ($(".clearfix1").is(":hidden")) {
+  //        $(".clearfix1").show();
+  //    }
+  //    else if ($(".clearfix2").is(":hidden")) {
+  //        $(".clearfix2").show();
+  //    }
+  //    else if ($(".clearfix3").is(":hidden")) {
+  //      $(".clearfix3").show();
+  //    }
+  //  
+  //  if (numTopics === 3) {
+  //    $('#topicBtn').hide();
+  //  }
+  //});
   
   
   // ---------------------
@@ -349,84 +365,84 @@ const init = () => {
   
   // ---------------------
   
-  /* WILL TOGGLE EDITING FOR TOPICS */
-    
-  $("#showSettings1").click(function(){
-    $(".settings1").toggle('fast', 'swing');
-  });
-  
-   $("#showSettings2").click(function(){
-    $(".settings2").toggle('fast', 'swing');
-  });
-  
-   $("#showSettings3").click(function(){
-    $(".settings3").toggle('fast', 'swing');
-  });
-
-  
-  // ---------------------
-  
-  /* WILL GET THE NEW NAME FOR TOPIC */
-
-  
-  $("#submitTopic1").click(function(){
-    let text = $("#name1").val();
-    $(".settings1").toggle('fast', 'swing');
-
-
-    $("#topicsName1").html(text);
-  });
-  
-  $("#submitTopic2").click(function(){
-    let text = $("#name2").val();
-    $(".settings2").toggle('fast', 'swing');
-
-
-    $("#topicsName2").html(text);
-  });
-  
-  $("#submitTopic3").click(function(){
-    let text = $("#name3").val();
-    $(".settings3").toggle('fast', 'swing');
-
-
-    $("#topicsName3").html(text);
-  });
-  
-  // ---------------------
-  
-  /* WILL DELETE TOPIC */
-
-  
-  $("#delete1").click(function(){
-    $("#name1").val('');
-
-    $("#topicsName1").html('1');
-     numTopics--;
-      $(".clearfix1").hide();
-      $(".settings1").hide();
-      $('#topicBtn').show();
-  });
-  
-  $("#delete2").click(function(){
-    $("#name2").val('');
-
-    $("#topicsName2").html('2');
-     numTopics--;
-      $(".clearfix2").hide();
-      $(".settings2").hide();
-      $('#topicBtn').show();
-  });
-  
-  $("#delete3").click(function(){
-    $("#name3").val('');
-
-    $("#topicsName3").html('3');
-     numTopics--;
-      $(".clearfix3").hide();
-      $(".settings3").hide();
-      $('#topicBtn').show();
-  });
+  ///* WILL TOGGLE EDITING FOR TOPICS */
+  //  
+  //$("#showSettings1").click(function(){
+  //  $(".settings1").toggle('fast', 'swing');
+  //});
+  //
+  // $("#showSettings2").click(function(){
+  //  $(".settings2").toggle('fast', 'swing');
+  //});
+  //
+  // $("#showSettings3").click(function(){
+  //  $(".settings3").toggle('fast', 'swing');
+  //});
+//
+  //
+  //// ---------------------
+  //
+  ///* WILL GET THE NEW NAME FOR TOPIC */
+//
+  //
+  //$("#submitTopic1").click(function(){
+  //  let text = $("#name1").val();
+  //  $(".settings1").toggle('fast', 'swing');
+//
+//
+  //  $("#topicsName1").html(text);
+  //});
+  //
+  //$("#submitTopic2").click(function(){
+  //  let text = $("#name2").val();
+  //  $(".settings2").toggle('fast', 'swing');
+//
+//
+  //  $("#topicsName2").html(text);
+  //});
+  //
+  //$("#submitTopic3").click(function(){
+  //  let text = $("#name3").val();
+  //  $(".settings3").toggle('fast', 'swing');
+//
+//
+  //  $("#topicsName3").html(text);
+  //});
+  //
+  //// ---------------------
+  //
+  ///* WILL DELETE TOPIC */
+//
+  //
+  //$("#delete1").click(function(){
+  //  $("#name1").val('');
+//
+  //  $("#topicsName1").html('1');
+  //   numTopics--;
+  //    $(".clearfix1").hide();
+  //    $(".settings1").hide();
+  //    $('#topicBtn').show();
+  //});
+  //
+  //$("#delete2").click(function(){
+  //  $("#name2").val('');
+//
+  //  $("#topicsName2").html('2');
+  //   numTopics--;
+  //    $(".clearfix2").hide();
+  //    $(".settings2").hide();
+  //    $('#topicBtn').show();
+  //});
+  //
+  //$("#delete3").click(function(){
+  //  $("#name3").val('');
+//
+  //  $("#topicsName3").html('3');
+  //   numTopics--;
+  //    $(".clearfix3").hide();
+  //    $(".settings3").hide();
+  //    $('#topicBtn').show();
+  //});
   
   
   // ---------------------

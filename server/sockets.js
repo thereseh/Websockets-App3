@@ -2,7 +2,7 @@ const xxh = require('xxhashjs');
 const Note = require('./classes/Note.js'); // Import Note class
 const User = require('./classes/User.js'); // Import User class
 const TextField = require('./classes/TextField.js'); // Import TextField class
-const Line = require('./classes/Line.js'); // Import TextField class
+const Line = require('./classes/Line.js'); // Import Line class
 
 // containers for each room
 const notes1 = {};
@@ -38,7 +38,7 @@ const setupSockets = (ioServer) => {
       // get a random color from array
       const color = Math.floor(Math.random() * colors.length);
 
-      users[hash] = new User(hash, colors[color]);
+      users[hash] = new User(hash, colors[color], room);
 
       // add the id to the user's socket object for quick reference
       socket.hash = hash;
@@ -55,7 +55,7 @@ const setupSockets = (ioServer) => {
     // when this user sends the server a movement update
     socket.on('movementUpdate', (data) => {
       users[socket.hash] = data;
-      io.sockets.in('room1').emit('updatedMovement', users[socket.hash]);
+      io.sockets.in(users[socket.hash].room).emit('updatedMovement', users[socket.hash]);
     });
 
     // Add a note to the note list
@@ -73,9 +73,10 @@ const setupSockets = (ioServer) => {
                             data.textPosY, data.room);
 
       // depending on which room, store and return correct object
+      console.log(data.room, 'room1');
       if (data.room === 'room1') {
         notes1[note.hash] = note;
-        console.dir(notes1);  io.sockets.in(data.room).emit('addedNote', notes1[note.hash]);
+        io.sockets.in('room1').emit('addedNote', notes1[note.hash]);
       } else if (data.room === 'room2') {
         notes2[note.hash] = note;
         io.sockets.in(data.room).emit('addedNote', notes2[note.hash]);
@@ -107,7 +108,7 @@ const setupSockets = (ioServer) => {
         io.sockets.in(data.room).emit('addedNote', notes3[field.hash]);
       }
     });
-    
+
      // Add a note to the note list
     socket.on('addLine', (data) => {
       console.dir(data);
@@ -133,7 +134,7 @@ const setupSockets = (ioServer) => {
       }
     });
 
-    
+
     socket.on('removeNote', (data) => {
       if (data.room === 'room1') {
         io.sockets.in(data.room).emit('removeNote', data.hash);
@@ -160,7 +161,7 @@ const setupSockets = (ioServer) => {
         io.sockets.in(data.room).emit('addedNote', notes3[data.hash]);
       }
     });
-    
+
     socket.on('connectNotes', (data) => {
       // depending on which room, store and return correct object
       if (data.room === 'room1') {
