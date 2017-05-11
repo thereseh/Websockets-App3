@@ -160,7 +160,7 @@ margin-bottom: 30px;
    .sideBar {
      z-index: 100;
      width: 200px;
-     height: 500px;
+     height: 600px;
      background-color: #fff2e6;
      box-shadow: 2px 2px 3px #262626;
      position: absolute;
@@ -172,6 +172,22 @@ margin-bottom: 30px;
      font-size: 20px;
      position: absolute;
    }
+
+
+.instruct {
+  left: 10px;
+  top: 385px;
+  font-size: 20px;
+  position: absolute;
+  font-size: 11px;
+  width: 160px;
+  margin: none;
+}
+
+#connectInstruct {
+  top: 75px;
+  left: -10px;
+}
 
   .sideBar>#toggle>#textH2 {
      left: 20px;
@@ -287,10 +303,10 @@ margin-bottom: 30px;
    }
 
 .sideBar>#toggle>#makeConnection {
-  width: 200px;
-  height: auto;
+  width: 165px;
+  height: 150px;
   left: 20px;
-  top: 375px;
+  top: 410px;
   position: absolute;
   cursor: pointer;
   overflow: hidden;
