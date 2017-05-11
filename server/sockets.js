@@ -71,6 +71,8 @@ const setupSockets = (ioServer) => {
                             data.position.y, data.text,
                             data.color, data.textPosX,
                             data.textPosY, data.room, data.to, data.from);
+                            data.color, data.textColor, data.textPosX,
+                            data.textPosY, data.room);
 
       // depending on which room, store and return correct object
       if (data.room === 'room1') {
@@ -93,7 +95,7 @@ const setupSockets = (ioServer) => {
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
 
       // Create the Note object and add to the list of notes
-      const field = new TextField(noteHash, data.username, data.position.x, data.position.y, data.text, data.color, data.room);
+      const field = new TextField(noteHash, data.username, data.position.x, data.position.y, data.text, data.textColor, data.room);
 
       // depending on which room, store and return correct object
       if (data.room === 'room1') {

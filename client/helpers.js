@@ -67,7 +67,7 @@ const mouseUpHandler = (e) => {
     // Determines where the user clicked
   const position = getMousePos(e, canvas);
   let posX = position.x - 50;
-  let posY = position.y - 60;
+  let posY = position.y - 50;
   console.log(currAction);
   
   if(canvasBool === 1) {
@@ -86,7 +86,10 @@ const mouseUpHandler = (e) => {
     } else if (currAction === "text") {
       console.log(currAction);
       // adds a text field
-      document.querySelector("#fakeTextField").style.display = "none";
+      let fakeTextField = document.querySelector("#fakeTextField")
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
       addTextField(position, posX, posY);
       objectPlaced = true;
       console.log(`objectPlaced: ${objectPlaced}`);
@@ -94,8 +97,8 @@ const mouseUpHandler = (e) => {
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
       document.querySelector(".btn-group").style.display = "block";
-      document.querySelector(".btn-group").style.left = (posX+150) + "px";
-      document.querySelector(".btn-group").style.top = (posY-50) + "px";
+      document.querySelector(".btn-group").style.left = (posX + 100) + "px";
+      document.querySelector(".btn-group").style.top = (posY - 65) + "px";
     }
   }
   
