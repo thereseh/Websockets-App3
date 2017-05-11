@@ -222,6 +222,19 @@ margin-bottom: 30px;
      resize: none;
      overflow: hidden;
    }
+
+.sideBar>#toggle>#makeConnection {
+  width: 200px;
+  height: auto;
+  left: 20px;
+  top: 240px;
+  position: absolute;
+  cursor: pointer;
+  overflow: hidden;
+}
+.sideBar>#toggle>#makeConnection>img {
+ width: 70%;
+}
    
    p {
      margin-left: 12px;

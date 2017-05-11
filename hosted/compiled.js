@@ -10,13 +10,17 @@ var redraw = function redraw() {
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;
-    //ctx.shadowBlur = 5;
-    //ctx.shadowOffsetX = 2;
-    //ctx.shadowOffsetY = 2;
-    //ctx.shadowColor = "black";
     ctx.fillStyle = stickyColor;
     ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
     ctx.fill();
+    ctx.restore();
+  }
+  if (currAction === "connectNote") {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(tempLine.x, tempLine.y);
+    ctx.lineTo(tempLine.toX, tempLine.toY);
+    ctx.stroke();
     ctx.restore();
   }
   var keys = Object.keys(notes);
@@ -24,11 +28,21 @@ var redraw = function redraw() {
   // Draw each note to the screen
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
-      ctx.save();
       var note = notes[keys[i]];
-
-      if (note.objectType === "note") {
-        if (note.focus) {
+      if (note.objectType === "line") {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(note.fromX, note.fromY);
+        ctx.lineTo(note.toX, note.toY);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+    for (var _i = 0; _i < keys.length; _i++) {
+      var _note = notes[keys[_i]];
+      if (_note.objectType === "note") {
+        ctx.save();
+        if (_note.focus) {
           //ctx.shadowBlur = 5;
           //ctx.shadowOffsetX = 2;
           //ctx.shadowOffsetY = 2;
@@ -40,25 +54,29 @@ var redraw = function redraw() {
           ctx.shadowColor = "black";
         }
         ctx.fill();
-        ctx.fillStyle = note.color;
-        ctx.fillRect(note.x - note.radiusx, note.y - note.radiusy, note.width, note.height);
+        ctx.fillStyle = _note.color;
+        ctx.fillRect(_note.x - _note.radiusx, _note.y - _note.radiusy, _note.width, _note.height);
         ctx.restore();
         ctx.font = "15px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = "black";
-        wrapText(note.text, note.x + 2, note.y - 25, 85, 18);
+        wrapText(_note.text, _note.x + 2, _note.y - 25, 85, 18);
 
         ctx.font = "12px Arial";
         ctx.fillStyle = "gray";
         ctx.textAlign = "right";
-        ctx.fillText(note.username, note.x + note.radiusx - 2, note.y + note.radiusy - 2);
+        ctx.fillText(_note.username, _note.x + _note.radiusx - 2, _note.y + _note.radiusy - 2);
+        ctx.restore();
       }
-      if (note.objectType === "textField") {
+    }
+    for (var _i2 = 0; _i2 < keys.length; _i2++) {
+      var _note2 = notes[keys[_i2]];
+      if (_note2.objectType === "textField") {
         ctx.save();
         ctx.font = "15px Arial";
         ctx.textAlign = "center";
-        ctx.fillStyle = note.color;
-        wrapText(note.text, note.x, note.y, 85, 18);
+        ctx.fillStyle = _note2.color;
+        wrapText(_note2.text, _note2.x, _note2.y, 85, 18);
         ctx.restore();
       }
     }
@@ -66,8 +84,8 @@ var redraw = function redraw() {
 
   // draws all the users
   var userKey = Object.keys(users);
-  for (var _i = 0; _i < userKey.length; _i++) {
-    var user = users[userKey[_i]];
+  for (var _i3 = 0; _i3 < userKey.length; _i3++) {
+    var user = users[userKey[_i3]];
 
     if (!(user.hash === hash)) {
       //if alpha less than 1, increase it by 0.1
@@ -92,7 +110,7 @@ var redraw = function redraw() {
 
 // Checks to see if the user clicked within interactable spaces
 var checkClickOnRec = function checkClickOnRec(position, type) {
-  if (currAction === "") {
+  if (currAction === "" || currAction === "connect" || currAction === "connectNote") {
 
     // Get mouse positions
     var mousex = position.x;
@@ -218,11 +236,14 @@ var lerp = function lerp(v0, v1, alpha) {
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
   if (position) {
-    //if (currAction === "note" && !objectPlaced) {
-    updateGrayNote(position);
-    //}
+    if (currAction === "note" && !objectPlaced) {
+      updateGrayNote(position);
+    }
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
+    }
+    if (currAction === "connectNote" && !objectPlaced) {
+      createLine(position);
     }
 
     var user = users[hash];
@@ -330,6 +351,8 @@ var connectFunction = function connectFunction() {
   }
 };
 
+var tempLine = {};
+
 var init = function init() {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
@@ -392,6 +415,11 @@ var init = function init() {
   addTextField.addEventListener('click', function () {
     currAction = "text";
     createTempText();
+  });
+
+  var addConnections = document.querySelector('#makeConnection');
+  addConnections.addEventListener('click', function () {
+    currAction = "connect";
   });
 
   // when connecting, display canvas and hide the log in objecs
@@ -599,8 +627,26 @@ window.onload = init;
 
 // Ensures all notes besides the active note are not in focus
 var changeFocus = function changeFocus(data) {
-  currAction = "updateNote";
-  updateNoteText(data);
+  console.log(currAction);
+
+  if (currAction === "connect") {
+    currAction = "connectNote";
+    tempLine.fromX = data.x;
+    tempLine.fromY = data.y;
+    console.log(currAction);
+    tempLine.fromHash = data.hash;
+  }if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
+    currAction = "connectNotes";
+    tempLine.toX = data.x;
+    tempLine.toY = data.y;
+    tempLine.room = currRoom;
+    tempLine.toHash = data.hash;
+    connectTwoNotes();
+  } else {
+    //currAction = "updateNote";
+    //updateNoteText(data);
+  }
+  console.log(currAction);
   var keys = Object.keys(notes);
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
@@ -611,6 +657,10 @@ var changeFocus = function changeFocus(data) {
       }
     }
   }
+};
+
+var connectTwoNotes = function connectTwoNotes() {
+  socket.emit('addLine', tempLine);
 };
 
 var updateNoteText = function updateNoteText(focusnote) {
@@ -750,6 +800,11 @@ var createTempNote = function createTempNote() {
 
 var createTempText = function createTempText() {
   document.querySelector("#fakeTextField").style.display = "block";
+};
+
+var createLine = function createLine(position) {
+  tempLine.toX = position.x;
+  tempLine.toY = position.y;
 };
 
 // Create a note object and add it to the notes list
