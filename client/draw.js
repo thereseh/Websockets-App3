@@ -8,13 +8,17 @@ const redraw = () => {
   if (currAction === "note") {
     ctx.save();
     ctx.globalAlpha = 0.9;
-    //ctx.shadowBlur = 5;
-    //ctx.shadowOffsetX = 2;
-    //ctx.shadowOffsetY = 2;
-    //ctx.shadowColor = "black";
     ctx.fillStyle = stickyColor;
     ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
     ctx.fill();
+    ctx.restore();
+  }
+  if (currAction === "connectNote") {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(tempLine.x,tempLine.y);
+    ctx.lineTo(tempLine.toX,tempLine.toY);
+    ctx.stroke();
     ctx.restore();
   }
   const keys = Object.keys(notes);
@@ -22,20 +26,30 @@ const redraw = () => {
   // Draw each note to the screen
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
-      ctx.save();
       const note = notes[keys[i]];
-  
+       if (note.objectType === "line") {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(note.fromX,note.fromY);
+        ctx.lineTo(note.toX,note.toY);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  for(let i = 0; i < keys.length; i++) {
+      const note = notes[keys[i]];
       if (note.objectType === "note") {
-      if (note.focus) {
-        //ctx.shadowBlur = 5;
-        //ctx.shadowOffsetX = 2;
-        //ctx.shadowOffsetY = 2;
-        ctx.shadowColor = "black";
-      } else {
-        ctx.shadowBlur = 3;
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowColor = "black";
+        ctx.save();
+        if (note.focus) {
+          //ctx.shadowBlur = 5;
+          //ctx.shadowOffsetX = 2;
+          //ctx.shadowOffsetY = 2;
+          ctx.shadowColor = "black";
+        } else {
+          ctx.shadowBlur = 3;
+          ctx.shadowOffsetX = 2;
+          ctx.shadowOffsetY = 2;
+          ctx.shadowColor = "black";
       }
       ctx.fill();
       ctx.fillStyle = note.color;
@@ -50,7 +64,11 @@ const redraw = () => {
       ctx.fillStyle = "gray";
       ctx.textAlign = "right";
       ctx.fillText(note.username, note.x + note.radiusx - 2, note.y + note.radiusy - 2);
+      ctx.restore();
     }
+  }
+    for(let i = 0; i < keys.length; i++) {
+      const note = notes[keys[i]];
     if (note.objectType === "textField") {
       ctx.save();
       ctx.font = "15px Arial";

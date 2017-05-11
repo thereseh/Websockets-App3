@@ -1,6 +1,6 @@
 // Checks to see if the user clicked within interactable spaces
 const checkClickOnRec = (position, type) => {
-  if (currAction === "") {
+  if (currAction === "" || currAction === "connect" || currAction === "connectNote" ) {
   
   // Get mouse positions
   const mousex = position.x;
@@ -130,11 +130,14 @@ const lerp = (v0, v1, alpha) => {
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
   if(position) {
-    //if (currAction === "note" && !objectPlaced) {
+    if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
-    //}
+    }
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
+    }
+    if (currAction === "connectNote" && !objectPlaced) {
+      createLine(position);
     }
     
     

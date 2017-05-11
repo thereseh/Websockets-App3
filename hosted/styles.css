@@ -286,7 +286,20 @@ margin-bottom: 30px;
      border-radius: 2px;
    }
 
-  .sideBar>#toggle>#textField:hover {
+.sideBar>#toggle>#makeConnection {
+  width: 200px;
+  height: auto;
+  left: 20px;
+  top: 240px;
+  position: absolute;
+  cursor: pointer;
+  overflow: hidden;
+}
+.sideBar>#toggle>#makeConnection>img {
+ width: 70%;
+}
+
+.sideBar>#toggle>#textField:hover {
     box-shadow: 0px 0px 5px #262626;
   }
 

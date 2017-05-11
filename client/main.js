@@ -80,6 +80,8 @@ const connectFunction = () => {
     }
 };
 
+let tempLine = {};
+
 const init = () => {
   canvas = document.querySelector('#canvas');
   ctx = canvas.getContext('2d');
@@ -271,6 +273,11 @@ const init = () => {
   addTextField.addEventListener('click', function() {
     currAction = "text";
     createTempText();
+  });
+  
+  const addConnections = document.querySelector('#makeConnection');
+  addConnections.addEventListener('click', function() {
+    currAction = "connect";
   });
   
   

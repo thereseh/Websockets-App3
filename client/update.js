@@ -1,7 +1,25 @@
 // Ensures all notes besides the active note are not in focus
 const changeFocus = (data) => {
-  currAction = "updateNote";
-  updateNoteText(data);
+    console.log(currAction);
+
+  if (currAction === "connect") {
+    currAction = "connectNote";
+    tempLine.fromX = data.x;
+    tempLine.fromY = data.y;
+    console.log(currAction);
+    tempLine.fromHash = data.hash;
+  } if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
+    currAction = "connectNotes";
+    tempLine.toX = data.x;
+    tempLine.toY = data.y;
+    tempLine.room = currRoom;
+    tempLine.toHash = data.hash;
+    connectTwoNotes();
+  } else {
+    //currAction = "updateNote";
+    //updateNoteText(data);
+  }
+  console.log(currAction);
   const keys = Object.keys(notes);
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
@@ -12,6 +30,10 @@ const changeFocus = (data) => {
       }
     }
   }
+};
+
+const connectTwoNotes = () => {
+  socket.emit('addLine', tempLine);
 };
 
 const updateNoteText = (focusnote) => {
@@ -157,6 +179,12 @@ const createTempNote = () => {
 const createTempText = () => {
   document.querySelector("#fakeTextField").style.zIndex = "1";
 };
+
+const createLine = (position) => {
+  tempLine.toX = position.x;
+  tempLine.toY = position.y;
+};
+
 
 // Create a note object and add it to the notes list
 const addNote = (position, notePosX, notePosY) => {
