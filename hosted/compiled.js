@@ -183,7 +183,7 @@ var getMousePos = function getMousePos(e, can) {
 
 // helper method to clear action
 var endAction = function endAction() {
-  // no curr action
+  // if we are ending the action while focusing on a textfield, then restore the textfield
   if (currNote.objectType === "textField" && notes[currNote.hash].text === "") {
     notes[currNote.hash].text = tempTextHolder;
   }
@@ -449,14 +449,16 @@ var canvasBool = void 0;
 // what room we are in
 var currRoom = void 0;
 
+// keeps track on what we are trying to do
 var currAction = "";
-
-var objectPlaced = false;
 
 //character list
 var users = {};
+
 //user's unique character id (from the server)
 var hash = void 0;
+
+var objectPlaced = false;
 
 // curr note created
 var currNote = {};
@@ -745,7 +747,6 @@ var init = function init() {
 
     // if we are adding a note, tell server to create a note
     if (currAction === "note") {
-      placedNoteNoText = false;
       socket.emit('addNote', currNote);
 
       // if we are adding a textField, tell server to create a textField
@@ -765,6 +766,7 @@ var init = function init() {
 
   $("#deleteNote").click(function () {
     socket.emit('removeNote', currNote);
+
     currAction = "";
     currNote = {};
     document.querySelector('#comment').value = "";
@@ -773,12 +775,11 @@ var init = function init() {
 
   // ---------------------
 
-  /* WILL CONNECT T0 A TOPIC */
+  /* WILL CONNECT T0 A TOPIC AND LOAD CORRECT ROOM + OBJECTS */
 
   $("#topic1").click(function () {
     $(".topics").hide('slow', 'swing', function () {
       $(".can").show('slow', 'swing', function () {
-        // then first send name of topic to server of course
         connectSocket();
         currRoom = 'room1';
         socket.emit('enterRoom', { room: 'room1' });
@@ -834,22 +835,37 @@ window.onload = init;
 
 // Ensures all notes besides the active note are not in focus
 var changeFocus = function changeFocus(data) {
+  // we have already clicked on the line button
+  // and have now clicked on a note
   if (currAction === "connect") {
+    // we are now trying to connec elements
     currAction = "connectNote";
+    // get center position of the note we clicked
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
+    // and the hash of the note
     tempLine.fromHash = data.hash;
+
+    //if we have already clicked on one note, and is clicking on another
+    // which is not the same as the first note
   }if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
+    // we are now connecting 2 notes
     currAction = "connectNotes";
+    // get center of the second note
     tempLine.toX = data.x;
     tempLine.toY = data.y;
     tempLine.room = currRoom;
+    // get the hash of the second note
     tempLine.toHash = data.hash;
     connectTwoNotes();
+
+    // if we are not trying to place anything
   }if (currAction === "") {
+    // then we are updating a object
     currAction = "updateNote";
     updateNoteText(data);
   }
+  // all other objects, put out of focus
   var keys = Object.keys(notes);
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
@@ -862,29 +878,38 @@ var changeFocus = function changeFocus(data) {
   }
 };
 
+// tell server to create a line between notes
 var connectTwoNotes = function connectTwoNotes() {
   socket.emit('addLine', tempLine);
 };
 
+// updating a object
 var updateNoteText = function updateNoteText(focusnote) {
+  // make a temp template of the object
   currNote = focusnote;
+  // display the textfield
   movingTextField.style.display = "block";
   movingTextField.style.left = "0px";
   movingTextField.style.top = "0px";
   movingTextField.style.left = focusnote.textPosX + "px";
   movingTextField.style.top = focusnote.textPosY + "px";
+  // set value of textarea to the existing value
   document.querySelector('#comment').value = focusnote.text;
+  // temp store it in case this is a textfield
   tempTextHolder = focusnote.text;
+  // empty the text in the note
   focusnote.text = "";
+  // display deletion button
   document.querySelector("#deleteNote").style.display = "block";
 };
-// Add all of the notes in the current room to the notes list
+
+// Add all of the notes in the current room (from server) to the notes list
 var addAllNotes = function addAllNotes(data) {
   setUser(data);
   notes = data.note;
 };
 
-// Add the note to the list if it doesn't exist
+// Add, or update the note in the list
 var updateNoteList = function updateNoteList(data) {
   var note = data;
   note.focus = true;
@@ -942,11 +967,13 @@ var removeUser = function removeUser(data) {
 };
 
 var removeNote = function removeNote(data) {
-  //if we have that character, remove them
+  //remove note, prompted from server
   if (notes[data]) {
     delete notes[data];
+
     var keys = Object.keys(notes);
 
+    // check if any lines are connected to this note, if so, delete that line too
     if (keys.length > 0) {
       for (var i = 0; i < keys.length; i++) {
         var note = notes[keys[i]];
@@ -981,9 +1008,12 @@ var connectSocket = function connectSocket(e) {
   socket.on('objectClickUp', clickUp);
 };
 
+// when we get a click down event from the server (another user clicked element)
 var clickDown = function clickDown(id) {
   $("#" + id).fadeToggle("fast");
 };
+
+// when we get a click up event from the server (another user clicked element)
 var clickUp = function clickUp(id) {
   $("#" + id).fadeToggle("fast");
 };
@@ -994,6 +1024,7 @@ var updateGrayNote = function updateGrayNote(position) {
   greynote.y = position.y;
 };
 
+// creates a temp note to follow mouse when user is about to add a stickynote
 var createTempNote = function createTempNote() {
   greynote.x = 0;
   greynote.y = 0;
@@ -1003,6 +1034,7 @@ var createTempNote = function createTempNote() {
   greynote.height = 100;
 };
 
+// updates a fake textareafield to follow mouse
 var updateTempTextField = function updateTempTextField(position) {
   // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
   position.x -= 50;
@@ -1023,10 +1055,12 @@ var updateTempTextField = function updateTempTextField(position) {
   }
 };
 
+// displays a fake textareafield to follow mouse
 var createTempText = function createTempText() {
   document.querySelector("#fakeTextField").style.zIndex = "1";
 };
 
+// when user have clicked on first note, this updates end pos of line to follow mouse
 var createLine = function createLine(position) {
   tempLine.toX = position.x;
   tempLine.toY = position.y;

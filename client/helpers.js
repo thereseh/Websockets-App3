@@ -58,7 +58,7 @@ const getMousePos = (e, can) => {
 
 // helper method to clear action
 const endAction = () => {
-  // no curr action
+  // if we are ending the action while focusing on a textfield, then restore the textfield
   if (currNote.objectType === "textField" && notes[currNote.hash].text === "") {
     notes[currNote.hash].text = tempTextHolder;
   }

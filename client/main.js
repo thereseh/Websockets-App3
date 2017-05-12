@@ -37,15 +37,16 @@ let canvasBool;
 // what room we are in
 let currRoom;
 
-
+// keeps track on what we are trying to do
 let currAction = "";
-
-let objectPlaced = false;
 
 //character list
 let users = {}; 
+
 //user's unique character id (from the server)
 let hash; 
+
+let objectPlaced = false;
 
 // curr note created
 let currNote = {};
@@ -339,7 +340,6 @@ const init = () => {
     
     // if we are adding a note, tell server to create a note
     if (currAction === "note") {
-      placedNoteNoText = false;
       socket.emit('addNote', currNote);
       
     // if we are adding a textField, tell server to create a textField
@@ -359,6 +359,7 @@ const init = () => {
   
   $("#deleteNote").click(function(){
     socket.emit('removeNote', currNote);
+  
     currAction = "";
     currNote = {};  
     document.querySelector('#comment').value = ""; 
@@ -367,13 +368,11 @@ const init = () => {
   
   // ---------------------
   
-  /* WILL CONNECT T0 A TOPIC */
+  /* WILL CONNECT T0 A TOPIC AND LOAD CORRECT ROOM + OBJECTS */
 
-  
   $("#topic1").click(function(){
     $(".topics").hide('slow', 'swing', function() {
       $(".can").show('slow', 'swing', function() {
-        // then first send name of topic to server of course
         connectSocket();
         currRoom = 'room1';
         socket.emit('enterRoom', {room: 'room1'});

@@ -84,7 +84,7 @@ const setupSockets = (ioServer) => {
     });
 
     socket.on('addTextField', (data) => {
-      // Create a unique id for the note
+      // Create a unique id for the textfield
       const noteString = `${data.text}${new Date().getTime()}`;
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
 
@@ -107,13 +107,13 @@ const setupSockets = (ioServer) => {
       }
     });
 
-     // Add a note to the note list
+     // Add a line to the note list
     socket.on('addLine', (data) => {
-      // Create a unique id for the note
+      // Create a unique id for the line
       const noteString = `${data.fromX}${new Date().getTime()}`;
       const noteHash = xxh.h32(noteString, 0xCAFEBABE).toString(16);
 
-      // Create the List object and add to the list of notes
+      // Create the Line object and add to the list of notes
       const line = new Line(noteHash, data.username, data.toX, data.toY, data.fromX, data.fromY,
                 data.room, data.toHash, data.fromHash);
 
@@ -131,6 +131,7 @@ const setupSockets = (ioServer) => {
     });
 
 
+    // when a user remove a note, delete from list here and tell the others
     socket.on('removeNote', (data) => {
       if (data.room === 'room1') {
         io.sockets.in(data.room).emit('removeNote', data.hash);
@@ -144,6 +145,7 @@ const setupSockets = (ioServer) => {
       }
     });
 
+    // when a user remove a line, delete from list here and tell the others
     socket.on('removeLine', (data) => {
       if (data.room === 'room1') {
         delete notes1[data.hash];
@@ -154,6 +156,7 @@ const setupSockets = (ioServer) => {
       }
     });
 
+      // when a user updates a note, update list here and tell the others
     socket.on('updateNoteText', (data) => {
       // depending on which room, store and return correct object
       if (data.room === 'room1') {
@@ -168,30 +171,17 @@ const setupSockets = (ioServer) => {
       }
     });
 
+    // when a user clicks on a element, return the id of the element
     socket.on('clickedDownElement', (data) => {
       // depending on which room, store and return correct object
       socket.broadcast.to(data.room).emit('objectClickDown', data.id);
     });
 
+    // when the mouseup event happens
     socket.on('clickedUpElement', (data) => {
       // depending on which room, store and return correct object
       socket.broadcast.to(data.room).emit('objectClickUp', data.id);
     });
-
-    socket.on('connectNotes', (data) => {
-      // depending on which room, store and return correct object
-      if (data.room === 'room1') {
-        notes1[data.hash].text = data.text;
-        io.sockets.in(data.room).emit('addedNote', notes1[data.hash]);
-      } else if (data.room === 'room2') {
-        notes2[data.hash].text = data.text;
-        io.sockets.in(data.room).emit('addedNote', notes2[data.hash]);
-      } else if (data.room === 'room3') {
-        notes3[data.hash].text = data.text;
-        io.sockets.in(data.room).emit('addedNote', notes3[data.hash]);
-      }
-    });
-
 
      // when the user disconnects
     socket.on('disconnect', () => {

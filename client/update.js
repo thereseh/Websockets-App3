@@ -1,21 +1,36 @@
 // Ensures all notes besides the active note are not in focus
 const changeFocus = (data) => {
+  // we have already clicked on the line button
+  // and have now clicked on a note
   if (currAction === "connect") {
+    // we are now trying to connec elements
     currAction = "connectNote";
+    // get center position of the note we clicked
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
+    // and the hash of the note
     tempLine.fromHash = data.hash;
+    
+    //if we have already clicked on one note, and is clicking on another
+    // which is not the same as the first note
   } if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
+    // we are now connecting 2 notes
     currAction = "connectNotes";
+    // get center of the second note
     tempLine.toX = data.x;
     tempLine.toY = data.y;
     tempLine.room = currRoom;
+    // get the hash of the second note
     tempLine.toHash = data.hash;
     connectTwoNotes();
+    
+    // if we are not trying to place anything
   } if (currAction === ""){
+    // then we are updating a object
     currAction = "updateNote";
     updateNoteText(data);
   }
+  // all other objects, put out of focus
   const keys = Object.keys(notes);
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
@@ -28,29 +43,38 @@ const changeFocus = (data) => {
   }
 };
 
+// tell server to create a line between notes
 const connectTwoNotes = () => {
   socket.emit('addLine', tempLine);
 };
 
+// updating a object
 const updateNoteText = (focusnote) => {
+  // make a temp template of the object
   currNote = focusnote;
+  // display the textfield
   movingTextField.style.display = "block";
   movingTextField.style.left = "0px";
   movingTextField.style.top = "0px";
   movingTextField.style.left = focusnote.textPosX + "px";
   movingTextField.style.top = focusnote.textPosY + "px";
+  // set value of textarea to the existing value
   document.querySelector('#comment').value = focusnote.text;
+  // temp store it in case this is a textfield
   tempTextHolder = focusnote.text;
+  // empty the text in the note
   focusnote.text = "";
+  // display deletion button
   document.querySelector("#deleteNote").style.display = "block";
 };
-// Add all of the notes in the current room to the notes list
+
+// Add all of the notes in the current room (from server) to the notes list
 const addAllNotes = (data) => {
   setUser(data);
   notes = data.note;
 };
 
-// Add the note to the list if it doesn't exist
+// Add, or update the note in the list
 const updateNoteList = (data) => {
   const note = data;
   note.focus = true;
@@ -109,11 +133,13 @@ const removeUser = (data) => {
 };
 
 const removeNote = (data) => {
-  //if we have that character, remove them
+  //remove note, prompted from server
   if(notes[data]) {
     delete notes[data];
+    
     const keys = Object.keys(notes);
     
+    // check if any lines are connected to this note, if so, delete that line too
     if(keys.length > 0) {
       for(let i = 0; i < keys.length; i++) {
         const note = notes[keys[i]];
@@ -148,9 +174,12 @@ const connectSocket = (e) => {
   socket.on('objectClickUp', clickUp);
 };
 
+// when we get a click down event from the server (another user clicked element)
 const clickDown = (id) => {
   $("#"+id).fadeToggle("fast");
 };
+
+// when we get a click up event from the server (another user clicked element)
 const clickUp = (id) => {
  $("#"+id).fadeToggle("fast");
 };
@@ -161,6 +190,7 @@ const updateGrayNote = (position) => {
   greynote.y = position.y;
 };
 
+// creates a temp note to follow mouse when user is about to add a stickynote
 const createTempNote = () => {
   greynote.x = 0;
   greynote.y = 0;
@@ -170,6 +200,7 @@ const createTempNote = () => {
   greynote.height = 100;
 };
 
+// updates a fake textareafield to follow mouse
 const updateTempTextField = (position) => {
   // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
   position.x -= 50;
@@ -190,11 +221,12 @@ const updateTempTextField = (position) => {
   }
 };
 
-
+// displays a fake textareafield to follow mouse
 const createTempText = () => {
   document.querySelector("#fakeTextField").style.zIndex = "1";
 };
 
+// when user have clicked on first note, this updates end pos of line to follow mouse
 const createLine = (position) => {
   tempLine.toX = position.x;
   tempLine.toY = position.y;
