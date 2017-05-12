@@ -56,6 +56,9 @@ let hash;
 // curr note created
 let currNote = {};
 
+//
+let placedNoteNoText = false;
+
 //our next animation frame function
 let animationFrame; 
 
@@ -71,9 +74,14 @@ const connectFunction = () => {
     // If the username is over 15 characters, display a popup
     if (username.length > 15) {      
       let popup = document.getElementById('namePopup');
+      popup.innerHTML = "Usernames must not be longer than 15 characters!";
       popup.classList.toggle("show");
+    } else if (username.length < 1) {
+      let popup = document.getElementById('namePopup');
+      popup.innerHTML = "Usernames must be at least 1 character!";
+      popup.classList.toggle("show");
+      
     } else {
-      console.log('connect');
       canvasBool = 1;
       document.querySelector('.topics').style.display = "block";
       document.querySelector('.login').style.display = "none";
@@ -112,6 +120,11 @@ const init = () => {
   // Yellow sticky note
   const yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function() {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'yellow';
     currAction = "note";
     yellowSticky.style.border = "2px solid #454545";
@@ -126,6 +139,11 @@ const init = () => {
   // Green sticky note
   const greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'greenyellow';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -140,6 +158,11 @@ const init = () => {
   // Blue sticky note
   const blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'deepskyblue';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -283,12 +306,22 @@ const init = () => {
   
   const addTextField = document.querySelector('#textField');
   addTextField.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "text";
     createTempText();
   });
   
   const addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function() {
+     if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "connect";
     let fakeTextField = document.querySelector("#fakeTextField")
     fakeTextField.style.zIndex = "0";
@@ -339,10 +372,9 @@ const init = () => {
     document.querySelector('#comment').value = ""; 
     movingTextField.style.display = "none";
     if (currAction === "note") {
-      console.log('adding note');
+      placedNoteNoText = false;
       socket.emit('addNote', currNote);
     } else if (currAction === "text") {
-      console.log('adding text');
       socket.emit('addTextField', currNote);
     } else if (currAction === "updateNote") {
       socket.emit('updateNoteText', currNote);
@@ -358,8 +390,8 @@ const init = () => {
   
   $("#deleteNote").click(function(){
     socket.emit('removeNote', currNote);
-  currAction = "";
-     currNote = {};  document.querySelector('#comment').value = ""; 
+    currAction = "";
+    currNote = {};  document.querySelector('#comment').value = ""; 
     movingTextField.style.display = "none";
   });
   

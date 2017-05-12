@@ -7,14 +7,6 @@ var redraw = function redraw() {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (currAction === "note") {
-    ctx.save();
-    ctx.globalAlpha = 0.9;
-    ctx.fillStyle = stickyColor;
-    ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
-    ctx.fill();
-    ctx.restore();
-  }
   if (currAction === "connectNote") {
     ctx.save();
     ctx.beginPath();
@@ -76,9 +68,18 @@ var redraw = function redraw() {
         ctx.font = "40px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = _note2.textColor;
-        wrapText(_note2.text, _note2.x, _note2.y, 85, 18);
+        wrapText(_note2.text, _note2.x, _note2.y, 85, 30);
         ctx.restore();
       }
+    }
+
+    if (currAction === "note") {
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = stickyColor;
+      ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
+      ctx.fill();
+      ctx.restore();
     }
   }
 
@@ -179,16 +180,31 @@ var mouseUpHandler = function mouseUpHandler(e) {
   var posX = position.x - 50;
   var posY = position.y - 50;
 
-  console.log(currAction);
-
   if (canvasBool === 1) {
     if (checkClickOnRec(position, 1)) {
       changeFocus(checkClickOnRec(position, 1));
       // Focuses on the note the user clicked on
-    } else if (currAction === "note") {
+    } else if (currAction === "note" && !objectPlaced) {
       // adds a note
-      if (posX >= canvas.width - 100) {
-        posX = canvas.width - 100;
+      if (posX <= 0) {
+        position.x = 50;
+        greynote.x = position.x;
+        posX = position.x - 50;
+      }
+      if (posX > canvas.width - 150) {
+        position.x = canvas.width - 100;
+        greynote.x = position.x;
+        posX = position.x - 50;
+      }
+      if (posY <= 0) {
+        position.y = 50;
+        greynote.y = position.y;
+        posY = position.y - 50;
+      }
+      if (posY > canvas.height - 125) {
+        position.y = canvas.height - 50;
+        greynote.y = position.y;
+        posY = position.y - 50;
       }
       //if(position.y + 50 > canvas.height) {
       //  position.y = canvas.height - 50;
@@ -205,24 +221,24 @@ var mouseUpHandler = function mouseUpHandler(e) {
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "text") {
-      //if(posX > canvas.width - 150) {
-      //  posX = canvas.width - 150;
-      //}
-      //if(posY - 125 > canvas.height) {
-      //  posY = canvas.height - 125;
-      //}
-      //console.log(currAction);
-      //// adds a text field
-      //let fakeTextField = document.querySelector("#fakeTextField")
-      //fakeTextField.style.zIndex = "0";
-      //fakeTextField.style.left = "0";
-      //fakeTextField.style.top = "0";
-      //addTextField(position, posX, posY);
-      //objectPlaced = true;
-      //console.log(`objectPlaced: ${objectPlaced}`);
-      //movingTextField.style.display = 'block';
-      //movingTextField.style.left = posX + 'px';
-      //movingTextField.style.top = posY + 'px';
+      if (posX > canvas.width - 150) {
+        posX = canvas.width - 150;
+      }
+      if (posY > canvas.height - 125) {
+        posY = canvas.height - 125;
+      }
+      // adds a text field
+      var fakeTextField = document.querySelector("#fakeTextField");
+      fakeTextField.style.zIndex = "0";
+      fakeTextField.style.left = "0";
+      fakeTextField.style.top = "0";
+      addTextField(position, posX, posY);
+      objectPlaced = true;
+      movingTextField.style.display = 'block';
+      movingTextField.style.left = posX + 'px';
+      movingTextField.style.top = posY + 'px';
+    } else if (currAction === "connectNotes") {
+      currAction = "";
     }
   }
 };
@@ -244,6 +260,7 @@ var wrapText = function wrapText(text, x, y, maxWidth, lineHeight) {
       line = testLine;
     }
   }
+
   ctx.fillText(line, x, y);
 };
 
@@ -274,9 +291,7 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
-    console.log(currAction);
     if (currAction === "connectNote" && !objectPlaced) {
-      console.log(objectPlaced);
       createLine(position);
     }
 
@@ -364,6 +379,9 @@ var hash = void 0;
 // curr note created
 var currNote = {};
 
+//
+var placedNoteNoText = false;
+
 //our next animation frame function
 var animationFrame = void 0;
 
@@ -379,9 +397,13 @@ var connectFunction = function connectFunction() {
   // If the username is over 15 characters, display a popup
   if (username.length > 15) {
     var popup = document.getElementById('namePopup');
+    popup.innerHTML = "Usernames must not be longer than 15 characters!";
     popup.classList.toggle("show");
+  } else if (username.length < 1) {
+    var _popup = document.getElementById('namePopup');
+    _popup.innerHTML = "Usernames must be at least 1 character!";
+    _popup.classList.toggle("show");
   } else {
-    console.log('connect');
     canvasBool = 1;
     document.querySelector('.topics').style.display = "block";
     document.querySelector('.login').style.display = "none";
@@ -420,6 +442,11 @@ var init = function init() {
   // Yellow sticky note
   var yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'yellow';
     currAction = "note";
     yellowSticky.style.border = "2px solid #454545";
@@ -434,6 +461,11 @@ var init = function init() {
   // Green sticky note
   var greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'greenyellow';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -448,6 +480,11 @@ var init = function init() {
   // Blue sticky note
   var blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     stickyColor = 'deepskyblue';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -591,12 +628,22 @@ var init = function init() {
 
   var addTextField = document.querySelector('#textField');
   addTextField.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "text";
     createTempText();
   });
 
   var addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function () {
+    if (placedNoteNoText) {
+      movingTextField.style.display = "none";
+      currNote = {};
+      placedNoteNoText = false;
+    }
     currAction = "connect";
     var fakeTextField = document.querySelector("#fakeTextField");
     fakeTextField.style.zIndex = "0";
@@ -646,10 +693,9 @@ var init = function init() {
     document.querySelector('#comment').value = "";
     movingTextField.style.display = "none";
     if (currAction === "note") {
-      console.log('adding note');
+      placedNoteNoText = false;
       socket.emit('addNote', currNote);
     } else if (currAction === "text") {
-      console.log('adding text');
       socket.emit('addTextField', currNote);
     } else if (currAction === "updateNote") {
       socket.emit('updateNoteText', currNote);
@@ -819,10 +865,8 @@ window.onload = init;
 var changeFocus = function changeFocus(data) {
   if (currAction === "connect") {
     currAction = "connectNote";
-    console.log(currAction);
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
-    console.log(currAction);
     tempLine.fromHash = data.hash;
   }if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
     currAction = "connectNotes";
@@ -835,7 +879,6 @@ var changeFocus = function changeFocus(data) {
     currAction = "updateNote";
     updateNoteText(data);
   }
-  console.log(currAction);
   var keys = Object.keys(notes);
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
@@ -853,14 +896,13 @@ var connectTwoNotes = function connectTwoNotes() {
 };
 
 var updateNoteText = function updateNoteText(focusnote) {
-  console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
-
-  movingTextField.style.left = currNote.x - 50 + "px";
-  movingTextField.style.top = currNote.y - 50 + "px";
+  movingTextField.style.left = "0px";
+  movingTextField.style.top = "0px";
+  movingTextField.style.left = focusnote.textPosX + "px";
+  movingTextField.style.top = focusnote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
-  //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
@@ -872,7 +914,6 @@ var addAllNotes = function addAllNotes(data) {
 
 // Add the note to the list if it doesn't exist
 var updateNoteList = function updateNoteList(data) {
-  console.dir(data);
   var note = data;
   note.focus = true;
   notes[note.hash] = note;
@@ -940,6 +981,19 @@ var removeNote = function removeNote(data) {
   //if we have that character, remove them
   if (notes[data]) {
     delete notes[data];
+    var keys = Object.keys(notes);
+
+    if (keys.length > 0) {
+      for (var i = 0; i < keys.length; i++) {
+        var note = notes[keys[i]];
+        if (note.objectType === "line") {
+          if (note.noteParentFrom === data || note.noteParentTo === data) {
+            socket.emit('removeLine', note);
+            delete notes[note.hash];
+          }
+        }
+      }
+    }
   }
 };
 
@@ -957,6 +1011,8 @@ var connectSocket = function connectSocket(e) {
   socket.on('addedNote', updateNoteList);
 
   socket.on('joined', addAllNotes);
+
+  //socket.on('clickObject', clickObject);
 };
 
 // Updates the greynote's position for drawing to the canvas
@@ -1020,6 +1076,8 @@ var addTextField = function addTextField(position, notePosX, notePosY) {
   currNote = {};
   currNote.textColor = textColor;
   currNote.position = position;
+  currNote.textPosX = notePosX;
+  currNote.textPosY = notePosY;
   currNote.username = username;
   currNote.room = currRoom;
 };

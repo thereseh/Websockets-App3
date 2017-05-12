@@ -2,10 +2,8 @@
 const changeFocus = (data) => {
   if (currAction === "connect") {
     currAction = "connectNote";
-    console.log(currAction);
     tempLine.fromX = data.x;
     tempLine.fromY = data.y;
-    console.log(currAction);
     tempLine.fromHash = data.hash;
   } if (currAction === "connectNote" && data.hash !== tempLine.fromHash) {
     currAction = "connectNotes";
@@ -18,7 +16,6 @@ const changeFocus = (data) => {
     currAction = "updateNote";
     updateNoteText(data);
   }
-  console.log(currAction);
   const keys = Object.keys(notes);
   if(keys.length > 0) {
     for(let i = 0; i < keys.length; i++) {
@@ -36,14 +33,13 @@ const connectTwoNotes = () => {
 };
 
 const updateNoteText = (focusnote) => {
-  console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
-
-  movingTextField.style.left = currNote.x - 50 + "px";
-  movingTextField.style.top = currNote.y - 50 + "px";
+  movingTextField.style.left = "0px";
+  movingTextField.style.top = "0px";
+  movingTextField.style.left = focusnote.textPosX + "px";
+  movingTextField.style.top = focusnote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
-  //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
@@ -55,7 +51,6 @@ const addAllNotes = (data) => {
 
 // Add the note to the list if it doesn't exist
 const updateNoteList = (data) => {
-  console.dir(data);
   const note = data;
   note.focus = true;
   notes[note.hash] = note;
@@ -124,8 +119,20 @@ const removeNote = (data) => {
   //if we have that character, remove them
   if(notes[data]) {
     delete notes[data];
-  }
-  
+    const keys = Object.keys(notes);
+    
+    if(keys.length > 0) {
+      for(let i = 0; i < keys.length; i++) {
+        const note = notes[keys[i]];
+        if (note.objectType === "line") {
+          if (note.noteParentFrom === data || note.noteParentTo === data) {
+            socket.emit('removeLine', note);
+            delete notes[note.hash];
+          }
+        }
+      }
+    }
+  } 
 };
 
 // When the user connects, set up socket pipelines
@@ -142,6 +149,8 @@ const connectSocket = (e) => {
   socket.on('addedNote', updateNoteList);
   
   socket.on('joined', addAllNotes);
+  
+  //socket.on('clickObject', clickObject);
 };
 
 // Updates the greynote's position for drawing to the canvas
@@ -206,6 +215,8 @@ const addTextField = (position, notePosX, notePosY) => {
   currNote = {};
   currNote.textColor = textColor;
   currNote.position = position;
+  currNote.textPosX = notePosX;
+  currNote.textPosY = notePosY;
   currNote.username = username;
   currNote.room = currRoom;
 };
