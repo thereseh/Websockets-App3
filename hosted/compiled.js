@@ -7,6 +7,8 @@ var redraw = function redraw() {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // if we have clicked on one note and is planning to create a connection
+  // this will draw from the center of the clicked note to where the mouse is
   if (currAction === "connectNote") {
     ctx.save();
     ctx.beginPath();
@@ -15,12 +17,17 @@ var redraw = function redraw() {
     ctx.stroke();
     ctx.restore();
   }
+
+  // all elements from the object of notes
   var keys = Object.keys(notes);
 
   // Draw each note to the screen
+  // had to do several loops to make sure that the layering of object would be correct
   if (keys.length > 0) {
     for (var i = 0; i < keys.length; i++) {
       var note = notes[keys[i]];
+
+      // is this element (note) a line? then draw a line between the center of the two notes
       if (note.objectType === "line") {
         ctx.save();
         ctx.beginPath();
@@ -32,14 +39,15 @@ var redraw = function redraw() {
     }
     for (var _i = 0; _i < keys.length; _i++) {
       var _note = notes[keys[_i]];
+
+      // is this element (note) a stickynote? then draw a square
       if (_note.objectType === "note") {
         ctx.save();
+        // no shadow if the stickynote is in focus to be updated
         if (_note.focus) {
-          //ctx.shadowBlur = 5;
-          //ctx.shadowOffsetX = 2;
-          //ctx.shadowOffsetY = 2;
           ctx.shadowColor = "black";
         } else {
+          // not in focus, then give 3D effect by adding shadoq
           ctx.shadowBlur = 3;
           ctx.shadowOffsetX = 2;
           ctx.shadowOffsetY = 2;
@@ -52,6 +60,8 @@ var redraw = function redraw() {
         ctx.font = "15px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = _note.textColor;
+
+        // wrap the text to stay within bounds 
         wrapText(_note.text, _note.x + 2, _note.y - 25, 85, 18, _note.objectType);
 
         ctx.font = "12px Arial";
@@ -63,24 +73,29 @@ var redraw = function redraw() {
     }
     for (var _i2 = 0; _i2 < keys.length; _i2++) {
       var _note2 = notes[keys[_i2]];
+
+      // is this element (note) a textfield? then just draw text on the canvas
       if (_note2.objectType === "textField") {
         ctx.save();
         ctx.font = "40px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = _note2.textColor;
+
+        // wrap the text to stay within bounds 
         wrapText(_note2.text, _note2.x, _note2.y, 85, 30, _note2.objectType);
         ctx.restore();
       }
     }
-
-    if (currAction === "note") {
-      ctx.save();
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = stickyColor;
-      ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
-      ctx.fill();
-      ctx.restore();
-    }
+  }
+  // if we have clicked on one of the sticky note buttons, this draws
+  // a temp note to follow the mouse so the user can see what he is gonna place on canvas
+  if (currAction === "note") {
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = stickyColor;
+    ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
+    ctx.fill();
+    ctx.restore();
   }
 
   // draws all the users
@@ -88,6 +103,7 @@ var redraw = function redraw() {
   for (var _i3 = 0; _i3 < userKey.length; _i3++) {
     var user = users[userKey[_i3]];
 
+    // but not "self", only shows the name of the other clients
     if (!(user.hash === hash)) {
       //if alpha less than 1, increase it by 0.1
       if (user.alpha < 1) user.alpha += 0.1;
@@ -119,11 +135,10 @@ var checkClickOnRec = function checkClickOnRec(position, type) {
 
     var keys = void 0;
 
+    // type is always 1 for now
     if (type === 1) {
       keys = Object.keys(notes);
-    } else {}
-    // TODO - FILL IN FOR THREADS
-
+    }
 
     // Check if user clicked on an interactable space
     if (keys.length > 0) {
@@ -132,14 +147,19 @@ var checkClickOnRec = function checkClickOnRec(position, type) {
 
         if (type === 1) {
           rec = notes[keys[i]];
-        } else {
-          // TODO - FILL IN FOR THREADS
-        }
+        } else {}
+        // TODO - FILL IN FOR THREADS
 
+
+        // for each element, is the mouse within the bounds of the element?
         if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx && mousey > rec.y - rec.radiusy && mousey < rec.y + rec.radiusy) {
+          // then this element was clicked on
           rec.focus = true;
+
+          // return that element
           return rec;
         } else {
+          // if this element wasn't clicked on, then make sure focus is set to false
           rec.focus = false;
         }
       }
@@ -161,15 +181,32 @@ var getMousePos = function getMousePos(e, can) {
   return position;
 };
 
+// helper method to clear action
+var endAction = function endAction() {
+  // no curr action
+  if (currNote.objectType === "textField" && notes[currNote.hash].text === "") {
+    notes[currNote.hash].text = tempTextHolder;
+  }
+
+  currAction = "";
+  tempTextHolder = "";
+  currNote = {};
+  objectPlaced = false;
+
+  // hide "helper" textfields and reset positin to 0
+  movingTextField.style.display = "none";
+  movingTextField.style.left = 0;
+  movingTextField.style.top = 0;
+  var fakeTextField = document.querySelector('#fakeTextField');
+  fakeTextField.style.zIndex = -1;
+  fakeTextField.style.left = 0;
+  fakeTextField.style.top = 0;
+};
+
 // if you press Q, then it will stop the action
 var keypress = function keypress(e) {
   if (e.keyCode === 81) {
-    currAction = "";
-    movingTextField.style.display = "none";
-    var fakeTextField = document.querySelector('#fakeTextField');
-    fakeTextField.style.zIndex = -1;
-    fakeTextField.style.left = 0;
-    fakeTextField.style.top = 0;
+    endAction();
   }
 };
 
@@ -180,12 +217,19 @@ var mouseUpHandler = function mouseUpHandler(e) {
   var posX = position.x - 50;
   var posY = position.y - 50;
 
+  // always 1 for now
   if (canvasBool === 1) {
+    // if the return from this method is true (element is returned)
     if (checkClickOnRec(position, 1)) {
+      // add functionality to the focused element
       changeFocus(checkClickOnRec(position, 1));
-      // Focuses on the note the user clicked on
+
+      // if we are currently trying to add a note, and the user have clicked on canvas
+      // and the curr object has not been placed yet, then create a note
     } else if (currAction === "note" && !objectPlaced) {
-      // adds a note
+
+      // adjusts the position in case the client is trying to add a note too close
+      // to canvas bounds
       if (posX <= 0) {
         position.x = 50;
         greynote.x = position.x;
@@ -206,18 +250,17 @@ var mouseUpHandler = function mouseUpHandler(e) {
         greynote.y = position.y;
         posY = position.y - 50;
       }
-      addNote(position, posX, posY);
+
+      // object has been placed, to stop drawing temp sticky note and stuff
       objectPlaced = true;
+      // display textfield to be used to add text to the sticky note
       movingTextField.style.display = 'block';
-      //if(posX > canvas.width - 150) {
-      //  posX = canvas.width - 150;
-      //}
-      //if(posY - 125 > canvas.height) {
-      //  posY = canvas.height - 100;
-      //}
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
+      // method to create a note element
       addNote(position, posX, posY);
+
+      // if we are currently trying to add a textfield
     } else if (currAction === "text") {
       if (posX > canvas.width - 150) {
         posX = canvas.width - 150;
@@ -225,31 +268,44 @@ var mouseUpHandler = function mouseUpHandler(e) {
       if (posY > canvas.height - 125) {
         posY = canvas.height - 125;
       }
+
       // adds a text field
       var fakeTextField = document.querySelector("#fakeTextField");
       fakeTextField.style.zIndex = "0";
       fakeTextField.style.left = "0";
       fakeTextField.style.top = "0";
+      // method to create the textfield element
       addTextField(position, posX, posY);
+      // object has been placed, so stop moving
       objectPlaced = true;
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "connectNotes") {
-      currActiosn = "";
+      // the second note has now been clicked, so clear currAction
+      currAction = "";
     }
   }
 };
 
-//handler for key up events
+// when the client click (down) on elements on the sidebar
 var mouseDownSideBar = function mouseDownSideBar(e) {
+  // as long as they click on a valid button
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+    // emit to the server, to tell other clients that they clicked down
+    // so the others can do a fast animation
     var data = { id: e.target.id, room: currRoom };
     socket.emit('clickedDownElement', data);
   }
 };
+
+// when the client click (up) on elements on the sidebar
 var mouseUpSideBar = function mouseUpSideBar(e) {
+  // as long as they click on a valid button
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+
+    // emit to the server, to tell other clients that they clicked (now up)
+    // so the others can do a fast animation
     var data = { id: e.target.id, room: currRoom };
     socket.emit('clickedUpElement', data);
   }
@@ -264,6 +320,7 @@ var wrapText = function wrapText(text, x, y, maxWidth, lineHeight, type) {
     var metrics = ctx.measureText(testLine);
     var testWidth = metrics.width;
     if (testWidth > maxWidth && n > 0) {
+      // only draw shadow is the element is a textField type
       if (type === "textField") {
         ctx.shadowColor = "black";
         ctx.shadowBlur = 2;
@@ -277,6 +334,7 @@ var wrapText = function wrapText(text, x, y, maxWidth, lineHeight, type) {
       line = testLine;
     }
   }
+  // only draw shadow is the element is a textField type
   if (type === "textField") {
     ctx.shadowColor = "black";
     ctx.shadowBlur = 2;
@@ -307,18 +365,26 @@ var mouseMoveHandler = function mouseMoveHandler(e) {
   }
 
   if (position) {
+    // if we are creating a note, then keep drawing temp note until the user clicks on the canvas
     if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
     }
+    // if we are creating a textField, then keep updating pos of 
+    // fake textfield until the user clicks on the canvas
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
+    // if we are trying to connect notes, keep drawing line from
+    // first note to mouse until user clicks on a second note
     if (currAction === "connectNote" && !objectPlaced) {
       createLine(position);
     }
 
+    // get user
     var user = users[hash];
 
+    // update the position of this user as the client move around canvas
+    // emit to all other clients
     if (position.x > 0 && position.x < canvas.width && position.y > 0 && position.y < canvas.height) {
       if (user) {
         //user.x = user.prevX;
@@ -362,17 +428,11 @@ var ColorEnum = {
   BLUE: 3
 };
 
-// to limit topics
-var numTopics = 0;
-
 // Determines which color the sticky note is
 var stickyColor = void 0;
 
 // Determines what color the text is
 var textColor = void 0;
-
-// Used to get the value of text
-var textField = void 0;
 
 // USE THIS
 var movingTextField = void 0;
@@ -401,18 +461,14 @@ var hash = void 0;
 // curr note created
 var currNote = {};
 
-//
-var placedNoteNoText = false;
+// holds text while updating element
+var tempTextHolder = void 0;
 
 //our next animation frame function
 var animationFrame = void 0;
 
-var strokeColor = "black";
-
 var connectFunction = function connectFunction() {
   username = document.querySelector('#username').value;
-
-  createTempNote();
 
   // listening for key press, to stop curr action
   window.addEventListener("keydown", keypress, false);
@@ -464,16 +520,16 @@ var init = function init() {
   canvas.addEventListener('mouseup', mouseUpHandler);
   canvas.addEventListener('mousemove', mouseMoveHandler);
 
+  // initializing the moving text field, used to add text to elements
   movingTextField = document.querySelector('#tempTextField');
+
+  // ---------------------
+
+  /* OPTIONS FOR DIFFERENT STICKY NOTES */
 
   // Yellow sticky note
   var yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function () {
-    if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     stickyColor = 'yellow';
     currAction = "note";
     yellowSticky.style.border = "2px solid #454545";
@@ -485,14 +541,10 @@ var init = function init() {
     fakeTextField.style.top = "0";
     createTempNote();
   });
+
   // Green sticky note
   var greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function () {
-    if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     stickyColor = 'greenyellow';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -504,14 +556,10 @@ var init = function init() {
     fakeTextField.style.top = "0";
     createTempNote();
   });
+
   // Blue sticky note
   var blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function () {
-    if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     stickyColor = 'deepskyblue';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -525,6 +573,10 @@ var init = function init() {
   });
 
   textColor = "#4ECDC4";
+
+  // ---------------------
+
+  /* OPTIONS FOR DIFFERENT TEXT COLORS */
 
   var textColor1 = document.querySelector('#textColor1');
   textColor1.style.border = "2px solid #454545";
@@ -655,22 +707,12 @@ var init = function init() {
 
   var addTextField = document.querySelector('#textField');
   addTextField.addEventListener('click', function () {
-    if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     currAction = "text";
     createTempText();
   });
 
   var addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function () {
-    if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     currAction = "connect";
     var fakeTextField = document.querySelector("#fakeTextField");
     fakeTextField.style.zIndex = "0";
@@ -689,47 +731,32 @@ var init = function init() {
 
   // ---------------------
 
-  /* ADDING TOPICS */
-
-  //$("#topicBtn").click(function(){
-  //  numTopics++; 
-  //  
-  //    if ($(".clearfix1").is(":hidden")) {
-  //        $(".clearfix1").show();
-  //    }
-  //    else if ($(".clearfix2").is(":hidden")) {
-  //        $(".clearfix2").show();
-  //    }
-  //    else if ($(".clearfix3").is(":hidden")) {
-  //      $(".clearfix3").show();
-  //    }
-  //  
-  //  if (numTopics === 3) {
-  //    $('#topicBtn').hide();
-  //  }
-  //});
-
-
-  // ---------------------
-
   /* ADD COMMENT TO NOTE */
 
   $("#submitNote").click(function () {
+    // get the value from textarea
     var text = document.querySelector('#comment').value;
+    // set curr element text to this value
     currNote.text = text;
+    // clear out the textarea
     document.querySelector('#comment').value = "";
+    // and hide the div
     movingTextField.style.display = "none";
+
+    // if we are adding a note, tell server to create a note
     if (currAction === "note") {
       placedNoteNoText = false;
       socket.emit('addNote', currNote);
+
+      // if we are adding a textField, tell server to create a textField
     } else if (currAction === "text") {
       socket.emit('addTextField', currNote);
+
+      // if we are updating a element, tell server to update this element
     } else if (currAction === "updateNote") {
       socket.emit('updateNoteText', currNote);
     }
-    currAction = "";
-    currNote = {};
-    objectPlaced = false;
+    endAction();
   });
 
   // ---------------------
@@ -739,91 +766,10 @@ var init = function init() {
   $("#deleteNote").click(function () {
     socket.emit('removeNote', currNote);
     currAction = "";
-    currNote = {};document.querySelector('#comment').value = "";
+    currNote = {};
+    document.querySelector('#comment').value = "";
     movingTextField.style.display = "none";
   });
-
-  // ---------------------
-
-  ///* WILL TOGGLE EDITING FOR TOPICS */
-  //  
-  //$("#showSettings1").click(function(){
-  //  $(".settings1").toggle('fast', 'swing');
-  //});
-  //
-  // $("#showSettings2").click(function(){
-  //  $(".settings2").toggle('fast', 'swing');
-  //});
-  //
-  // $("#showSettings3").click(function(){
-  //  $(".settings3").toggle('fast', 'swing');
-  //});
-  //
-  //
-  //// ---------------------
-  //
-  ///* WILL GET THE NEW NAME FOR TOPIC */
-  //
-  //
-  //$("#submitTopic1").click(function(){
-  //  let text = $("#name1").val();
-  //  $(".settings1").toggle('fast', 'swing');
-  //
-  //
-  //  $("#topicsName1").html(text);
-  //});
-  //
-  //$("#submitTopic2").click(function(){
-  //  let text = $("#name2").val();
-  //  $(".settings2").toggle('fast', 'swing');
-  //
-  //
-  //  $("#topicsName2").html(text);
-  //});
-  //
-  //$("#submitTopic3").click(function(){
-  //  let text = $("#name3").val();
-  //  $(".settings3").toggle('fast', 'swing');
-  //
-  //
-  //  $("#topicsName3").html(text);
-  //});
-  //
-  //// ---------------------
-  //
-  ///* WILL DELETE TOPIC */
-  //
-  //
-  //$("#delete1").click(function(){
-  //  $("#name1").val('');
-  //
-  //  $("#topicsName1").html('1');
-  //   numTopics--;
-  //    $(".clearfix1").hide();
-  //    $(".settings1").hide();
-  //    $('#topicBtn').show();
-  //});
-  //
-  //$("#delete2").click(function(){
-  //  $("#name2").val('');
-  //
-  //  $("#topicsName2").html('2');
-  //   numTopics--;
-  //    $(".clearfix2").hide();
-  //    $(".settings2").hide();
-  //    $('#topicBtn').show();
-  //});
-  //
-  //$("#delete3").click(function(){
-  //  $("#name3").val('');
-  //
-  //  $("#topicsName3").html('3');
-  //   numTopics--;
-  //    $(".clearfix3").hide();
-  //    $(".settings3").hide();
-  //    $('#topicBtn').show();
-  //});
-
 
   // ---------------------
 
@@ -847,7 +793,6 @@ var init = function init() {
         connectSocket();
         currRoom = 'room2';
         socket.emit('enterRoom', { room: 'room2' });
-        // createGrayNote();
       });
     });
   });
@@ -859,7 +804,6 @@ var init = function init() {
         connectSocket();
         currRoom = 'room3';
         socket.emit('enterRoom', { room: 'room3' });
-        //createGrayNote();
       });
     });
   });
@@ -930,6 +874,7 @@ var updateNoteText = function updateNoteText(focusnote) {
   movingTextField.style.left = focusnote.textPosX + "px";
   movingTextField.style.top = focusnote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
+  tempTextHolder = focusnote.text;
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
@@ -944,14 +889,6 @@ var updateNoteList = function updateNoteList(data) {
   var note = data;
   note.focus = true;
   notes[note.hash] = note;
-  //if (!notes[data.hash]) {
-  //  console.log('dont exist');
-  //  notes[data.hash] = note;
-  //  return;
-  //} else if (notes[data.hash]) {
-  //  console.log('exist');
-  //  notes[data.hash] = data;
-  //}
 };
 
 //when we receive a character update
@@ -1057,6 +994,15 @@ var updateGrayNote = function updateGrayNote(position) {
   greynote.y = position.y;
 };
 
+var createTempNote = function createTempNote() {
+  greynote.x = 0;
+  greynote.y = 0;
+  greynote.radiusx = 50;
+  greynote.radiusy = 50;
+  greynote.width = 100;
+  greynote.height = 100;
+};
+
 var updateTempTextField = function updateTempTextField(position) {
   // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
   position.x -= 50;
@@ -1075,15 +1021,6 @@ var updateTempTextField = function updateTempTextField(position) {
   } else {
     document.querySelector("#fakeTextField").style.top = position.y + "px";
   }
-};
-
-var createTempNote = function createTempNote() {
-  greynote.x = 0;
-  greynote.y = 0;
-  greynote.radiusx = 50;
-  greynote.radiusy = 50;
-  greynote.width = 100;
-  greynote.height = 100;
 };
 
 var createTempText = function createTempText() {

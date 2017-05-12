@@ -40,6 +40,7 @@ const updateNoteText = (focusnote) => {
   movingTextField.style.left = focusnote.textPosX + "px";
   movingTextField.style.top = focusnote.textPosY + "px";
   document.querySelector('#comment').value = focusnote.text;
+  tempTextHolder = focusnote.text;
   focusnote.text = "";
   document.querySelector("#deleteNote").style.display = "block";
 };
@@ -54,14 +55,6 @@ const updateNoteList = (data) => {
   const note = data;
   note.focus = true;
   notes[note.hash] = note;
-  //if (!notes[data.hash]) {
-  //  console.log('dont exist');
-  //  notes[data.hash] = note;
-  //  return;
-  //} else if (notes[data.hash]) {
-  //  console.log('exist');
-  //  notes[data.hash] = data;
-  //}
 };
 
 //when we receive a character update
@@ -168,6 +161,15 @@ const updateGrayNote = (position) => {
   greynote.y = position.y;
 };
 
+const createTempNote = () => {
+  greynote.x = 0;
+  greynote.y = 0;
+  greynote.radiusx = 50;
+  greynote.radiusy = 50;
+  greynote.width = 100;
+  greynote.height = 100;
+};
+
 const updateTempTextField = (position) => {
   // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
   position.x -= 50;
@@ -188,14 +190,6 @@ const updateTempTextField = (position) => {
   }
 };
 
-const createTempNote = () => {
-  greynote.x = 0;
-  greynote.y = 0;
-  greynote.radiusx = 50;
-  greynote.radiusy = 50;
-  greynote.width = 100;
-  greynote.height = 100;
-};
 
 const createTempText = () => {
   document.querySelector("#fakeTextField").style.zIndex = "1";

@@ -8,10 +8,9 @@ const checkClickOnRec = (position, type) => {
   
   let keys;
   
+  // type is always 1 for now
   if (type === 1) {
     keys = Object.keys(notes);
-  } else {
-    // TODO - FILL IN FOR THREADS
   }
   
   // Check if user clicked on an interactable space
@@ -25,16 +24,20 @@ const checkClickOnRec = (position, type) => {
         // TODO - FILL IN FOR THREADS
       }
       
+      // for each element, is the mouse within the bounds of the element?
       if (mousex > rec.x - rec.radiusx && mousex < rec.x + rec.radiusx &&
          mousey > rec.y - rec.radiusy && mousey < rec.y + rec.radiusy) {
+        // then this element was clicked on
         rec.focus = true;
+        
+        // return that element
         return rec;
       } else {
+        // if this element wasn't clicked on, then make sure focus is set to false
         rec.focus = false;
       }
     }
-  }
-  else return false;
+  } else return false;
   }
 };
 
@@ -53,31 +56,55 @@ const getMousePos = (e, can) => {
 };
 
 
+// helper method to clear action
+const endAction = () => {
+  // no curr action
+  if (currNote.objectType === "textField" && notes[currNote.hash].text === "") {
+    notes[currNote.hash].text = tempTextHolder;
+  }
+  
+  currAction = "";
+  tempTextHolder = "";
+  currNote = {};
+  objectPlaced = false;
+
+  // hide "helper" textfields and reset positin to 0
+  movingTextField.style.display = "none";
+  movingTextField.style.left = 0;
+  movingTextField.style.top = 0;
+  let fakeTextField = document.querySelector('#fakeTextField');
+  fakeTextField.style.zIndex = -1;
+  fakeTextField.style.left = 0;
+  fakeTextField.style.top = 0;
+};
+
 // if you press Q, then it will stop the action
 const keypress = (e) => { 
   if (e.keyCode === 81) {
-      currAction = "";
-      movingTextField.style.display = "none";
-      let fakeTextField = document.querySelector('#fakeTextField');
-      fakeTextField.style.zIndex = -1;
-      fakeTextField.style.left = 0;
-      fakeTextField.style.top = 0;
-    }
+   endAction();
+  }
 };
 
 //handler for key up events
 const mouseUpHandler = (e) => { 
-    // Determines where the user clicked
+  // Determines where the user clicked
   const position = getMousePos(e, canvas);
   let posX = position.x - 50;
   let posY = position.y - 50;
   
+  // always 1 for now
   if(canvasBool === 1) {
+    // if the return from this method is true (element is returned)
     if(checkClickOnRec(position, 1)) {
+      // add functionality to the focused element
       changeFocus(checkClickOnRec(position, 1));
-      // Focuses on the note the user clicked on
+      
+      // if we are currently trying to add a note, and the user have clicked on canvas
+      // and the curr object has not been placed yet, then create a note
     } else if (currAction === "note" && !objectPlaced) {
-      // adds a note
+      
+      // adjusts the position in case the client is trying to add a note too close
+      // to canvas bounds
       if(posX <= 0) {
         position.x = 50;
         greynote.x = position.x;
@@ -98,18 +125,17 @@ const mouseUpHandler = (e) => {
         greynote.y = position.y;
         posY = position.y - 50;
       }
-      addNote(position, posX, posY);
+      
+      // object has been placed, to stop drawing temp sticky note and stuff
       objectPlaced = true;
+      // display textfield to be used to add text to the sticky note
       movingTextField.style.display = 'block';
-      //if(posX > canvas.width - 150) {
-      //  posX = canvas.width - 150;
-      //}
-      //if(posY - 125 > canvas.height) {
-      //  posY = canvas.height - 100;
-      //}
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
+      // method to create a note element
       addNote(position, posX, posY);
+      
+      // if we are currently trying to add a textfield
     } else if (currAction === "text") {
       if(posX > canvas.width - 150) {
         posX = canvas.width - 150;
@@ -117,39 +143,49 @@ const mouseUpHandler = (e) => {
       if(posY > canvas.height - 125) {
         posY = canvas.height - 125;
       }
+      
       // adds a text field
       let fakeTextField = document.querySelector("#fakeTextField")
       fakeTextField.style.zIndex = "0";
       fakeTextField.style.left = "0";
       fakeTextField.style.top = "0";
+      // method to create the textfield element
       addTextField(position, posX, posY);
+      // object has been placed, so stop moving
       objectPlaced = true;
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "connectNotes") {
-      currActiosn = "";
+      // the second note has now been clicked, so clear currAction
+      currAction = "";
     }
 }
 };
 
 
-
-//handler for key up events
+// when the client click (down) on elements on the sidebar
 const mouseDownSideBar = (e) => {
+  // as long as they click on a valid button
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+  // emit to the server, to tell other clients that they clicked down
+  // so the others can do a fast animation
   let data = {id: e.target.id, room: currRoom};
   socket.emit('clickedDownElement', data);
   }
 };
+
+// when the client click (up) on elements on the sidebar
 const mouseUpSideBar = (e) => {
+  // as long as they click on a valid button
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+    
+  // emit to the server, to tell other clients that they clicked (now up)
+  // so the others can do a fast animation
   let data = {id: e.target.id, room: currRoom};
   socket.emit('clickedUpElement', data);
   }
 };
-
-
 
 // function from http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
 const wrapText = (text, x, y, maxWidth, lineHeight, type) => {
@@ -160,6 +196,7 @@ const wrapText = (text, x, y, maxWidth, lineHeight, type) => {
     let metrics = ctx.measureText(testLine);
     let testWidth = metrics.width;
     if (testWidth > maxWidth && n > 0) {
+      // only draw shadow is the element is a textField type
       if (type === "textField") {
         ctx.shadowColor = "black";
         ctx.shadowBlur = 2;
@@ -173,6 +210,7 @@ const wrapText = (text, x, y, maxWidth, lineHeight, type) => {
         line = testLine;
       }
     }
+    // only draw shadow is the element is a textField type
    if (type === "textField") {
       ctx.shadowColor = "black";
       ctx.shadowBlur = 2;
@@ -203,18 +241,26 @@ const mouseMoveHandler = (e) => {
   }
   
   if(position) {
+    // if we are creating a note, then keep drawing temp note until the user clicks on the canvas
     if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
     }
+    // if we are creating a textField, then keep updating pos of 
+    // fake textfield until the user clicks on the canvas
     if (currAction === "text" && !objectPlaced) {
       updateTempTextField(position);
     }
+    // if we are trying to connect notes, keep drawing line from
+    // first note to mouse until user clicks on a second note
     if (currAction === "connectNote" && !objectPlaced) {
       createLine(position);
     }
       
+    // get user
     const user = users[hash];
     
+    // update the position of this user as the client move around canvas
+    // emit to all other clients
     if (position.x > 0 && position.x < canvas.width && position.y > 0 && position.y < canvas.height) {
       if (user) {
         //user.x = user.prevX;

@@ -16,17 +16,11 @@ const ColorEnum = {
   BLUE: 3,
 };
 
-// to limit topics
-let numTopics = 0;
-
 // Determines which color the sticky note is
 let stickyColor;
 
 // Determines what color the text is
 let textColor;
-
-// Used to get the value of text
-let textField;
 
 // USE THIS
 let movingTextField;
@@ -56,19 +50,15 @@ let hash;
 // curr note created
 let currNote = {};
 
-//
-let placedNoteNoText = false;
+// holds text while updating element
+let tempTextHolder;
 
 //our next animation frame function
 let animationFrame; 
 
-let strokeColor = "black";
-
 const connectFunction = () => {
     username = document.querySelector('#username').value;
   
-    createTempNote();
-
     // listening for key press, to stop curr action
     window.addEventListener("keydown", keypress, false);
     // If the username is over 15 characters, display a popup
@@ -121,16 +111,17 @@ const init = () => {
   canvas.addEventListener('mouseup', mouseUpHandler);
   canvas.addEventListener('mousemove', mouseMoveHandler);
  
+  // initializing the moving text field, used to add text to elements
   movingTextField = document.querySelector('#tempTextField');
+  
+  
+  // ---------------------
+  
+  /* OPTIONS FOR DIFFERENT STICKY NOTES */
   
   // Yellow sticky note
   const yellowSticky = document.querySelector('#stickyNote1');
   yellowSticky.addEventListener('click', function() {
-    if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     stickyColor = 'yellow';
     currAction = "note";
     yellowSticky.style.border = "2px solid #454545";
@@ -142,14 +133,10 @@ const init = () => {
     fakeTextField.style.top = "0";
     createTempNote();
   });
+  
   // Green sticky note
   const greenSticky = document.querySelector('#stickyNote2');
   greenSticky.addEventListener('click', function() {
-     if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     stickyColor = 'greenyellow';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -161,14 +148,10 @@ const init = () => {
     fakeTextField.style.top = "0";
     createTempNote();
   });
+  
   // Blue sticky note
   const blueSticky = document.querySelector('#stickyNote3');
   blueSticky.addEventListener('click', function() {
-     if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     stickyColor = 'deepskyblue';
     currAction = "note";
     yellowSticky.style.border = "none";
@@ -182,6 +165,10 @@ const init = () => {
   });
   
   textColor = "#4ECDC4"
+  
+   // ---------------------
+  
+  /* OPTIONS FOR DIFFERENT TEXT COLORS */
   
   const textColor1 = document.querySelector('#textColor1');
   textColor1.style.border = "2px solid #454545";
@@ -312,22 +299,12 @@ const init = () => {
   
   const addTextField = document.querySelector('#textField');
   addTextField.addEventListener('click', function() {
-     if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     currAction = "text";
     createTempText();
   });
   
   const addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function() {
-     if (placedNoteNoText) {
-      movingTextField.style.display = "none";
-      currNote = {};
-      placedNoteNoText = false;
-    }
     currAction = "connect";
     let fakeTextField = document.querySelector("#fakeTextField")
     fakeTextField.style.zIndex = "0";
@@ -345,49 +322,35 @@ const init = () => {
     }
   });
   
-  // ---------------------
-  
-  /* ADDING TOPICS */
-  
-  //$("#topicBtn").click(function(){
-  //  numTopics++; 
-  //  
-  //    if ($(".clearfix1").is(":hidden")) {
-  //        $(".clearfix1").show();
-  //    }
-  //    else if ($(".clearfix2").is(":hidden")) {
-  //        $(".clearfix2").show();
-  //    }
-  //    else if ($(".clearfix3").is(":hidden")) {
-  //      $(".clearfix3").show();
-  //    }
-  //  
-  //  if (numTopics === 3) {
-  //    $('#topicBtn').hide();
-  //  }
-  //});
-  
   
   // ---------------------
   
   /* ADD COMMENT TO NOTE */
   
   $("#submitNote").click(function(){
+    // get the value from textarea
     let text = document.querySelector('#comment').value;
+    // set curr element text to this value
     currNote.text = text;
+    // clear out the textarea
     document.querySelector('#comment').value = ""; 
+    // and hide the div
     movingTextField.style.display = "none";
+    
+    // if we are adding a note, tell server to create a note
     if (currAction === "note") {
       placedNoteNoText = false;
       socket.emit('addNote', currNote);
+      
+    // if we are adding a textField, tell server to create a textField
     } else if (currAction === "text") {
       socket.emit('addTextField', currNote);
+      
+    // if we are updating a element, tell server to update this element
     } else if (currAction === "updateNote") {
       socket.emit('updateNoteText', currNote);
     }
-     currAction = "";
-     currNote = {};
-     objectPlaced = false;
+     endAction();
   });
   
    // ---------------------
@@ -397,91 +360,10 @@ const init = () => {
   $("#deleteNote").click(function(){
     socket.emit('removeNote', currNote);
     currAction = "";
-    currNote = {};  document.querySelector('#comment').value = ""; 
+    currNote = {};  
+    document.querySelector('#comment').value = ""; 
     movingTextField.style.display = "none";
   });
-  
-  // ---------------------
-  
-  ///* WILL TOGGLE EDITING FOR TOPICS */
-  //  
-  //$("#showSettings1").click(function(){
-  //  $(".settings1").toggle('fast', 'swing');
-  //});
-  //
-  // $("#showSettings2").click(function(){
-  //  $(".settings2").toggle('fast', 'swing');
-  //});
-  //
-  // $("#showSettings3").click(function(){
-  //  $(".settings3").toggle('fast', 'swing');
-  //});
-//
-  //
-  //// ---------------------
-  //
-  ///* WILL GET THE NEW NAME FOR TOPIC */
-//
-  //
-  //$("#submitTopic1").click(function(){
-  //  let text = $("#name1").val();
-  //  $(".settings1").toggle('fast', 'swing');
-//
-//
-  //  $("#topicsName1").html(text);
-  //});
-  //
-  //$("#submitTopic2").click(function(){
-  //  let text = $("#name2").val();
-  //  $(".settings2").toggle('fast', 'swing');
-//
-//
-  //  $("#topicsName2").html(text);
-  //});
-  //
-  //$("#submitTopic3").click(function(){
-  //  let text = $("#name3").val();
-  //  $(".settings3").toggle('fast', 'swing');
-//
-//
-  //  $("#topicsName3").html(text);
-  //});
-  //
-  //// ---------------------
-  //
-  ///* WILL DELETE TOPIC */
-//
-  //
-  //$("#delete1").click(function(){
-  //  $("#name1").val('');
-//
-  //  $("#topicsName1").html('1');
-  //   numTopics--;
-  //    $(".clearfix1").hide();
-  //    $(".settings1").hide();
-  //    $('#topicBtn').show();
-  //});
-  //
-  //$("#delete2").click(function(){
-  //  $("#name2").val('');
-//
-  //  $("#topicsName2").html('2');
-  //   numTopics--;
-  //    $(".clearfix2").hide();
-  //    $(".settings2").hide();
-  //    $('#topicBtn').show();
-  //});
-  //
-  //$("#delete3").click(function(){
-  //  $("#name3").val('');
-//
-  //  $("#topicsName3").html('3');
-  //   numTopics--;
-  //    $(".clearfix3").hide();
-  //    $(".settings3").hide();
-  //    $('#topicBtn').show();
-  //});
-  
   
   // ---------------------
   
@@ -505,8 +387,7 @@ const init = () => {
         // then first send name of topic to server of course
         connectSocket();
         currRoom = 'room2';
-          socket.emit('enterRoom', {room: 'room2'});
-         // createGrayNote();
+        socket.emit('enterRoom', {room: 'room2'});
       });
     });
   });
@@ -518,7 +399,6 @@ const init = () => {
         connectSocket();
         currRoom = 'room3';
         socket.emit('enterRoom', {room: 'room3'});
-          //createGrayNote();
       });
     });
   });
