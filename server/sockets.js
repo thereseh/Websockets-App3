@@ -168,9 +168,14 @@ const setupSockets = (ioServer) => {
       }
     });
 
-    socket.on('clickObject', (data) => {
+    socket.on('clickedDownElement', (data) => {
       // depending on which room, store and return correct object
-      io.sockets.in(data.room).emit('clickObject', data);
+      socket.broadcast.to(data.room).emit('objectClickDown', data.id);
+    });
+
+    socket.on('clickedUpElement', (data) => {
+      // depending on which room, store and return correct object
+      socket.broadcast.to(data.room).emit('objectClickUp', data.id);
     });
 
     socket.on('connectNotes', (data) => {

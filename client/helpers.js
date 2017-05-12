@@ -76,23 +76,24 @@ const mouseUpHandler = (e) => {
     if(checkClickOnRec(position, 1)) {
       changeFocus(checkClickOnRec(position, 1));
       // Focuses on the note the user clicked on
-    } else if (currAction === "note") {
+    } else if (currAction === "note" && !objectPlaced) {
       // adds a note
       if(posX > canvas.width - 150) {
-        position.x = canvas.width - 50;
-        position.x = position.x;
-       posX = position.x - 50;
+        position.x = canvas.width - 100;
+        greynote.x = position.x;
+        posX = position.x - 50;
       }
+    
       if(posY > canvas.height - 125) {
         position.y = canvas.height - 50;
         greynote.y = position.y;
         posY = position.y - 50;
       }
-      addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
+      addNote(position, posX, posY);
     } else if (currAction === "text") {
       if(posX > canvas.width - 150) {
         posX = canvas.width - 150;
@@ -111,21 +112,46 @@ const mouseUpHandler = (e) => {
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "connectNotes") {
-      currAction = "";
+      currActiosn = "";
     }
   }  
 };
 
+
+
+//handler for key up events
+const mouseDownSideBar = (e) => {
+  console.log(e.target.localName);
+  if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+  let data = {id: e.target.id, room: currRoom};
+  socket.emit('clickedDownElement', data);
+  }
+};
+const mouseUpSideBar = (e) => {
+    console.log(e.target.localName);
+  if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+  let data = {id: e.target.id, room: currRoom};
+  socket.emit('clickedUpElement', data);
+  }
+};
+
+
+
 // function from http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
-const wrapText = (text, x, y, maxWidth, lineHeight) => {
+const wrapText = (text, x, y, maxWidth, lineHeight, type) => {
   let words = text.split(' ');
   let line = '';
-
   for(var n = 0; n < words.length; n++) {
     let testLine = line + words[n] + ' ';
     let metrics = ctx.measureText(testLine);
     let testWidth = metrics.width;
     if (testWidth > maxWidth && n > 0) {
+      if (type === "textField") {
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
+      }
       ctx.fillText(line, x, y);
       line = words[n] + ' ';
       y += lineHeight;
@@ -133,7 +159,12 @@ const wrapText = (text, x, y, maxWidth, lineHeight) => {
         line = testLine;
       }
     }
-
+   if (type === "textField") {
+      ctx.shadowColor = "black";
+      ctx.shadowBlur = 2;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
+    }
   ctx.fillText(line, x, y);
 }
 

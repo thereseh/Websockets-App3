@@ -58,7 +58,7 @@ const redraw = () => {
       ctx.font = "15px Arial";
       ctx.textAlign = "center";
       ctx.fillStyle = note.textColor;
-      wrapText(note.text, note.x+2, note.y-25, 85, 18);
+      wrapText(note.text, note.x+2, note.y-25, 85, 18, note.objectType);
 
       ctx.font = "12px Arial";
       ctx.fillStyle = "gray";
@@ -74,7 +74,7 @@ const redraw = () => {
       ctx.font = "40px Arial";
       ctx.textAlign = "center";
       ctx.fillStyle = note.textColor;
-      wrapText(note.text, note.x, note.y, 85, 30);
+      wrapText(note.text, note.x, note.y, 85, 30, note.objectType);
       ctx.restore();
     }
   }

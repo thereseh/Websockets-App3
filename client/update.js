@@ -152,7 +152,16 @@ const connectSocket = (e) => {
   
   socket.on('joined', addAllNotes);
   
-  //socket.on('clickObject', clickObject);
+  socket.on('objectClickDown', clickDown);
+  
+  socket.on('objectClickUp', clickUp);
+};
+
+const clickDown = (id) => {
+  $("#"+id).fadeToggle("fast");
+};
+const clickUp = (id) => {
+ $("#"+id).fadeToggle("fast");
 };
 
 // Updates the greynote's position for drawing to the canvas

@@ -60,7 +60,7 @@ var redraw = function redraw() {
         ctx.font = "15px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = _note.textColor;
-        wrapText(_note.text, _note.x + 2, _note.y - 25, 85, 18);
+        wrapText(_note.text, _note.x + 2, _note.y - 25, 85, 18, _note.objectType);
 
         ctx.font = "12px Arial";
         ctx.fillStyle = "gray";
@@ -76,7 +76,7 @@ var redraw = function redraw() {
         ctx.font = "40px Arial";
         ctx.textAlign = "center";
         ctx.fillStyle = _note2.textColor;
-        wrapText(_note2.text, _note2.x, _note2.y, 85, 30);
+        wrapText(_note2.text, _note2.x, _note2.y, 85, 30, _note2.objectType);
         ctx.restore();
       }
     }
@@ -183,23 +183,24 @@ var mouseUpHandler = function mouseUpHandler(e) {
     if (checkClickOnRec(position, 1)) {
       changeFocus(checkClickOnRec(position, 1));
       // Focuses on the note the user clicked on
-    } else if (currAction === "note") {
+    } else if (currAction === "note" && !objectPlaced) {
       // adds a note
       if (posX > canvas.width - 150) {
-        position.x = canvas.width - 50;
-        position.x = position.x;
+        position.x = canvas.width - 100;
+        greynote.x = position.x;
         posX = position.x - 50;
       }
+
       if (posY > canvas.height - 125) {
         position.y = canvas.height - 50;
         greynote.y = position.y;
         posY = position.y - 50;
       }
-      addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
+      addNote(position, posX, posY);
     } else if (currAction === "text") {
       if (posX > canvas.width - 150) {
         posX = canvas.width - 150;
@@ -218,21 +219,42 @@ var mouseUpHandler = function mouseUpHandler(e) {
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "connectNotes") {
-      currAction = "";
+      currActiosn = "";
     }
   }
 };
 
+//handler for key up events
+var mouseDownSideBar = function mouseDownSideBar(e) {
+  console.log(e.target.localName);
+  if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+    var data = { id: e.target.id, room: currRoom };
+    socket.emit('clickedDownElement', data);
+  }
+};
+var mouseUpSideBar = function mouseUpSideBar(e) {
+  console.log(e.target.localName);
+  if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
+    var data = { id: e.target.id, room: currRoom };
+    socket.emit('clickedUpElement', data);
+  }
+};
+
 // function from http://www.html5canvastutorials.com/tutorials/html5-canvas-wrap-text-tutorial/
-var wrapText = function wrapText(text, x, y, maxWidth, lineHeight) {
+var wrapText = function wrapText(text, x, y, maxWidth, lineHeight, type) {
   var words = text.split(' ');
   var line = '';
-
   for (var n = 0; n < words.length; n++) {
     var testLine = line + words[n] + ' ';
     var metrics = ctx.measureText(testLine);
     var testWidth = metrics.width;
     if (testWidth > maxWidth && n > 0) {
+      if (type === "textField") {
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 2;
+        ctx.shadowOffsetX = 1;
+        ctx.shadowOffsetY = 1;
+      }
       ctx.fillText(line, x, y);
       line = words[n] + ' ';
       y += lineHeight;
@@ -240,7 +262,12 @@ var wrapText = function wrapText(text, x, y, maxWidth, lineHeight) {
       line = testLine;
     }
   }
-
+  if (type === "textField") {
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+  }
   ctx.fillText(line, x, y);
 };
 
@@ -371,6 +398,11 @@ var connectFunction = function connectFunction() {
     document.querySelector('.topics').style.display = "block";
     document.querySelector('.login').style.display = "none";
   }
+
+  var sideBar = document.querySelector('.sideBar');
+
+  sideBar.addEventListener('mousedown', mouseDownSideBar);
+  sideBar.addEventListener('mouseup', mouseUpSideBar);
 };
 
 var tempLine = {};
@@ -977,7 +1009,16 @@ var connectSocket = function connectSocket(e) {
 
   socket.on('joined', addAllNotes);
 
-  //socket.on('clickObject', clickObject);
+  socket.on('objectClickDown', clickDown);
+
+  socket.on('objectClickUp', clickUp);
+};
+
+var clickDown = function clickDown(id) {
+  $("#" + id).fadeToggle("fast");
+};
+var clickUp = function clickUp(id) {
+  $("#" + id).fadeToggle("fast");
 };
 
 // Updates the greynote's position for drawing to the canvas

@@ -80,6 +80,12 @@ const connectFunction = () => {
       document.querySelector('.topics').style.display = "block";
       document.querySelector('.login').style.display = "none";
     }
+  
+  let sideBar = document.querySelector('.sideBar');
+
+  sideBar.addEventListener('mousedown', mouseDownSideBar);
+  sideBar.addEventListener('mouseup', mouseUpSideBar);
+  
 };
 
 let tempLine = {};
