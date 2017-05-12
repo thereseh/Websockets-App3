@@ -78,19 +78,35 @@ const mouseUpHandler = (e) => {
       // Focuses on the note the user clicked on
     } else if (currAction === "note" && !objectPlaced) {
       // adds a note
+      if(posX <= 0) {
+        position.x = 50;
+        greynote.x = position.x;
+        posX = position.x - 50;
+      }
       if(posX > canvas.width - 150) {
         position.x = canvas.width - 100;
         greynote.x = position.x;
         posX = position.x - 50;
       }
-    
+      if(posY <= 0) {
+        position.y = 50;
+        greynote.y = position.y;
+        posY = position.y - 50;
+      }
       if(posY > canvas.height - 125) {
         position.y = canvas.height - 50;
         greynote.y = position.y;
         posY = position.y - 50;
       }
+      addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
+      //if(posX > canvas.width - 150) {
+      //  posX = canvas.width - 150;
+      //}
+      //if(posY - 125 > canvas.height) {
+      //  posY = canvas.height - 100;
+      //}
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
       addNote(position, posX, posY);
@@ -114,21 +130,19 @@ const mouseUpHandler = (e) => {
     } else if (currAction === "connectNotes") {
       currActiosn = "";
     }
-  }  
+}
 };
 
 
 
 //handler for key up events
 const mouseDownSideBar = (e) => {
-  console.log(e.target.localName);
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
   let data = {id: e.target.id, room: currRoom};
   socket.emit('clickedDownElement', data);
   }
 };
 const mouseUpSideBar = (e) => {
-    console.log(e.target.localName);
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
   let data = {id: e.target.id, room: currRoom};
   socket.emit('clickedUpElement', data);
@@ -166,7 +180,7 @@ const wrapText = (text, x, y, maxWidth, lineHeight, type) => {
       ctx.shadowOffsetY = 1;
     }
   ctx.fillText(line, x, y);
-}
+};
 
 // calculats the lerp for smooth transition between frames
 const lerp = (v0, v1, alpha) => {
@@ -176,6 +190,18 @@ const lerp = (v0, v1, alpha) => {
 //handler for key up events
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
+  // KEEP THOSE NOTES IN THEIR BORDERS
+  if(position.x >= canvas.width - 100) {
+    position.x = canvas.width - 100;
+  } else if (position.x <= 50) {
+    position.x = 50;
+  }
+  if(position.y >= canvas.height - 50) {
+    position.y = canvas.height - 50;
+  } else if(position.y <= 50) {
+    position.y = 50;
+  }
+  
   if(position) {
     if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
@@ -186,8 +212,7 @@ const mouseMoveHandler = (e) => {
     if (currAction === "connectNote" && !objectPlaced) {
       createLine(position);
     }
-    
-    
+      
     const user = users[hash];
     
     if (position.x > 0 && position.x < canvas.width && position.y > 0 && position.y < canvas.height) {

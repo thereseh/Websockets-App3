@@ -74,7 +74,13 @@ const connectFunction = () => {
     // If the username is over 15 characters, display a popup
     if (username.length > 15) {      
       let popup = document.getElementById('namePopup');
+      popup.innerHTML = "Usernames must not be longer than 15 characters!";
       popup.classList.toggle("show");
+    } else if (username.length < 1) {
+      let popup = document.getElementById('namePopup');
+      popup.innerHTML = "Usernames must be at least 1 character!";
+      popup.classList.toggle("show");
+      
     } else {
       canvasBool = 1;
       document.querySelector('.topics').style.display = "block";
@@ -131,9 +137,9 @@ const init = () => {
     greenSticky.style.border = "none";
     blueSticky.style.border = "none";
     let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   // Green sticky note
@@ -150,9 +156,9 @@ const init = () => {
     greenSticky.style.border = "2px solid #454545";
     blueSticky.style.border = "none";
     let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   // Blue sticky note
@@ -169,9 +175,9 @@ const init = () => {
     greenSticky.style.border = "none";
     blueSticky.style.border = "2px solid #454545";
     let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   
@@ -323,10 +329,10 @@ const init = () => {
       placedNoteNoText = false;
     }
     currAction = "connect";
-          let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    let fakeTextField = document.querySelector("#fakeTextField")
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
   });
   
   

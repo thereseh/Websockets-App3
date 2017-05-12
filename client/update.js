@@ -15,7 +15,6 @@ const changeFocus = (data) => {
   } if (currAction === ""){
     currAction = "updateNote";
     updateNoteText(data);
-    console.dir(data);
   }
   const keys = Object.keys(notes);
   if(keys.length > 0) {
@@ -125,7 +124,6 @@ const removeNote = (data) => {
     if(keys.length > 0) {
       for(let i = 0; i < keys.length; i++) {
         const note = notes[keys[i]];
-        console.dir(note)
         if (note.objectType === "line") {
           if (note.noteParentFrom === data || note.noteParentTo === data) {
             socket.emit('removeLine', note);
@@ -171,11 +169,22 @@ const updateGrayNote = (position) => {
 };
 
 const updateTempTextField = (position) => {
-  if(position.x - 50 < canvas.width - 125) {
-  document.querySelector("#fakeTextField").style.left = (position.x-50) + "px";
+  // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
+  position.x -= 50;
+  position.y -= 50;
+  if(position.x <= 0) {
+    document.querySelector("#fakeTextField").style.left = (position.x = 0) + "px";
+  } else if (position.x >= canvas.width - 150) {
+    document.querySelector("#fakeTextField").style.left = (position.x = canvas.width - 150) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.left = (position.x) + "px";
   }
-  if(position.y - 50 < canvas.height - 100) {
-    document.querySelector("#fakeTextField").style.top = (position.y-50) + "px";
+  if(position.y <= 0) {
+    document.querySelector("#fakeTextField").style.top = (position.y = 0) + "px";
+  } else if (position.y >= canvas.height - 100) {
+    document.querySelector("#fakeTextField").style.top = (position.y = canvas.height - 100) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.top = (position.y) + "px";
   }
 };
 

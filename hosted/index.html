@@ -12,12 +12,12 @@
 </head>
 <body>
   <div class="login">
-  <h1 id="indexh1">Time to brainstorm!</h1>
+  <h1 id="indexh1">Cloud Brain</h1>
   <div class="row">
   <div class="col-lg-6">
     <div class="input-group" id="inputUser">
       <div class="popup">
-        <span class="popuptext" id="namePopup">Usernames must not be longer than 15 characters!</span>
+        <span class="popuptext" id="namePopup"></span>
       </div>
       <input type="text" id="username" class="form-control" placeholder="Username...">
       <span class="input-group-btn">
@@ -147,7 +147,7 @@
       </div>
        <div id="tempTextField">
         <div class="input-group" id="inputNote">
-         <textarea class="form-control" rows="5" placeholder="add text" id="comment"></textarea>
+         <textarea maxlength="50" class="form-control" rows="5" placeholder="add text" id="comment"></textarea>
           <span class="input-group-btn">
           <button class="btn btn-default" type="button" id="submitNote">OK!</button>
             <span class="glyphicon glyphicon-trash" aria-hidden="true" id="deleteNote"></span>

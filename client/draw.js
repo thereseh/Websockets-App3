@@ -5,14 +5,6 @@ const redraw = () => {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (currAction === "note") {
-    ctx.save();
-    ctx.globalAlpha = 0.9;
-    ctx.fillStyle = stickyColor;
-    ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
-    ctx.fill();
-    ctx.restore();
-  }
   if (currAction === "connectNote") {
     ctx.save();
     ctx.beginPath();
@@ -67,8 +59,8 @@ const redraw = () => {
       ctx.restore();
     }
   }
-    for(let i = 0; i < keys.length; i++) {
-      const note = notes[keys[i]];
+  for(let i = 0; i < keys.length; i++) {
+    const note = notes[keys[i]];
     if (note.objectType === "textField") {
       ctx.save();
       ctx.font = "40px Arial";
@@ -77,6 +69,15 @@ const redraw = () => {
       wrapText(note.text, note.x, note.y, 85, 30, note.objectType);
       ctx.restore();
     }
+  }
+    
+  if (currAction === "note") {
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = stickyColor;
+    ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
+    ctx.fill();
+    ctx.restore();
   }
 }
   

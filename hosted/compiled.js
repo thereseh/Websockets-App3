@@ -7,14 +7,6 @@ var redraw = function redraw() {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (currAction === "note") {
-    ctx.save();
-    ctx.globalAlpha = 0.9;
-    ctx.fillStyle = stickyColor;
-    ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
-    ctx.fill();
-    ctx.restore();
-  }
   if (currAction === "connectNote") {
     ctx.save();
     ctx.beginPath();
@@ -79,6 +71,15 @@ var redraw = function redraw() {
         wrapText(_note2.text, _note2.x, _note2.y, 85, 30, _note2.objectType);
         ctx.restore();
       }
+    }
+
+    if (currAction === "note") {
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = stickyColor;
+      ctx.fillRect(greynote.x - greynote.radiusx, greynote.y - greynote.radiusy, greynote.width, greynote.height);
+      ctx.fill();
+      ctx.restore();
     }
   }
 
@@ -185,19 +186,35 @@ var mouseUpHandler = function mouseUpHandler(e) {
       // Focuses on the note the user clicked on
     } else if (currAction === "note" && !objectPlaced) {
       // adds a note
+      if (posX <= 0) {
+        position.x = 50;
+        greynote.x = position.x;
+        posX = position.x - 50;
+      }
       if (posX > canvas.width - 150) {
         position.x = canvas.width - 100;
         greynote.x = position.x;
         posX = position.x - 50;
       }
-
+      if (posY <= 0) {
+        position.y = 50;
+        greynote.y = position.y;
+        posY = position.y - 50;
+      }
       if (posY > canvas.height - 125) {
         position.y = canvas.height - 50;
         greynote.y = position.y;
         posY = position.y - 50;
       }
+      addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
+      //if(posX > canvas.width - 150) {
+      //  posX = canvas.width - 150;
+      //}
+      //if(posY - 125 > canvas.height) {
+      //  posY = canvas.height - 100;
+      //}
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
       addNote(position, posX, posY);
@@ -226,14 +243,12 @@ var mouseUpHandler = function mouseUpHandler(e) {
 
 //handler for key up events
 var mouseDownSideBar = function mouseDownSideBar(e) {
-  console.log(e.target.localName);
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
     var data = { id: e.target.id, room: currRoom };
     socket.emit('clickedDownElement', data);
   }
 };
 var mouseUpSideBar = function mouseUpSideBar(e) {
-  console.log(e.target.localName);
   if (socket && e.target.id != "close" && e.target.localName != "h2" && e.target.localName != "p") {
     var data = { id: e.target.id, room: currRoom };
     socket.emit('clickedUpElement', data);
@@ -279,6 +294,18 @@ var lerp = function lerp(v0, v1, alpha) {
 //handler for key up events
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
+  // KEEP THOSE NOTES IN THEIR BORDERS
+  if (position.x >= canvas.width - 100) {
+    position.x = canvas.width - 100;
+  } else if (position.x <= 50) {
+    position.x = 50;
+  }
+  if (position.y >= canvas.height - 50) {
+    position.y = canvas.height - 50;
+  } else if (position.y <= 50) {
+    position.y = 50;
+  }
+
   if (position) {
     if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
@@ -392,7 +419,12 @@ var connectFunction = function connectFunction() {
   // If the username is over 15 characters, display a popup
   if (username.length > 15) {
     var popup = document.getElementById('namePopup');
+    popup.innerHTML = "Usernames must not be longer than 15 characters!";
     popup.classList.toggle("show");
+  } else if (username.length < 1) {
+    var _popup = document.getElementById('namePopup');
+    _popup.innerHTML = "Usernames must be at least 1 character!";
+    _popup.classList.toggle("show");
   } else {
     canvasBool = 1;
     document.querySelector('.topics').style.display = "block";
@@ -873,7 +905,6 @@ var changeFocus = function changeFocus(data) {
   }if (currAction === "") {
     currAction = "updateNote";
     updateNoteText(data);
-    console.dir(data);
   }
   var keys = Object.keys(notes);
   if (keys.length > 0) {
@@ -982,7 +1013,6 @@ var removeNote = function removeNote(data) {
     if (keys.length > 0) {
       for (var i = 0; i < keys.length; i++) {
         var note = notes[keys[i]];
-        console.dir(note);
         if (note.objectType === "line") {
           if (note.noteParentFrom === data || note.noteParentTo === data) {
             socket.emit('removeLine', note);
@@ -1028,11 +1058,22 @@ var updateGrayNote = function updateGrayNote(position) {
 };
 
 var updateTempTextField = function updateTempTextField(position) {
-  if (position.x - 50 < canvas.width - 125) {
-    document.querySelector("#fakeTextField").style.left = position.x - 50 + "px";
+  // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
+  position.x -= 50;
+  position.y -= 50;
+  if (position.x <= 0) {
+    document.querySelector("#fakeTextField").style.left = (position.x = 0) + "px";
+  } else if (position.x >= canvas.width - 150) {
+    document.querySelector("#fakeTextField").style.left = (position.x = canvas.width - 150) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.left = position.x + "px";
   }
-  if (position.y - 50 < canvas.height - 100) {
-    document.querySelector("#fakeTextField").style.top = position.y - 50 + "px";
+  if (position.y <= 0) {
+    document.querySelector("#fakeTextField").style.top = (position.y = 0) + "px";
+  } else if (position.y >= canvas.height - 100) {
+    document.querySelector("#fakeTextField").style.top = (position.y = canvas.height - 100) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.top = position.y + "px";
   }
 };
 
