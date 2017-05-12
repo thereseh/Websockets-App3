@@ -187,36 +187,42 @@ var mouseUpHandler = function mouseUpHandler(e) {
       // Focuses on the note the user clicked on
     } else if (currAction === "note") {
       // adds a note
-      if (posX > canvas.width - 150) {
-        position.x = canvas.width - 50;
+      if (posX >= canvas.width - 100) {
+        posX = canvas.width - 100;
       }
-      if (posY > canvas.height - 125) {
-        position.y = canvas.height - 50;
-      }
+      //if(position.y + 50 > canvas.height) {
+      //  position.y = canvas.height - 50;
+      //}
       addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
+      //if(posX > canvas.width - 150) {
+      //  posX = canvas.width - 150;
+      //}
+      //if(posY - 125 > canvas.height) {
+      //  posY = canvas.height - 100;
+      //}
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "text") {
-      if (posX > canvas.width - 150) {
-        posX = canvas.width - 150;
-      }
-      if (posY > canvas.height - 125) {
-        posY = canvas.height - 125;
-      }
-      console.log(currAction);
-      // adds a text field
-      var fakeTextField = document.querySelector("#fakeTextField");
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
-      addTextField(position, posX, posY);
-      objectPlaced = true;
-      console.log("objectPlaced: " + objectPlaced);
-      movingTextField.style.display = 'block';
-      movingTextField.style.left = posX + 'px';
-      movingTextField.style.top = posY + 'px';
+      //if(posX > canvas.width - 150) {
+      //  posX = canvas.width - 150;
+      //}
+      //if(posY - 125 > canvas.height) {
+      //  posY = canvas.height - 125;
+      //}
+      //console.log(currAction);
+      //// adds a text field
+      //let fakeTextField = document.querySelector("#fakeTextField")
+      //fakeTextField.style.zIndex = "0";
+      //fakeTextField.style.left = "0";
+      //fakeTextField.style.top = "0";
+      //addTextField(position, posX, posY);
+      //objectPlaced = true;
+      //console.log(`objectPlaced: ${objectPlaced}`);
+      //movingTextField.style.display = 'block';
+      //movingTextField.style.left = posX + 'px';
+      //movingTextField.style.top = posY + 'px';
     }
   }
 };
@@ -249,6 +255,18 @@ var lerp = function lerp(v0, v1, alpha) {
 //handler for key up events
 var mouseMoveHandler = function mouseMoveHandler(e) {
   var position = getMousePos(e, canvas);
+  // KEEP THOSE NOTES IN THEIR BORDERS
+  if (position.x >= canvas.width - 100) {
+    position.x = canvas.width - 100;
+  } else if (position.x <= 50) {
+    position.x = 50;
+  }
+  if (position.y >= canvas.height - 50) {
+    position.y = canvas.height - 50;
+  } else if (position.y <= 50) {
+    position.y = 50;
+  }
+
   if (position) {
     if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);
@@ -838,8 +856,9 @@ var updateNoteText = function updateNoteText(focusnote) {
   console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
-  movingTextField.style.left = currNote.textPosX + "px";
-  movingTextField.style.top = currNote.textPosY + "px";
+
+  movingTextField.style.left = currNote.x - 50 + "px";
+  movingTextField.style.top = currNote.y - 50 + "px";
   document.querySelector('#comment').value = focusnote.text;
   //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
@@ -947,11 +966,22 @@ var updateGrayNote = function updateGrayNote(position) {
 };
 
 var updateTempTextField = function updateTempTextField(position) {
-  if (position.x - 50 < canvas.width - 125) {
-    document.querySelector("#fakeTextField").style.left = position.x - 50 + "px";
+  // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
+  position.x -= 50;
+  position.y -= 50;
+  if (position.x <= 0) {
+    document.querySelector("#fakeTextField").style.left = (position.x = 0) + "px";
+  } else if (position.x >= canvas.width - 150) {
+    document.querySelector("#fakeTextField").style.left = (position.x = canvas.width - 150) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.left = position.x + "px";
   }
-  if (position.y - 50 < canvas.height - 100) {
-    document.querySelector("#fakeTextField").style.top = position.y - 50 + "px";
+  if (position.y <= 0) {
+    document.querySelector("#fakeTextField").style.top = (position.y = 0) + "px";
+  } else if (position.y >= canvas.height - 100) {
+    document.querySelector("#fakeTextField").style.top = (position.y = canvas.height - 100) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.top = position.y + "px";
   }
 };
 
@@ -969,7 +999,6 @@ var createTempText = function createTempText() {
 };
 
 var createLine = function createLine(position) {
-  console.log("poops");
   tempLine.toX = position.x;
   tempLine.toY = position.y;
 };

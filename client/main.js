@@ -118,9 +118,9 @@ const init = () => {
     greenSticky.style.border = "none";
     blueSticky.style.border = "none";
     let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   // Green sticky note
@@ -132,9 +132,9 @@ const init = () => {
     greenSticky.style.border = "2px solid #454545";
     blueSticky.style.border = "none";
     let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   // Blue sticky note
@@ -146,9 +146,9 @@ const init = () => {
     greenSticky.style.border = "none";
     blueSticky.style.border = "2px solid #454545";
     let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
     createTempNote();
   });
   
@@ -290,10 +290,10 @@ const init = () => {
   const addConnections = document.querySelector('#makeConnection');
   addConnections.addEventListener('click', function() {
     currAction = "connect";
-          let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
+    let fakeTextField = document.querySelector("#fakeTextField")
+    fakeTextField.style.zIndex = "0";
+    fakeTextField.style.left = "0";
+    fakeTextField.style.top = "0";
   });
   
   

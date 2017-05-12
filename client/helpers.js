@@ -80,36 +80,42 @@ const mouseUpHandler = (e) => {
       // Focuses on the note the user clicked on
     } else if (currAction === "note") {
       // adds a note
-      if(posX > canvas.width - 150) {
-        position.x = canvas.width - 50;
+      if(posX >= canvas.width - 100) {
+        posX = canvas.width - 100;
       }
-      if(posY > canvas.height - 125) {
-        position.y= canvas.height - 50;
-      }
+      //if(position.y + 50 > canvas.height) {
+      //  position.y = canvas.height - 50;
+      //}
       addNote(position, posX, posY);
       objectPlaced = true;
       movingTextField.style.display = 'block';
+      //if(posX > canvas.width - 150) {
+      //  posX = canvas.width - 150;
+      //}
+      //if(posY - 125 > canvas.height) {
+      //  posY = canvas.height - 100;
+      //}
       movingTextField.style.left = posX + 'px';
       movingTextField.style.top = posY + 'px';
     } else if (currAction === "text") {
-      if(posX > canvas.width - 150) {
-        posX = canvas.width - 150;
-      }
-      if(posY > canvas.height - 125) {
-        posY = canvas.height - 125;
-      }
-      console.log(currAction);
-      // adds a text field
-      let fakeTextField = document.querySelector("#fakeTextField")
-      fakeTextField.style.zIndex = "0";
-      fakeTextField.style.left = "0";
-      fakeTextField.style.top = "0";
-      addTextField(position, posX, posY);
-      objectPlaced = true;
-      console.log(`objectPlaced: ${objectPlaced}`);
-      movingTextField.style.display = 'block';
-      movingTextField.style.left = posX + 'px';
-      movingTextField.style.top = posY + 'px';
+      //if(posX > canvas.width - 150) {
+      //  posX = canvas.width - 150;
+      //}
+      //if(posY - 125 > canvas.height) {
+      //  posY = canvas.height - 125;
+      //}
+      //console.log(currAction);
+      //// adds a text field
+      //let fakeTextField = document.querySelector("#fakeTextField")
+      //fakeTextField.style.zIndex = "0";
+      //fakeTextField.style.left = "0";
+      //fakeTextField.style.top = "0";
+      //addTextField(position, posX, posY);
+      //objectPlaced = true;
+      //console.log(`objectPlaced: ${objectPlaced}`);
+      //movingTextField.style.display = 'block';
+      //movingTextField.style.left = posX + 'px';
+      //movingTextField.style.top = posY + 'px';
     }
   }  
 };
@@ -142,6 +148,18 @@ const lerp = (v0, v1, alpha) => {
 //handler for key up events
 const mouseMoveHandler = (e) => {
   const position = getMousePos(e, canvas);
+  // KEEP THOSE NOTES IN THEIR BORDERS
+  if(position.x >= canvas.width - 100) {
+    position.x = canvas.width - 100;
+  } else if (position.x <= 50) {
+    position.x = 50;
+  }
+  if(position.y >= canvas.height - 50) {
+    position.y = canvas.height - 50;
+  } else if(position.y <= 50) {
+    position.y = 50;
+  }
+  
   if(position) {
     if (currAction === "note" && !objectPlaced) {
       updateGrayNote(position);

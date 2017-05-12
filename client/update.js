@@ -39,8 +39,9 @@ const updateNoteText = (focusnote) => {
   console.dir(focusnote);
   currNote = focusnote;
   movingTextField.style.display = "block";
-  movingTextField.style.left = currNote.textPosX + "px";
-  movingTextField.style.top = currNote.textPosY + "px";
+
+  movingTextField.style.left = currNote.x - 50 + "px";
+  movingTextField.style.top = currNote.y - 50 + "px";
   document.querySelector('#comment').value = focusnote.text;
   //document.querySelector('#comment').style.resize = "none";
   focusnote.text = "";
@@ -150,11 +151,22 @@ const updateGrayNote = (position) => {
 };
 
 const updateTempTextField = (position) => {
-  if(position.x - 50 < canvas.width - 125) {
-    document.querySelector("#fakeTextField").style.left = (position.x-50) + "px";
+  // KEEP THAT DARN TEMPTEXTFIELD IN THE CANVAS
+  position.x -= 50;
+  position.y -= 50;
+  if(position.x <= 0) {
+    document.querySelector("#fakeTextField").style.left = (position.x = 0) + "px";
+  } else if (position.x >= canvas.width - 150) {
+    document.querySelector("#fakeTextField").style.left = (position.x = canvas.width - 150) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.left = (position.x) + "px";
   }
-  if(position.y - 50 < canvas.height - 100) {
-    document.querySelector("#fakeTextField").style.top = (position.y-50) + "px";
+  if(position.y <= 0) {
+    document.querySelector("#fakeTextField").style.top = (position.y = 0) + "px";
+  } else if (position.y >= canvas.height - 100) {
+    document.querySelector("#fakeTextField").style.top = (position.y = canvas.height - 100) + "px";
+  } else {
+    document.querySelector("#fakeTextField").style.top = (position.y) + "px";
   }
 };
 
@@ -172,7 +184,6 @@ const createTempText = () => {
 };
 
 const createLine = (position) => {
-  console.log("poops");
   tempLine.toX = position.x;
   tempLine.toY = position.y;
 };
